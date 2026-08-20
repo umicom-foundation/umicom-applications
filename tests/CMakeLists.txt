@@ -46,11 +46,22 @@ target_compile_definitions(umicom-applications-resource-composition-test PRIVATE
     UMICOM_APPLICATIONS_RESOURCE_ROOT="${UMICOM_FRAMEWORK_RESOURCE_ROOT}"
     UMICOM_APPLICATIONS_SHARED_BRAND_REQUIRED=$<BOOL:${UMICOM_STUDIO_BUILD_GTK}>
 )
-
 umicom_apply_warnings(umicom-applications-resource-composition-test)
 umicom_apply_sanitizers(umicom-applications-resource-composition-test)
-
 add_test(
     NAME applications.resources
     COMMAND umicom-applications-resource-composition-test
+)
+
+add_executable(umicom-applications-desk-runtime-test
+    test_desk_runtime_composition.c
+)
+target_link_libraries(umicom-applications-desk-runtime-test PRIVATE
+    Umicom::Framework
+)
+umicom_apply_warnings(umicom-applications-desk-runtime-test)
+umicom_apply_sanitizers(umicom-applications-desk-runtime-test)
+add_test(
+    NAME applications.desk_runtime
+    COMMAND umicom-applications-desk-runtime-test
 )

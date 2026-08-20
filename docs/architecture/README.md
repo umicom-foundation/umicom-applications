@@ -1,6 +1,6 @@
 # Umicom Applications Architecture Decisions
 
-This directory records the high-impact decisions established while converting Umicom Applications into the runnable multi-product composition and future Umicom Desk.
+This directory records the high-impact decisions established while converting Umicom Applications into the runnable multi-product composition and Umicom Desk.
 
 | ADR | Decision |
 |---|---|
@@ -10,6 +10,8 @@ This directory records the high-impact decisions established while converting Um
 | ADR-0004 | Layouts use Framework semantics, product defaults, Data Server state and portable files |
 | ADR-0005 | Umicom Framework is a modular SDK/runtime rather than one giant DLL |
 | ADR-0006 | Umicom Desk discovers validated applications and exposes a bottom taskbar |
+| ADR-0007 | Framework owns application runtime state and governed launch planning |
+| ADR-0008 | `umicom-os-module` is a user-space Control Centre, not the OS distribution |
 
 The companion `REPOSITORY-TOPOLOGY.md` records the approved superproject, module and Umicom OS dependency directions.
 

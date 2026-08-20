@@ -1,0 +1,31 @@
+{
+  "schema": "umicom.desk-runtime/1",
+  "authority": "Master Controller",
+  "application_catalogue": "manifests/applications.json",
+  "application_discovery": {
+    "mode": "validated-manifest-and-build-composition",
+    "scan_arbitrary_directories": false,
+    "require_installed": true,
+    "require_compatible": true,
+    "require_enabled": true
+  },
+  "taskbar": {
+    "position": "bottom",
+    "show_pinned": true,
+    "show_running": true,
+    "show_attention": true,
+    "separate_from_layout_strip": true
+  },
+  "layouts": {
+    "model_owner": "umicom-framework",
+    "generic_templates_owner": "umicom-framework",
+    "product_templates_owner": "application-module",
+    "user_state_owner": "Data Server",
+    "portable_extension": ".umilayout"
+  },
+  "operating_system": {
+    "kernel_inside_framework": false,
+    "recovery_depends_on_framework": false,
+    "normal_user_space_uses_framework": true
+  }
+}

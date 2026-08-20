@@ -26,3 +26,11 @@
 	path = applications/exchange
 	url = https://github.com/umicom-foundation/umicom-exchange-module.git
 	branch = main
+[submodule "applications/desktop"]
+	path = applications/desktop
+	url = https://github.com/umicom-foundation/umicom-desktop-module.git
+	branch = main
+[submodule "applications/os"]
+	path = applications/os
+	url = https://github.com/umicom-foundation/umicom-os-module.git
+	branch = main

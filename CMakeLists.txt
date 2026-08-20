@@ -4,16 +4,19 @@
 #
 # PURPOSE:
 #   Compose one authoritative Umicom Framework checkout with independently
-#   versioned thin application modules. Repository Mega Batch R2 moves common
-#   immutable resources into Framework and exposes the first Umicom Desk
-#   application-taskbar model without copying reusable application logic.
+#   versioned thin application modules. The
+#   runnable Umicom Desk, governed application launcher and thin OS Control
+#   Centre without duplicating Framework implementation.
 #
 # ARCHITECTURE:
 #   - Framework is configured exactly once from framework/.
 #   - Application modules consume public Framework targets only.
-#   - Shared branding, themes, schemas and generic layouts live in Framework.
-#   - Studio is the first enabled application and reference integration host.
-#   - Placeholder application modules never block an unrelated Studio build.
+#   - Shared resources, taskbar policy, launcher state and semantic layouts
+#     remain in Framework.
+#   - Umicom Desk is the outer application shell and composition host.
+#   - Studio is the first complete workbench hosted and launched by Desk.
+#   - Placeholder application modules never block enabled products.
+#   - Linux kernel, boot and recovery remain in the full umicom-os repository.
 #   - Master Controller and Slave Controllers remain the canonical lifecycle
 #     terminology and are implemented by Framework/application code, not here.
 #
@@ -28,8 +31,8 @@ cmake_minimum_required(VERSION 3.24)
 
 project(
     UmicomApplications
-    VERSION 0.2.0
-    DESCRIPTION "Runnable composition of Umicom Framework and thin application modules"
+    VERSION 0.3.0
+    DESCRIPTION "Runnable Umicom Desk composition and thin application modules"
     LANGUAGES C
 )
 
@@ -51,6 +54,9 @@ option(UMICOM_BUILD_NATIVE_TOOL
        "Build the native Framework-owned umicom command"
        ON)
 
+option(UMICOM_APPLICATIONS_BUILD_DESKTOP
+       "Build the Umicom Desk application module"
+       ON)
 option(UMICOM_APPLICATIONS_BUILD_STUDIO
        "Build the Umicom Studio IDE application module"
        ON)
@@ -69,7 +75,16 @@ option(UMICOM_APPLICATIONS_BUILD_BANK
 option(UMICOM_APPLICATIONS_BUILD_EXCHANGE
        "Build the Umicom Exchange application module"
        OFF)
+option(UMICOM_APPLICATIONS_BUILD_OS
+       "Build the user-space Umicom OS Control Centre module"
+       ON)
 
+option(UMICOM_DESKTOP_BUILD_GTK
+       "Build the GTK4 Umicom Desk application"
+       ON)
+option(UMICOM_DESKTOP_GUI
+       "Build Umicom Desk as a Windows GUI-subsystem executable"
+       ON)
 option(UMICOM_STUDIO_BUILD_GTK
        "Build the GTK4 Umicom Studio IDE application"
        ON)
@@ -209,10 +224,12 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
     endif()
 endif()
 
-# Studio requires the Framework GTK4 adapter when its GTK application is built.
-if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
+# Studio and Umicom Desk require the Framework GTK4 adapter when either
+# graphical application is built.
+if((UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK) OR
+   (UMICOM_APPLICATIONS_BUILD_DESKTOP AND UMICOM_DESKTOP_BUILD_GTK))
     set(UMICOM_BUILD_GTK4_ADAPTER ON CACHE BOOL
-        "Build the Framework GTK4 adapter required by Studio" FORCE)
+        "Build the Framework GTK4 adapter required by enabled applications" FORCE)
 else()
     set(UMICOM_BUILD_GTK4_ADAPTER OFF CACHE BOOL
         "Build the Framework GTK4 adapter required by enabled applications" FORCE)
@@ -226,6 +243,12 @@ if(NOT TARGET Umicom::Framework)
         "framework/CMakeLists.txt did not provide the required Umicom::Framework target.")
 endif()
 
+# Add the application runtime and Desk sources to the established Framework
+# targets without creating a second Framework build catalogue.
+include(
+    "${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake/UmicomApplicationRuntimeIntegration.cmake"
+)
+
 # The source-superbuild publishes an explicit default root for Framework-owned
 # immutable resources. Installed consumers may call the same resolver with the
 # package resource root discovered beside their installation prefix.
@@ -234,6 +257,31 @@ if(TARGET umicom_application)
         UMICOM_FRAMEWORK_RESOURCE_ROOT_DEFAULT="${UMICOM_FRAMEWORK_RESOURCE_ROOT}")
 endif()
 
+# -----------------------------------------------------------------------------
+# Thin Umicom Desk composition
+# -----------------------------------------------------------------------------
+if(UMICOM_APPLICATIONS_BUILD_DESKTOP)
+    umicom_require_cmake_project(
+        "applications/desktop" "Umicom Desktop Module")
+    set(UMICOM_DESKTOP_COMPOSE_STUDIO
+        "${UMICOM_APPLICATIONS_BUILD_STUDIO}" CACHE BOOL
+        "Expose Studio in Umicom Desk" FORCE)
+    set(UMICOM_DESKTOP_COMPOSE_OS
+        "${UMICOM_APPLICATIONS_BUILD_OS}" CACHE BOOL
+        "Expose OS Control Centre in Umicom Desk" FORCE)
+    add_subdirectory(applications/desktop)
+    if(NOT TARGET Umicom::desktop_module)
+        message(FATAL_ERROR
+            "The Desktop module did not provide Umicom::desktop_module.")
+    endif()
+    message(STATUS "Enabled application module: Umicom Desk")
+else()
+    message(STATUS "Disabled application module: Umicom Desk")
+endif()
+
+# -----------------------------------------------------------------------------
+# Studio reference workbench
+# -----------------------------------------------------------------------------
 if(UMICOM_APPLICATIONS_BUILD_STUDIO)
     umicom_require_cmake_project("applications/studio" "Umicom Studio IDE")
     add_subdirectory(applications/studio)
@@ -257,6 +305,15 @@ else()
     message(STATUS "Disabled application module: Umicom Studio IDE")
 endif()
 
+# -----------------------------------------------------------------------------
+# User-space Umicom OS Control Centre
+# -----------------------------------------------------------------------------
+umicom_add_optional_application(
+    UMICOM_APPLICATIONS_BUILD_OS
+    "applications/os"
+    "Umicom OS Control Centre")
+
+# Placeholder and future product modules.
 umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_TRADER
     "applications/trader"
@@ -278,6 +335,13 @@ umicom_add_optional_application(
     "applications/exchange"
     "Umicom Exchange")
 
+if(TARGET umicom-desk AND TARGET umicom-studio-ide)
+    add_dependencies(umicom-desk umicom-studio-ide)
+endif()
+if(TARGET umicom-desk AND TARGET umicom-os-control-centre)
+    add_dependencies(umicom-desk umicom-os-control-centre)
+endif()
+
 if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
@@ -289,12 +353,12 @@ install(DIRECTORY "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/"
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/licenses/umicom-applications")
 
-# Repository Mega Batch R2 retains portable archives. Platform-specific signed
-# installers remain governed by the later delivery roadmap.
+# Portable archives remain the initial package format. Platform-specific
+# signed installers remain governed by the delivery roadmap.
 set(CPACK_PACKAGE_NAME "Umicom Applications")
 set(CPACK_PACKAGE_VENDOR "Umicom Foundation")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-    "Umicom Framework with independently versioned thin application modules")
+    "Umicom Desk, Framework and independently versioned application modules")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME
@@ -309,6 +373,8 @@ include(CPack)
 message(STATUS "Umicom Applications version: ${PROJECT_VERSION}")
 message(STATUS "C standard: C${CMAKE_C_STANDARD}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Umicom Desk GTK4 application: ${UMICOM_DESKTOP_BUILD_GTK}")
 message(STATUS "Studio GTK4 application: ${UMICOM_STUDIO_BUILD_GTK}")
+message(STATUS "OS Control Centre: ${UMICOM_APPLICATIONS_BUILD_OS}")
 message(STATUS "Framework source: ${CMAKE_CURRENT_SOURCE_DIR}/framework")
 message(STATUS "Framework resources: ${UMICOM_FRAMEWORK_RESOURCE_ROOT}")
