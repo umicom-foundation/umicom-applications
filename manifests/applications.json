@@ -1,0 +1,54 @@
+{
+  "schema": "umicom.applications/1",
+  "repository": "umicom-foundation/umicom-applications",
+  "framework": {
+    "id": "umicom.framework",
+    "path": "framework",
+    "repository": "umicom-foundation/umicom-framework",
+    "required": true
+  },
+  "applications": [
+    {
+      "id": "umicom.studio",
+      "path": "applications/studio",
+      "repository": "umicom-foundation/umicom-studio-ide-module",
+      "status": "active",
+      "default_enabled": true
+    },
+    {
+      "id": "umicom.trader",
+      "path": "applications/trader",
+      "repository": "umicom-foundation/umicom-trader-module",
+      "status": "placeholder",
+      "default_enabled": false
+    },
+    {
+      "id": "umicom.tms",
+      "path": "applications/tms",
+      "repository": "umicom-foundation/umicom-tms-module",
+      "status": "placeholder",
+      "default_enabled": false
+    },
+    {
+      "id": "umicom.llm",
+      "path": "applications/llm",
+      "repository": "umicom-foundation/umicom-llm-module",
+      "status": "placeholder",
+      "default_enabled": false
+    },
+    {
+      "id": "umicom.bank",
+      "path": "applications/bank",
+      "repository": "umicom-foundation/umicom-bank-module",
+      "status": "placeholder",
+      "default_enabled": false
+    },
+    {
+      "id": "umicom.exchange",
+      "path": "applications/exchange",
+      "repository": "umicom-foundation/umicom-exchange-module",
+      "status": "placeholder",
+      "default_enabled": false
+    }
+  ]
+}

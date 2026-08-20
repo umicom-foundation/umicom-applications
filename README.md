@@ -18,20 +18,23 @@ Application-module repositories contain only thin product-specific composition, 
 umicom-applications
 ├── framework
 │   └── submodule: umicom-framework
-│
-└── applications
-    ├── studio
-    │   └── submodule: umicom-studio-ide-module
-    ├── trader
-    │   └── submodule: umicom-trader-module
-    ├── tms
-    │   └── submodule: umicom-tms-module
-    ├── llm
-    │   └── submodule: umicom-llm-module
-    ├── bank
-    │   └── submodule: umicom-bank-module
-    └── exchange
-        └── submodule: umicom-exchange-module
+├── applications
+│   ├── studio
+│   │   └── submodule: umicom-studio-ide-module
+│   ├── trader
+│   │   └── submodule: umicom-trader-module
+│   ├── tms
+│   │   └── submodule: umicom-tms-module
+│   ├── llm
+│   │   └── submodule: umicom-llm-module
+│   ├── bank
+│   │   └── submodule: umicom-bank-module
+│   └── exchange
+│       └── submodule: umicom-exchange-module
+├── manifests
+├── tests
+├── CMakeLists.txt
+└── CMakePresets.json
 ```
 
 ## Repository catalogue
@@ -93,6 +96,34 @@ git submodule foreach --recursive `
     'echo ""; echo "===== $displaypath ====="; git status --short'
 ```
 
+Launch Studio:
+
+```powershell
+& ".\build\windows-ucrt64-debug\bin\umicom-studio-ide.exe" --console
+```
+
+## Install and create a portable package
+
+```powershell
+cmake --install ".\build\windows-ucrt64-debug" `
+    --prefix "C:\umicom\install\umicom-applications"
+
+cpack --config ".\build\windows-ucrt64-debug\CPackConfig.cmake" `
+    -C Debug
+```
+
+## Application options
+
+```text
+UMICOM_APPLICATIONS_BUILD_STUDIO   ON
+UMICOM_APPLICATIONS_BUILD_TRADER   OFF
+UMICOM_APPLICATIONS_BUILD_TMS      OFF
+UMICOM_APPLICATIONS_BUILD_LLM      OFF
+UMICOM_APPLICATIONS_BUILD_BANK     OFF
+UMICOM_APPLICATIONS_BUILD_EXCHANGE OFF
+```
+
+An application option must not be enabled until its module contains a valid `CMakeLists.txt` and application source.
 ## Development workflow
 
 Changes must be committed in the repository that owns the source.
@@ -136,13 +167,15 @@ The next milestone is the root application-composition build, beginning with Fra
 - Cross-module public interfaces use a stable C ABI.
 - C++ remains behind controlled adapters where justified.
 - GTK4 is the first graphical frontend.
-- Master Controller and Slave Controllers remain the canonical terminology.
+- Master Controller and Slave Controllers remain canonical terminology.
 - Application modules consume public Framework contracts only.
-- Common functionality must not be duplicated between applications.
+- Common functionality is not duplicated between applications.
 - The Data Server remains authoritative for Umicom-owned persistent state.
-- Every integrated revision must be reproducible.
+- Every integrated revision is reproducible through pinned submodule commits.
+- User workbenches, panels and layouts will be rendered from Framework-owned semantic models rather than saved GTK widget trees.
 
 ## Ownership
 
 Project lead and author: Sammy Hegab  
-Organisation: Umicom Foundation
+Organisation: Umicom Foundation  
+Licence: MIT
