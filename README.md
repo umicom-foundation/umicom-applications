@@ -1,4 +1,3 @@
-@'
 # Umicom Applications
 
 Umicom Applications is the master multi-application composition superproject for the Umicom ecosystem.
@@ -147,6 +146,3 @@ The next milestone is the root application-composition build, beginning with Fra
 
 Project lead and author: Sammy Hegab  
 Organisation: Umicom Foundation
-'@ | Set-Content `
-    -Path "README.md" `
-    -Encoding UTF8
