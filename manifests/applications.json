@@ -1,54 +1,100 @@
 {
-  "schema": "umicom.applications/1",
+  "schema": "umicom.applications/2",
   "repository": "umicom-foundation/umicom-applications",
+  "runtime_product": "Umicom Desk",
   "framework": {
     "id": "umicom.framework",
     "path": "framework",
     "repository": "umicom-foundation/umicom-framework",
-    "required": true
+    "required": true,
+    "resource_catalogue": "framework/resources/resource-catalogue.json"
   },
   "applications": [
     {
-      "id": "umicom.studio",
+      "id": "org.umicom.studio",
       "path": "applications/studio",
       "repository": "umicom-foundation/umicom-studio-ide-module",
       "status": "active",
-      "default_enabled": true
+      "default_enabled": true,
+      "entry_kind": "workbench",
+      "taskbar_group": "development",
+      "icon_resource_id": "umicom.icon.application.studio",
+      "default_layout_id": "develop"
     },
     {
-      "id": "umicom.trader",
+      "id": "org.umicom.trader",
       "path": "applications/trader",
       "repository": "umicom-foundation/umicom-trader-module",
       "status": "placeholder",
-      "default_enabled": false
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "finance",
+      "icon_resource_id": "umicom.icon.application.trader",
+      "default_layout_id": "trading"
     },
     {
-      "id": "umicom.tms",
+      "id": "org.umicom.tms",
       "path": "applications/tms",
       "repository": "umicom-foundation/umicom-tms-module",
       "status": "placeholder",
-      "default_enabled": false
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "finance",
+      "icon_resource_id": "umicom.icon.application.tms",
+      "default_layout_id": "treasury"
     },
     {
-      "id": "umicom.llm",
+      "id": "org.umicom.llm",
       "path": "applications/llm",
       "repository": "umicom-foundation/umicom-llm-module",
       "status": "placeholder",
-      "default_enabled": false
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "artificial-intelligence",
+      "icon_resource_id": "umicom.icon.application.llm",
+      "default_layout_id": "ai"
     },
     {
-      "id": "umicom.bank",
+      "id": "org.umicom.bank",
       "path": "applications/bank",
       "repository": "umicom-foundation/umicom-bank-module",
       "status": "placeholder",
-      "default_enabled": false
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "finance",
+      "icon_resource_id": "umicom.icon.application.bank",
+      "default_layout_id": "banking"
     },
     {
-      "id": "umicom.exchange",
+      "id": "org.umicom.exchange",
       "path": "applications/exchange",
       "repository": "umicom-foundation/umicom-exchange-module",
       "status": "placeholder",
-      "default_enabled": false
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "finance",
+      "icon_resource_id": "umicom.icon.application.exchange",
+      "default_layout_id": "exchange"
+    }
+  ],
+  "planned_modules": [
+    {
+      "id": "org.umicom.desktop",
+      "future_path": "applications/desktop",
+      "future_repository": "umicom-foundation/umicom-desktop-module",
+      "role": "thin Umicom Desk composition and product profile",
+      "entry_kind": "system",
+      "icon_resource_id": "umicom.icon.application.desktop",
+      "default_layout_id": "mosaic"
+    },
+    {
+      "id": "org.umicom.os",
+      "future_path": "applications/os",
+      "future_repository": "umicom-foundation/umicom-os-module",
+      "role": "thin user-space operating-system Control Centre composition",
+      "entry_kind": "system",
+      "icon_resource_id": "umicom.icon.application.os",
+      "default_layout_id": "system"
     }
   ]
 }

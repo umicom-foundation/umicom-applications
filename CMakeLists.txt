@@ -4,13 +4,14 @@
 #
 # PURPOSE:
 #   Compose one authoritative Umicom Framework checkout with independently
-#   versioned thin application modules. Repository Batch R1 enables Studio as
-#   the first runnable application while retaining the remaining application
-#   repositories as disabled, reproducibly pinned composition members.
+#   versioned thin application modules. Repository Mega Batch R2 moves common
+#   immutable resources into Framework and exposes the first Umicom Desk
+#   application-taskbar model without copying reusable application logic.
 #
 # ARCHITECTURE:
 #   - Framework is configured exactly once from framework/.
 #   - Application modules consume public Framework targets only.
+#   - Shared branding, themes, schemas and generic layouts live in Framework.
 #   - Studio is the first enabled application and reference integration host.
 #   - Placeholder application modules never block an unrelated Studio build.
 #   - Master Controller and Slave Controllers remain the canonical lifecycle
@@ -27,7 +28,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(
     UmicomApplications
-    VERSION 0.1.0
+    VERSION 0.2.0
     DESCRIPTION "Runnable composition of Umicom Framework and thin application modules"
     LANGUAGES C
 )
@@ -75,9 +76,14 @@ option(UMICOM_STUDIO_BUILD_GTK
 option(UMICOM_STUDIO_GUI
        "Build Studio as a Windows GUI-subsystem executable"
        ON)
-option(UMICOM_APPLICATIONS_REQUIRE_STUDIO_RESOURCES
-       "Require the established Studio branding and Windows resources for GTK builds"
+option(UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES
+       "Stage Framework-owned shared resources for compatibility with the current Studio module"
        ON)
+
+set(UMICOM_FRAMEWORK_RESOURCE_ROOT
+    "${CMAKE_CURRENT_SOURCE_DIR}/framework/resources"
+    CACHE PATH
+    "Source or installed root containing the Umicom Framework resource catalogue")
 
 include(CTest)
 include(GNUInstallDirs)
@@ -123,6 +129,15 @@ function(umicom_require_cmake_project relative_path display_name)
     endif()
 endfunction()
 
+function(umicom_require_framework_resource relative_path logical_id)
+    if(NOT EXISTS "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/${relative_path}")
+        message(FATAL_ERROR
+            "Required Framework resource '${logical_id}' is missing at "
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/${relative_path}. Copy the exact "
+            "canonical asset into framework/resources before configuring.")
+    endif()
+endfunction()
+
 function(umicom_add_optional_application option_name relative_path display_name)
     if(${option_name})
         umicom_require_cmake_project("${relative_path}" "${display_name}")
@@ -133,37 +148,64 @@ function(umicom_add_optional_application option_name relative_path display_name)
     endif()
 endfunction()
 
-# The current Studio module intentionally preserves its established resource
-# references while the repository split is stabilised. The five resources are
-# copied from the existing standalone Studio checkout into this composition
-# root once; they are not generated, downloaded or silently replaced.
-if(UMICOM_APPLICATIONS_BUILD_STUDIO AND
-   UMICOM_STUDIO_BUILD_GTK AND
-   UMICOM_APPLICATIONS_REQUIRE_STUDIO_RESOURCES)
-    set(UMICOM_STUDIO_REQUIRED_RESOURCES
-        assets/umicom-icon.svg
-        assets/umicom-logo.svg
-        win/umicom.rc
-        win/umicom.ico
-        win/umicom-logo.png
-    )
+# -----------------------------------------------------------------------------
+# Framework-owned shared resources and temporary Studio compatibility staging
+# -----------------------------------------------------------------------------
+# The current Studio module still reads common branding from ${CMAKE_SOURCE_DIR}
+# while its standalone superproject conversion is pending. The source of truth
+# is now framework/resources. CMake creates ignored compatibility copies only;
+# contributors must never edit the generated root assets or generated .rc file.
+if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
+    umicom_require_framework_resource(
+        "brand/umicom-icon.svg" "umicom.brand.icon.primary")
+    umicom_require_framework_resource(
+        "brand/umicom-logo.svg" "umicom.brand.logo.primary")
+    umicom_require_framework_resource(
+        "brand/umicom-logo.png" "umicom.brand.logo.raster")
+    umicom_require_framework_resource(
+        "brand/umicom.ico" "umicom.brand.icon.windows")
+    umicom_require_framework_resource(
+        "windows/umicom-application.rc.in"
+        "umicom.windows.application-resource-template")
 
-    set(UMICOM_STUDIO_MISSING_RESOURCES "")
-    foreach(UMICOM_STUDIO_RESOURCE IN LISTS UMICOM_STUDIO_REQUIRED_RESOURCES)
-        if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${UMICOM_STUDIO_RESOURCE}")
-            list(APPEND UMICOM_STUDIO_MISSING_RESOURCES
-                "${UMICOM_STUDIO_RESOURCE}")
-        endif()
-    endforeach()
+    if(UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES)
+        file(MAKE_DIRECTORY
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+            "${CMAKE_CURRENT_SOURCE_DIR}/win")
 
-    if(UMICOM_STUDIO_MISSING_RESOURCES)
-        list(JOIN UMICOM_STUDIO_MISSING_RESOURCES ", "
-            UMICOM_STUDIO_MISSING_RESOURCE_TEXT)
-        message(FATAL_ERROR
-            "The GTK4 Studio build requires the existing product resources: "
-            "${UMICOM_STUDIO_MISSING_RESOURCE_TEXT}. Copy those exact files "
-            "from the current umicom-studio-ide repository before configuring, "
-            "or use the headless preset while reviewing Repository Batch R1.")
+        configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-icon.svg"
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-icon.svg"
+            COPYONLY)
+        configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo.svg"
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-logo.svg"
+            COPYONLY)
+        configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo.png"
+            "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom-logo.png"
+            COPYONLY)
+        configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom.ico"
+            "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom.ico"
+            COPYONLY)
+
+        set(UMICOM_WINDOWS_FILE_VERSION "0,17,0,0")
+        set(UMICOM_WINDOWS_PRODUCT_VERSION "0,17,0,0")
+        set(UMICOM_WINDOWS_FILE_VERSION_TEXT "0.17.0.0")
+        set(UMICOM_WINDOWS_PRODUCT_VERSION_TEXT "0.17.0.0")
+        set(UMICOM_WINDOWS_FILE_DESCRIPTION "Umicom Studio IDE")
+        set(UMICOM_WINDOWS_INTERNAL_NAME "umicom-studio-ide")
+        set(UMICOM_WINDOWS_ORIGINAL_FILENAME "umicom-studio-ide.exe")
+        set(UMICOM_WINDOWS_PRODUCT_NAME "Umicom Studio IDE")
+        configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/windows/umicom-application.rc.in"
+            "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom.rc"
+            @ONLY
+            NEWLINE_STYLE WIN32)
+
+        message(STATUS
+            "Staged Framework-owned shared resources for the current Studio module")
     endif()
 endif()
 
@@ -182,6 +224,14 @@ add_subdirectory(framework)
 if(NOT TARGET Umicom::Framework)
     message(FATAL_ERROR
         "framework/CMakeLists.txt did not provide the required Umicom::Framework target.")
+endif()
+
+# The source-superbuild publishes an explicit default root for Framework-owned
+# immutable resources. Installed consumers may call the same resolver with the
+# package resource root discovered beside their installation prefix.
+if(TARGET umicom_application)
+    target_compile_definitions(umicom_application PRIVATE
+        UMICOM_FRAMEWORK_RESOURCE_ROOT_DEFAULT="${UMICOM_FRAMEWORK_RESOURCE_ROOT}")
 endif()
 
 if(UMICOM_APPLICATIONS_BUILD_STUDIO)
@@ -232,11 +282,15 @@ if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
+# Shared resources are installed once beside the modular Framework runtime.
+# Application-specific resources continue to be installed by their owner.
+install(DIRECTORY "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/umicom/resources")
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/licenses/umicom-applications")
 
-# Repository Batch R1 deliberately starts with portable archives. Platform-
-# specific signed installers remain governed by the later delivery roadmap.
+# Repository Mega Batch R2 retains portable archives. Platform-specific signed
+# installers remain governed by the later delivery roadmap.
 set(CPACK_PACKAGE_NAME "Umicom Applications")
 set(CPACK_PACKAGE_VENDOR "Umicom Foundation")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
@@ -257,3 +311,4 @@ message(STATUS "C standard: C${CMAKE_C_STANDARD}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Studio GTK4 application: ${UMICOM_STUDIO_BUILD_GTK}")
 message(STATUS "Framework source: ${CMAKE_CURRENT_SOURCE_DIR}/framework")
+message(STATUS "Framework resources: ${UMICOM_FRAMEWORK_RESOURCE_ROOT}")

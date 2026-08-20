@@ -3,8 +3,9 @@
  * File: tests/test_application_composition.c
  *
  * PURPOSE:
- *   Verify the Framework/Studio composition baseline and the repository
- *   catalogue used by the runnable multi-application superproject.
+ *   Verify the Framework/Studio composition baseline, repository catalogue,
+ *   architecture decisions and shared-resource ownership expected by the
+ *   runnable multi-application superproject.
  *
  * AUTHOR AND ORGANISATION:
  *   Sammy Hegab
@@ -27,131 +28,178 @@
 
 static int make_path(char *destination,
                      size_t capacity,
-                     const char *relative_path) {
-  const int written = snprintf(destination,
-                               capacity,
-                               "%s/%s",
-                               UMICOM_APPLICATIONS_SOURCE_DIR,
-                               relative_path);
-  return written >= 0 && (size_t)written < capacity;
+                     const char *relative_path)
+{
+    const int written = snprintf(destination,
+                                 capacity,
+                                 "%s/%s",
+                                 UMICOM_APPLICATIONS_SOURCE_DIR,
+                                 relative_path);
+    return written >= 0 && (size_t)written < capacity;
 }
 
-static int path_is_file(const char *relative_path) {
-  char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
-  struct stat information;
+static int path_is_file(const char *relative_path)
+{
+    char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
+    struct stat information;
 
-  if (!make_path(path, sizeof(path), relative_path)) {
-    return 0;
-  }
-  if (stat(path, &information) != 0) {
-    return 0;
-  }
-  return S_ISREG(information.st_mode) != 0;
+    if (!make_path(path, sizeof(path), relative_path)) return 0;
+    if (stat(path, &information) != 0) return 0;
+    return S_ISREG(information.st_mode) != 0;
 }
 
-static int path_is_directory(const char *relative_path) {
-  char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
-  struct stat information;
+static int path_is_directory(const char *relative_path)
+{
+    char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
+    struct stat information;
 
-  if (!make_path(path, sizeof(path), relative_path)) {
-    return 0;
-  }
-  if (stat(path, &information) != 0) {
-    return 0;
-  }
-  return S_ISDIR(information.st_mode) != 0;
+    if (!make_path(path, sizeof(path), relative_path)) return 0;
+    if (stat(path, &information) != 0) return 0;
+    return S_ISDIR(information.st_mode) != 0;
 }
 
-static int file_contains(const char *relative_path, const char *expected_text) {
-  char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
-  char line[2048];
-  FILE *stream;
+static int file_contains(const char *relative_path, const char *expected_text)
+{
+    char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
+    char line[4096];
+    FILE *stream;
 
-  if (!make_path(path, sizeof(path), relative_path)) {
-    return 0;
-  }
+    if (!make_path(path, sizeof(path), relative_path)) return 0;
+    stream = fopen(path, "r");
+    if (stream == NULL) return 0;
 
-  stream = fopen(path, "r");
-  if (stream == NULL) {
-    return 0;
-  }
-
-  while (fgets(line, (int)sizeof(line), stream) != NULL) {
-    if (strstr(line, expected_text) != NULL) {
-      (void)fclose(stream);
-      return 1;
+    while (fgets(line, (int)sizeof(line), stream) != NULL) {
+        if (strstr(line, expected_text) != NULL) {
+            (void)fclose(stream);
+            return 1;
+        }
     }
-  }
 
-  (void)fclose(stream);
-  return 0;
-}
-
-static int require_condition(int condition, const char *message) {
-  if (!condition) {
-    (void)fprintf(stderr, "[FAIL] %s\n", message);
+    (void)fclose(stream);
     return 0;
-  }
-  (void)printf("[PASS] %s\n", message);
-  return 1;
 }
 
-int main(void) {
-  static const char *const module_directories[] = {
-      "applications/studio",
-      "applications/trader",
-      "applications/tms",
-      "applications/llm",
-      "applications/bank",
-      "applications/exchange",
-  };
-  static const char *const repository_names[] = {
-      "umicom-foundation/umicom-framework",
-      "umicom-foundation/umicom-studio-ide-module",
-      "umicom-foundation/umicom-trader-module",
-      "umicom-foundation/umicom-tms-module",
-      "umicom-foundation/umicom-llm-module",
-      "umicom-foundation/umicom-bank-module",
-      "umicom-foundation/umicom-exchange-module",
-  };
-  size_t index;
-  int success = 1;
+static int require_condition(int condition, const char *message)
+{
+    if (!condition) {
+        (void)fprintf(stderr, "[FAIL] %s\n", message);
+        return 0;
+    }
+    (void)printf("[PASS] %s\n", message);
+    return 1;
+}
 
-  success &= require_condition(
-      UMICOM_FRAMEWORK_ABI_VERSION > 0U,
-      "Framework publishes a non-zero stable ABI version");
-  success &= require_condition(
-      path_is_file("framework/CMakeLists.txt"),
-      "Framework submodule contains CMakeLists.txt");
-  success &= require_condition(
-      path_is_file("applications/studio/CMakeLists.txt"),
-      "Studio application module contains CMakeLists.txt");
-  success &= require_condition(
-      path_is_file("applications/studio/application.umicom.yaml"),
-      "Studio application module contains its application manifest");
-  success &= require_condition(
-      path_is_file("manifests/applications.json"),
-      "Composition catalogue exists");
+int main(void)
+{
+    static const char *const module_directories[] = {
+        "applications/studio",
+        "applications/trader",
+        "applications/tms",
+        "applications/llm",
+        "applications/bank",
+        "applications/exchange",
+    };
+    static const char *const repository_names[] = {
+        "umicom-foundation/umicom-framework",
+        "umicom-foundation/umicom-studio-ide-module",
+        "umicom-foundation/umicom-trader-module",
+        "umicom-foundation/umicom-tms-module",
+        "umicom-foundation/umicom-llm-module",
+        "umicom-foundation/umicom-bank-module",
+        "umicom-foundation/umicom-exchange-module",
+    };
+    static const char *const architecture_decisions[] = {
+        "docs/architecture/ADR-0001-framework-shared-resources.md",
+        "docs/architecture/ADR-0002-linux-kernel-boundary.md",
+        "docs/architecture/ADR-0003-desktop-and-os-modules.md",
+        "docs/architecture/ADR-0004-layout-ownership-and-persistence.md",
+        "docs/architecture/ADR-0005-framework-sdk-and-runtime.md",
+        "docs/architecture/ADR-0006-desk-taskbar-and-discovery.md",
+        "docs/architecture/REPOSITORY-TOPOLOGY.md",
+    };
+    static const char *const framework_resource_files[] = {
+        "framework/resources/resource-catalogue.json",
+        "framework/resources/application-presentations.json",
+        "framework/resources/icons/application-icon-map.json",
+        "framework/resources/themes/umicom-dark.tokens.json",
+        "framework/resources/themes/umicom-light.tokens.json",
+        "framework/resources/themes/umicom-high-contrast.tokens.json",
+        "framework/resources/schemas/resource-catalogue.schema.json",
+        "framework/resources/schemas/application-presentation.schema.json",
+        "framework/resources/schemas/layout.schema.json",
+        "framework/resources/layouts/templates/blank.umilayout",
+        "framework/resources/layouts/templates/mosaic.umilayout",
+        "framework/resources/layouts/templates/standard-workbench.umilayout",
+        "framework/resources/windows/umicom-application.rc.in",
+    };
+    size_t index;
+    int success = 1;
 
-  for (index = 0U;
-       index < sizeof(module_directories) / sizeof(module_directories[0]);
-       ++index) {
     success &= require_condition(
-        path_is_directory(module_directories[index]),
-        module_directories[index]);
-  }
-
-  for (index = 0U;
-       index < sizeof(repository_names) / sizeof(repository_names[0]);
-       ++index) {
+        UMICOM_FRAMEWORK_ABI_VERSION > 0U,
+        "Framework publishes a non-zero stable ABI version");
     success &= require_condition(
-        file_contains("manifests/applications.json", repository_names[index]),
-        repository_names[index]);
-  }
+        path_is_file("framework/CMakeLists.txt"),
+        "Framework submodule contains CMakeLists.txt");
+    success &= require_condition(
+        path_is_file("applications/studio/CMakeLists.txt"),
+        "Studio application module contains CMakeLists.txt");
+    success &= require_condition(
+        path_is_file("applications/studio/application.umicom.yaml"),
+        "Studio application module contains its application manifest");
+    success &= require_condition(
+        path_is_file("manifests/applications.json"),
+        "Composition catalogue exists");
+    success &= require_condition(
+        path_is_file("manifests/resources.json"),
+        "Resource ownership manifest exists");
+    success &= require_condition(
+        file_contains("manifests/applications.json", "umicom.applications/2"),
+        "Application catalogue uses the R2 schema");
+    success &= require_condition(
+        file_contains("manifests/applications.json", "org.umicom.desktop"),
+        "Future Umicom Desktop module is recorded without becoming a submodule");
+    success &= require_condition(
+        file_contains("manifests/applications.json", "org.umicom.os"),
+        "Future Umicom OS module is recorded without owning the kernel");
 
-  (void)printf("Umicom Framework public version: %s; ABI: %u\n",
-               UMICOM_FRAMEWORK_VERSION_STRING,
-               (unsigned int)UMICOM_FRAMEWORK_ABI_VERSION);
+    for (index = 0U;
+         index < sizeof(module_directories) / sizeof(module_directories[0]);
+         ++index) {
+        success &= require_condition(
+            path_is_directory(module_directories[index]),
+            module_directories[index]);
+    }
 
-  return success ? 0 : 1;
+    for (index = 0U;
+         index < sizeof(repository_names) / sizeof(repository_names[0]);
+         ++index) {
+        success &= require_condition(
+            file_contains("manifests/applications.json", repository_names[index]),
+            repository_names[index]);
+    }
+
+    for (index = 0U;
+         index < sizeof(architecture_decisions) /
+                     sizeof(architecture_decisions[0]);
+         ++index) {
+        success &= require_condition(
+            path_is_file(architecture_decisions[index]),
+            architecture_decisions[index]);
+    }
+
+    for (index = 0U;
+         index < sizeof(framework_resource_files) /
+                     sizeof(framework_resource_files[0]);
+         ++index) {
+        success &= require_condition(
+            path_is_file(framework_resource_files[index]),
+            framework_resource_files[index]);
+    }
+
+    (void)printf("Umicom Framework public version: %s; ABI: %u\n",
+                 UMICOM_FRAMEWORK_VERSION_STRING,
+                 (unsigned int)UMICOM_FRAMEWORK_ABI_VERSION);
+
+    return success ? 0 : 1;
 }

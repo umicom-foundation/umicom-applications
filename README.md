@@ -17,7 +17,14 @@ Application-module repositories contain only thin product-specific composition, 
 ```text
 umicom-applications
 ├── framework
-│   └── submodule: umicom-framework
+│   ├── reusable C23 platform
+│   └── resources
+│       ├── brand
+│       ├── icons
+│       ├── themes
+│       ├── schemas
+│       ├── layouts
+│       └── windows
 ├── applications
 │   ├── studio
 │   │   └── submodule: umicom-studio-ide-module
@@ -31,6 +38,8 @@ umicom-applications
 │   │   └── submodule: umicom-bank-module
 │   └── exchange
 │       └── submodule: umicom-exchange-module
+├── docs
+│   └── architecture
 ├── manifests
 ├── tests
 ├── CMakeLists.txt
@@ -56,7 +65,8 @@ Set-Location "C:\umicom"
 
 git clone `
     --recurse-submodules `
-    "https://github.com/umicom-foundation/umicom-applications.git"
+    "https://github.com/umicom-foundation/umicom-applications.git" `
+    "C:\umicom\umicom-applications"
 ```
 
 ## Initialise submodules in an existing checkout
@@ -112,6 +122,12 @@ cpack --config ".\build\windows-ucrt64-debug\CPackConfig.cmake" `
     -C Debug
 ```
 
+Framework resources are installed once below:
+
+```text
+share/umicom/resources
+```
+
 ## Application options
 
 ```text
@@ -128,25 +144,26 @@ An application option must not be enabled until its module contains a valid `CMa
 
 Changes must be committed in the repository that owns the source.
 
-For an application-module change:
-
-```text
-1. Change the application module.
-2. Commit and push the module repository.
-3. Return to umicom-applications.
-4. Stage the updated submodule pointer.
-5. Build and test the integrated repository.
-6. Commit and push umicom-applications.
-```
-
 For a Framework change:
 
 ```text
-1. Change Umicom Framework.
-2. Commit and push umicom-framework.
+1. Change framework.
+2. Build and test the integrated checkout.
+3. Commit and push umicom-framework.
+4. Return to umicom-applications.
+5. Stage the updated framework submodule pointer and root composition files.
+6. Build and test the pinned integrated revision.
+7. Commit and push umicom-applications.
+```
+
+For a Studio application-module change:
+
+```text
+1. Change applications/studio.
+2. Commit and push umicom-studio-ide-module.
 3. Return to umicom-applications.
-4. Stage the updated framework pointer.
-5. Build and test every affected application.
+4. Stage the updated applications/studio submodule pointer.
+5. Build and test the integrated repository.
 6. Commit and push umicom-applications.
 ```
 
@@ -172,10 +189,11 @@ The next milestone is the root application-composition build, beginning with Fra
 - Common functionality is not duplicated between applications.
 - The Data Server remains authoritative for Umicom-owned persistent state.
 - Every integrated revision is reproducible through pinned submodule commits.
-- User workbenches, panels and layouts will be rendered from Framework-owned semantic models rather than saved GTK widget trees.
+- User workbenches, panels and layouts are rendered from Framework-owned semantic models rather than saved GTK widget trees.
+- Linux kernel, boot and recovery ownership remain outside Framework.
 
 ## Ownership
 
-Project lead and author: Sammy Hegab  
-Organisation: Umicom Foundation  
+Project lead and author: Sammy Hegab
+Organisation: Umicom Foundation
 Licence: MIT

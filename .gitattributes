@@ -3,8 +3,8 @@
 # File: .gitattributes
 #
 # PURPOSE:
-#   Keep source, build definitions and documentation stable across Windows and
-#   Unix checkouts while leaving binary application resources untouched.
+#   Keep source, build definitions, semantic layouts and documentation stable
+#   across Windows and Unix checkouts while leaving binary resources untouched.
 #
 # AUTHOR AND ORGANISATION:
 #   Sammy Hegab
@@ -15,23 +15,26 @@
 #-----------------------------------------------------------------------------
 * text=auto
 
-*.c       text eol=lf
-*.cc      text eol=lf
-*.cpp     text eol=lf
-*.h       text eol=lf
-*.hpp     text eol=lf
-*.cmake   text eol=lf
+*.c         text eol=lf
+*.cc        text eol=lf
+*.cpp       text eol=lf
+*.h         text eol=lf
+*.hpp       text eol=lf
+*.cmake     text eol=lf
 CMakeLists.txt text eol=lf
-*.json    text eol=lf
-*.yml     text eol=lf
-*.yaml    text eol=lf
-*.md      text eol=lf
-*.txt     text eol=lf
-*.html    text eol=lf
-*.css     text eol=lf
-*.js      text eol=lf
-*.ts      text eol=lf
-*.sh      text eol=lf
+*.in        text eol=lf
+*.json      text eol=lf
+*.umilayout text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.md        text eol=lf
+*.txt       text eol=lf
+*.html      text eol=lf
+*.css       text eol=lf
+*.js        text eol=lf
+*.ts        text eol=lf
+*.sh        text eol=lf
+*.svg       text eol=lf
 
 *.bat     text eol=crlf
 *.cmd     text eol=crlf
@@ -41,6 +44,7 @@ CMakeLists.txt text eol=lf
 *.filters text eol=crlf
 *.props   text eol=crlf
 *.targets text eol=crlf
+*.rc      text eol=crlf
 
 *.png  -text
 *.jpg  -text

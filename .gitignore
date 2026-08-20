@@ -23,6 +23,12 @@
 /CMakeUserPresets.json
 /compile_commands.json
 
+# Repository Mega Batch R2 compatibility staging. The canonical shared assets
+# live under framework/resources; CMake regenerates these ignored root folders
+# for the current Studio module until its standalone-superproject conversion.
+/assets/
+/win/
+
 # Compiled files and diagnostic output
 *.a
 *.dll

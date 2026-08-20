@@ -1,0 +1,40 @@
+{
+  "schema": "umicom.resource-composition/1",
+  "owner": "umicom-foundation/umicom-framework",
+  "resource_root": "framework/resources",
+  "catalogue": "framework/resources/resource-catalogue.json",
+  "ownership": {
+    "framework": [
+      "common Umicom trademark assets",
+      "generic application icons and logical icon identifiers",
+      "toolkit-neutral theme tokens",
+      "generic semantic layout templates",
+      "resource, presentation and layout schemas",
+      "product-neutral Windows resource template"
+    ],
+    "application_module": [
+      "product-specific branding",
+      "application screenshots and help illustrations",
+      "product-specific default layouts",
+      "application tutorials and onboarding media"
+    ],
+    "umicom_os": [
+      "boot splash",
+      "installer artwork",
+      "recovery imagery",
+      "distribution wallpapers",
+      "resources needed before Umicom Framework starts"
+    ]
+  },
+  "compatibility_staging": {
+    "generated_by": "CMake configure",
+    "source": "framework/resources/brand",
+    "destinations": [
+      "assets",
+      "win"
+    ],
+    "tracked": false,
+    "temporary_until": "standalone Studio superproject conversion"
+  },
+  "presentation_catalogue": "framework/resources/application-presentations.json"
+}
