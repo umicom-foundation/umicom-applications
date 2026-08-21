@@ -21,7 +21,14 @@
     "generic_templates_owner": "umicom-framework",
     "product_templates_owner": "application-module",
     "user_state_owner": "Data Server",
-    "portable_extension": ".umilayout"
+    "portable_extension": ".umilayout",
+    "schema_path": "framework/resources/schemas/workbench-layout.schema.json",
+    "defaults_path": "framework/resources/workbench-layout-defaults.json",
+    "supports_transactions": true,
+    "supports_undo_redo": true,
+    "supports_diff_merge": true,
+    "supports_session_recovery": true,
+    "store_boundary": "Framework layout-store adapter"
   },
   "operating_system": {
     "kernel_inside_framework": false,

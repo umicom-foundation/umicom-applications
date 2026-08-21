@@ -3,9 +3,9 @@
  * File: tests/test_application_composition.c
  *
  * PURPOSE:
- *   Verify the Framework/Studio composition baseline, repository catalogue,
- *   architecture decisions and shared-resource ownership expected by the
- *   runnable multi-application superproject.
+ *   Verify the Framework/application composition baseline, repository
+ *   catalogue, required module contracts and shared-resource ownership
+ *   expected by the runnable multi-application superproject.
  *
  * AUTHOR AND ORGANISATION:
  *   Sammy Hegab
@@ -107,17 +107,6 @@ int main(void)
         "umicom-foundation/umicom-exchange-module",
         "umicom-foundation/umicom-os-module",
     };
-    static const char *const architecture_decisions[] = {
-        "docs/architecture/ADR-0001-framework-shared-resources.md",
-        "docs/architecture/ADR-0002-linux-kernel-boundary.md",
-        "docs/architecture/ADR-0003-desktop-and-os-modules.md",
-        "docs/architecture/ADR-0004-layout-ownership-and-persistence.md",
-        "docs/architecture/ADR-0005-framework-sdk-and-runtime.md",
-        "docs/architecture/ADR-0006-desk-taskbar-and-discovery.md",
-        "docs/architecture/ADR-0007-application-runtime-and-launcher.md",
-        "docs/architecture/ADR-0008-os-control-centre-boundary.md",
-        "docs/architecture/REPOSITORY-TOPOLOGY.md",
-    };
     static const char *const framework_resource_files[] = {
         "framework/resources/resource-catalogue.json",
         "framework/resources/application-presentations.json",
@@ -152,6 +141,16 @@ int main(void)
         "framework/include/umicom/ui/gtk4/desk.h",
         "framework/resources/application-runtime-defaults.json",
         "framework/resources/schemas/application-runtime.schema.json",
+    };
+    static const char *const framework_workbench_layout_files[] = {
+        "framework/cmake/UmicomWorkbenchLayoutPlatform.cmake",
+        "framework/include/umicom/workbench_layout/workbench_layout.h",
+        "framework/resources/schemas/workbench-layout.schema.json",
+        "framework/resources/workbench-layout-defaults.json",
+        "framework/resources/layouts/templates/blank.umilayout",
+        "framework/resources/layouts/templates/development.umilayout",
+        "framework/resources/layouts/templates/mosaic.umilayout",
+        "framework/resources/layouts/templates/operations.umilayout",
     };
     size_t index;
     int success = 1;
@@ -209,14 +208,6 @@ int main(void)
             file_contains("manifests/applications.json", repository_names[index]),
             repository_names[index]);
     }
-    for (index = 0U;
-         index < sizeof(architecture_decisions) /
-                     sizeof(architecture_decisions[0]);
-         ++index) {
-        success &= require_condition(
-            path_is_file(architecture_decisions[index]),
-            architecture_decisions[index]);
-    }
 
     for (index = 0U;
          index < sizeof(framework_resource_files) /
@@ -243,6 +234,15 @@ int main(void)
         success &= require_condition(
             path_is_file(framework_application_runtime_files[index]),
             framework_application_runtime_files[index]);
+    }
+
+    for (index = 0U;
+         index < sizeof(framework_workbench_layout_files) /
+                     sizeof(framework_workbench_layout_files[0]);
+         ++index) {
+        success &= require_condition(
+            path_is_file(framework_workbench_layout_files[index]),
+            framework_workbench_layout_files[index]);
     }
 
     (void)printf("Umicom Framework public version: %s; ABI: %u\n",

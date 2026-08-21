@@ -65,3 +65,18 @@ add_test(
     NAME applications.desk_runtime
     COMMAND umicom-applications-desk-runtime-test
 )
+add_executable(umicom-applications-workbench-layout-test
+    test_workbench_layout_composition.c
+)
+
+target_link_libraries(umicom-applications-workbench-layout-test PRIVATE
+    Umicom::workbench_layout
+)
+
+umicom_apply_warnings(umicom-applications-workbench-layout-test)
+umicom_apply_sanitizers(umicom-applications-workbench-layout-test)
+
+add_test(
+    NAME applications.workbench_layout
+    COMMAND umicom-applications-workbench-layout-test
+)

@@ -9,6 +9,7 @@
       "generic application icons and logical icon identifiers",
       "toolkit-neutral theme tokens",
       "generic semantic layout templates",
+      "semantic workbench layout schemas, defaults and portable templates",
       "resource, presentation and layout schemas",
       "product-neutral Windows resource template"
     ],
@@ -36,5 +37,11 @@
     "tracked": false,
     "temporary_until": "standalone Studio superproject conversion"
   },
-  "presentation_catalogue": "framework/resources/application-presentations.json"
+  "presentation_catalogue": "framework/resources/application-presentations.json",
+  "workbench_layout": {
+    "schema": "framework/resources/schemas/workbench-layout.schema.json",
+    "defaults": "framework/resources/workbench-layout-defaults.json",
+    "template_root": "framework/resources/layouts/templates",
+    "portable_extension": ".umilayout"
+  }
 }
