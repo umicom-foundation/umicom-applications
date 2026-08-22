@@ -32,8 +32,8 @@
     },
     {
       "name": "windows-ucrt64-headless-debug",
-      "displayName": "Windows MSYS2 UCRT64 headless Debug",
-      "description": "Canonical Windows headless validation of Framework, Desk runtime, StudioCore and OS Control Centre.",
+      "displayName": "Windows MSYS2 UCRT64 GCC headless Debug",
+      "description": "Canonical Windows GCC/UCRT64 headless validation of Framework, Desk runtime, StudioCore and OS Control Centre.",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/windows-ucrt64-headless-debug",
       "environment": {
@@ -41,7 +41,9 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/clang.exe",
+        "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
+        "CMAKE_ASM_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
+        "CMAKE_RC_COMPILER": "C:/msys64/ucrt64/bin/windres.exe",
         "CMAKE_MAKE_PROGRAM": "C:/msys64/ucrt64/bin/ninja.exe",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "PKG_CONFIG_EXECUTABLE": "C:/msys64/ucrt64/bin/pkg-config.exe",
@@ -62,8 +64,8 @@
     },
     {
       "name": "windows-ucrt64-debug",
-      "displayName": "Windows MSYS2 UCRT64 GTK4 Debug",
-      "description": "Canonical Windows GTK4 build of Umicom Desk, Framework, Studio and OS Control Centre.",
+      "displayName": "Windows MSYS2 UCRT64 GCC GTK4 Debug",
+      "description": "Canonical Windows GCC/UCRT64 GTK4 build of Umicom Desk, Framework, Studio and OS Control Centre.",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/windows-ucrt64-debug",
       "environment": {
@@ -71,7 +73,8 @@
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/clang.exe",
+        "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
+        "CMAKE_ASM_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
         "CMAKE_RC_COMPILER": "C:/msys64/ucrt64/bin/windres.exe",
         "CMAKE_MAKE_PROGRAM": "C:/msys64/ucrt64/bin/ninja.exe",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
