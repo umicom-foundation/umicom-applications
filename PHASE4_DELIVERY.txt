@@ -1,0 +1,11 @@
+Umicom Studio Operational Workbench
+
+Scope:
+- Resolves all compiler warnings reported after Phase 3 build.
+- Adds a global professional command centre above the Framework editor.
+- Adds workspace/build/test/layout/command workflow entry points.
+- Restores scripts/update-version-lock.ps1 compatibility for consolidated gitlink locks.
+- Preserves Framework-first architecture and thin Studio GTK composition.
+
+Author: Sammy Hegab
+Organisation: Umicom Foundation
