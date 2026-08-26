@@ -310,5 +310,6 @@
       "default_layout_id": "course",
       "executable": "umicom-education"
     }
-  ]
+  ],
+  "planned_modules": []
 }

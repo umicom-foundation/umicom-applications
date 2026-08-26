@@ -27,7 +27,8 @@
         "UMICOM_APPLICATIONS_BUILD_EXCHANGE": "OFF",
         "UMICOM_DESKTOP_BUILD_GTK": "OFF",
         "UMICOM_STUDIO_BUILD_GTK": "OFF",
-        "UMICOM_ENABLE_STRICT_WARNINGS": "ON"
+        "UMICOM_ENABLE_STRICT_WARNINGS": "ON",
+        "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "OFF"
       }
     },
     {
@@ -60,7 +61,8 @@
         "UMICOM_APPLICATIONS_BUILD_EXCHANGE": "OFF",
         "UMICOM_DESKTOP_BUILD_GTK": "OFF",
         "UMICOM_STUDIO_BUILD_GTK": "OFF",
-        "UMICOM_ENABLE_STRICT_WARNINGS": "ON"
+        "UMICOM_ENABLE_STRICT_WARNINGS": "ON",
+        "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "OFF"
       }
     },
     {
@@ -96,7 +98,18 @@
         "UMICOM_STUDIO_BUILD_GTK": "ON",
         "UMICOM_STUDIO_GUI": "ON",
         "UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES": "ON",
-        "UMICOM_ENABLE_STRICT_WARNINGS": "ON"
+        "UMICOM_ENABLE_STRICT_WARNINGS": "ON",
+        "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "OFF"
+      }
+    },
+    {
+      "name": "windows-ucrt64-all-debug",
+      "displayName": "Windows MSYS2 UCRT64 GCC all modules Debug",
+      "description": "Build the complete checked-in Umicom application module estate with the canonical Windows GCC/UCRT64 GTK4 configuration.",
+      "inherits": "windows-ucrt64-debug",
+      "binaryDir": "${sourceDir}/build/windows-ucrt64-all-debug",
+      "cacheVariables": {
+        "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "ON"
       }
     }
   ],
@@ -112,6 +125,10 @@
     {
       "name": "windows-ucrt64-debug",
       "configurePreset": "windows-ucrt64-debug"
+    },
+    {
+      "name": "windows-ucrt64-all-debug",
+      "configurePreset": "windows-ucrt64-all-debug"
     }
   ],
   "testPresets": [
@@ -132,6 +149,13 @@
     {
       "name": "windows-ucrt64-debug",
       "configurePreset": "windows-ucrt64-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "windows-ucrt64-all-debug",
+      "configurePreset": "windows-ucrt64-all-debug",
       "output": {
         "outputOnFailure": true
       }

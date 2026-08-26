@@ -163,6 +163,9 @@ function(umicom_add_optional_application option_name relative_path display_name)
     endif()
 endfunction()
 
+# Extended application-module switches are kept in one suite-owned catalogue.
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/UmicomExtendedApplicationModules.cmake")
+
 # -----------------------------------------------------------------------------
 # Framework-owned shared resources and temporary Studio compatibility staging
 # -----------------------------------------------------------------------------
@@ -205,10 +208,10 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
             "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom.ico"
             COPYONLY)
 
-        set(UMICOM_WINDOWS_FILE_VERSION "0,17,0,0")
-        set(UMICOM_WINDOWS_PRODUCT_VERSION "0,17,0,0")
-        set(UMICOM_WINDOWS_FILE_VERSION_TEXT "0.17.0.0")
-        set(UMICOM_WINDOWS_PRODUCT_VERSION_TEXT "0.17.0.0")
+        set(UMICOM_WINDOWS_FILE_VERSION "0,23,0,0")
+        set(UMICOM_WINDOWS_PRODUCT_VERSION "0,23,0,0")
+        set(UMICOM_WINDOWS_FILE_VERSION_TEXT "0.23.0.0")
+        set(UMICOM_WINDOWS_PRODUCT_VERSION_TEXT "0.23.0.0")
         set(UMICOM_WINDOWS_FILE_DESCRIPTION "Umicom Studio IDE")
         set(UMICOM_WINDOWS_INTERNAL_NAME "umicom-studio-ide")
         set(UMICOM_WINDOWS_ORIGINAL_FILENAME "umicom-studio-ide.exe")
@@ -249,6 +252,11 @@ include(
     "${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake/UmicomApplicationRuntimeIntegration.cmake"
 )
 
+# Attach canonical application experience and runtime/readiness projections.
+include(
+    "${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake/UmicomApplicationExperienceIntegration.cmake"
+)
+
 # The source-superbuild publishes an explicit default root for Framework-owned
 # immutable resources. Installed consumers may call the same resolver with the
 # package resource root discovered beside their installation prefix.
@@ -285,6 +293,10 @@ endif()
 if(UMICOM_APPLICATIONS_BUILD_STUDIO)
     umicom_require_cmake_project("applications/studio" "Umicom Studio IDE")
     add_subdirectory(applications/studio)
+
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/cmake/UmicomStudioExperienceIntegration.cmake")
+        include("${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/cmake/UmicomStudioExperienceIntegration.cmake")
+    endif()
 
     # These bounded Studio features deliberately remain sibling subprojects of
     # the primary Studio module, matching the previous runnable Studio build.
@@ -334,6 +346,9 @@ umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_EXCHANGE
     "applications/exchange"
     "Umicom Exchange")
+
+# Add the extended thin application modules after the established core products.
+umicom_add_extended_application_modules()
 
 if(TARGET umicom-desk AND TARGET umicom-studio-ide)
     add_dependencies(umicom-desk umicom-studio-ide)
