@@ -34,3 +34,39 @@
 	path = applications/os
 	url = https://github.com/umicom-foundation/umicom-os-module.git
 	branch = main
+[submodule "applications/music"]
+	path = applications/music
+	url = https://github.com/umicom-foundation/umicom-music-studio-module.git
+	branch = main
+[submodule "applications/media"]
+	path = applications/media
+	url = https://github.com/umicom-foundation/umicom-media-studio-module.git
+	branch = main
+[submodule "applications/accountant"]
+	path = applications/accountant
+	url = https://github.com/umicom-foundation/umicom-accountant-module.git
+	branch = main
+[submodule "applications/rag"]
+	path = applications/rag
+	url = https://github.com/umicom-foundation/umicom-rag-module.git
+	branch = main
+[submodule "applications/games"]
+	path = applications/games
+	url = https://github.com/umicom-foundation/umicom-games-module.git
+	branch = main
+[submodule "applications/creator"]
+	path = applications/creator
+	url = https://github.com/umicom-foundation/umicom-ai-creator-module.git
+	branch = main
+[submodule "applications/kitchen"]
+	path = applications/kitchen
+	url = https://github.com/umicom-foundation/umicom-kitchen-designer-module.git
+	branch = main
+[submodule "applications/cad"]
+	path = applications/cad
+	url = https://github.com/umicom-foundation/umicom-cad-module.git
+	branch = main
+[submodule "applications/web-studio"]
+	path = applications/web-studio
+	url = https://github.com/umicom-foundation/umicom-web-studio-module.git
+	branch = main
