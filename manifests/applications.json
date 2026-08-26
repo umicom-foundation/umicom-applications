@@ -1,5 +1,5 @@
 {
-  "schema": "umicom.applications/3",
+  "schema": "umicom.applications/4",
   "repository": "umicom-foundation/umicom-applications",
   "runtime_product": "Umicom Desk",
   "framework": {
@@ -32,7 +32,7 @@
       "entry_kind": "workbench",
       "taskbar_group": "development",
       "icon_resource_id": "umicom.icon.application.studio",
-      "default_layout_id": "develop",
+      "default_layout_id": "development",
       "executable": "umicom-studio-ide"
     },
     {
@@ -117,6 +117,198 @@
       "icon_resource_id": "umicom.icon.application.os",
       "default_layout_id": "system",
       "executable": "umicom-os-control-centre"
+    },
+    {
+      "id": "org.umicom.music-studio",
+      "path": "applications/music",
+      "repository": "umicom-foundation/umicom-music-studio-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "media",
+      "icon_resource_id": "umicom.icon.application.music.studio",
+      "default_layout_id": "compose",
+      "executable": "umicom-music-studio"
+    },
+    {
+      "id": "org.umicom.media-studio",
+      "path": "applications/media",
+      "repository": "umicom-foundation/umicom-media-studio-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "media",
+      "icon_resource_id": "umicom.icon.application.media.studio",
+      "default_layout_id": "edit",
+      "executable": "umicom-media-studio"
+    },
+    {
+      "id": "org.umicom.accountant",
+      "path": "applications/accountant",
+      "repository": "umicom-foundation/umicom-accountant-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "finance",
+      "icon_resource_id": "umicom.icon.application.accountant",
+      "default_layout_id": "bookkeeping",
+      "executable": "umicom-accountant"
+    },
+    {
+      "id": "org.umicom.rag",
+      "path": "applications/rag",
+      "repository": "umicom-foundation/umicom-rag-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "artificial-intelligence",
+      "icon_resource_id": "umicom.icon.application.rag",
+      "default_layout_id": "knowledge",
+      "executable": "umicom-rag"
+    },
+    {
+      "id": "org.umicom.games",
+      "path": "applications/games",
+      "repository": "umicom-foundation/umicom-games-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "games",
+      "icon_resource_id": "umicom.icon.application.games",
+      "default_layout_id": "world",
+      "executable": "umicom-games"
+    },
+    {
+      "id": "org.umicom.creator",
+      "path": "applications/creator",
+      "repository": "umicom-foundation/umicom-ai-creator-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "artificial-intelligence",
+      "icon_resource_id": "umicom.icon.application.creator",
+      "default_layout_id": "create",
+      "executable": "umicom-ai-creator"
+    },
+    {
+      "id": "org.umicom.kitchen-designer",
+      "path": "applications/kitchen",
+      "repository": "umicom-foundation/umicom-kitchen-designer-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "design",
+      "icon_resource_id": "umicom.icon.application.kitchen.designer",
+      "default_layout_id": "design",
+      "executable": "umicom-kitchen-designer"
+    },
+    {
+      "id": "org.umicom.cad",
+      "path": "applications/cad",
+      "repository": "umicom-foundation/umicom-cad-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "design",
+      "icon_resource_id": "umicom.icon.application.cad",
+      "default_layout_id": "design",
+      "executable": "umicom-cad"
+    },
+    {
+      "id": "org.umicom.web-studio",
+      "path": "applications/web-studio",
+      "repository": "umicom-foundation/umicom-web-studio-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "development",
+      "icon_resource_id": "umicom.icon.application.web.studio",
+      "default_layout_id": "design",
+      "executable": "umicom-web-studio"
+    },
+    {
+      "id": "org.umicom.mobile-studio",
+      "path": "applications/mobile-studio",
+      "repository": "umicom-foundation/umicom-mobile-studio-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "development",
+      "icon_resource_id": "umicom.icon.application.mobile.studio",
+      "default_layout_id": "design",
+      "executable": "umicom-mobile-studio"
+    },
+    {
+      "id": "org.umicom.database-studio",
+      "path": "applications/database-studio",
+      "repository": "umicom-foundation/umicom-database-studio-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "enterprise",
+      "icon_resource_id": "umicom.icon.application.database.studio",
+      "default_layout_id": "database",
+      "executable": "umicom-database-studio"
+    },
+    {
+      "id": "org.umicom.integration-studio",
+      "path": "applications/integration-studio",
+      "repository": "umicom-foundation/umicom-integration-studio-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "enterprise",
+      "icon_resource_id": "umicom.icon.application.integration.studio",
+      "default_layout_id": "design",
+      "executable": "umicom-integration-studio"
+    },
+    {
+      "id": "org.umicom.operations",
+      "path": "applications/operations",
+      "repository": "umicom-foundation/umicom-operations-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "system",
+      "icon_resource_id": "umicom.icon.application.operations",
+      "default_layout_id": "operations",
+      "executable": "umicom-operations"
+    },
+    {
+      "id": "org.umicom.security-centre",
+      "path": "applications/security-centre",
+      "repository": "umicom-foundation/umicom-security-centre-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "system",
+      "icon_resource_id": "umicom.icon.application.security.centre",
+      "default_layout_id": "security",
+      "executable": "umicom-security-centre"
+    },
+    {
+      "id": "org.umicom.marketplace",
+      "path": "applications/marketplace",
+      "repository": "umicom-foundation/umicom-marketplace-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "system",
+      "icon_resource_id": "umicom.icon.application.marketplace",
+      "default_layout_id": "marketplace",
+      "executable": "umicom-marketplace"
+    },
+    {
+      "id": "org.umicom.education",
+      "path": "applications/education",
+      "repository": "umicom-foundation/umicom-education-studio-module",
+      "status": "foundation",
+      "default_enabled": false,
+      "entry_kind": "workbench",
+      "taskbar_group": "education",
+      "icon_resource_id": "umicom.icon.application.education",
+      "default_layout_id": "course",
+      "executable": "umicom-education"
     }
   ]
 }
