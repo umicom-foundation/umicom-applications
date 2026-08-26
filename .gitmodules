@@ -70,3 +70,31 @@
 	path = applications/web-studio
 	url = https://github.com/umicom-foundation/umicom-web-studio-module.git
 	branch = main
+[submodule "applications/mobile-studio"]
+	path = applications/mobile-studio
+	url = https://github.com/umicom-foundation/umicom-mobile-studio-module.git
+	branch = main
+[submodule "applications/database-studio"]
+	path = applications/database-studio
+	url = https://github.com/umicom-foundation/umicom-database-studio-module.git
+	branch = main
+[submodule "applications/integration-studio"]
+	path = applications/integration-studio
+	url = https://github.com/umicom-foundation/umicom-integration-studio-module.git
+	branch = main
+[submodule "applications/operations"]
+	path = applications/operations
+	url = https://github.com/umicom-foundation/umicom-operations-module.git
+	branch = main
+[submodule "applications/security-centre"]
+	path = applications/security-centre
+	url = https://github.com/umicom-foundation/umicom-security-centre-module.git
+	branch = main
+[submodule "applications/marketplace"]
+	path = applications/marketplace
+	url = https://github.com/umicom-foundation/umicom-marketplace-module.git
+	branch = main
+[submodule "applications/education"]
+	path = applications/education
+	url = https://github.com/umicom-foundation/umicom-education-studio-module.git
+	branch = main
