@@ -162,3 +162,115 @@ A product launch is accepted only when:
 A structural audit does not authorize Trader live execution. Live execution
 continues to require explicit paper, OMS, risk, reconciliation and live-release
 evidence.
+
+## Executable experience audit
+
+The architecture and product-reference blueprints were rechecked against the
+current remote repositories after the GTK Application Suite layout batch. The
+design sources consistently require Framework-first commands, panels,
+documents, notifications, docking and persistence; a thin GTK4 Studio adapter;
+and a Trader layout with chart, order/position, research and diagnostics areas.
+They also require the Master Controller to remain a composition root while
+Slave Controllers own editor, market, OMS, risk and other domain operations.
+
+Batch 51 adds sixteen executable, evidence-bearing user journeys rather than a
+second feature catalogue. Every journey resolves its layout and panel references
+through the existing canonical experience catalogue. The catalogue contains
+eight Studio journeys and eight Trader journeys, each with five ordered steps.
+All eighty references resolve; there are no missing application, layout or
+panel identifiers.
+
+| Product | Journeys | Steps | Release blocking | Confirmation steps | Initial evidence state |
+|---|---:|---:|---:|---:|---|
+| Studio IDE | 8 | 40 | 8 | 6 | Pending |
+| Trader | 8 | 40 | 8 | 8 | Pending |
+| **Total** | **16** | **80** | **16** | **14** | **Pending** |
+
+The journey runtime is deliberately data-only: it orders steps, records bounded
+evidence, blocks on critical failures and produces completion reports. It does
+not drive GTK widgets, edit files, place orders or bypass a Slave Controller.
+
+## Current layout and panel closure
+
+| Product | Canonical layouts | Canonical panels | Native GTK status | Remaining layout work |
+|---|---:|---:|---|---|
+| Studio IDE | Development, Review, AI Assisted | 12 | Existing production workbench plus suite-layout binding | Prove canonical-to-live surface mapping, parameterised command flows, multi-monitor recovery, keyboard/focus traversal and clean restart |
+| Trader | Trading, Research, Strategy Development | 15 | All 15 panels now have Framework view factories and the GTK workstation can render each layout | Complete parameter-entry interactions, context propagation, real chart/replay/news adapters, multi-monitor recovery and operator acceptance |
+
+Trader previously returned `UMI_STATUS_NOT_IMPLEMENTED` for Scanner, Predictive
+Research Lab, News, Context Inspector, Strategy, Replay and Research Output.
+Those panels now produce toolkit-neutral Framework view models. News and Replay
+report explicit provider/stream empty states until an accepted external source
+is connected; this is a complete UI state, not a claim that the adapter exists.
+
+## Remaining Framework work to product readiness
+
+| Priority | Contract/module group | Required implementation and proof |
+|---|---|---|
+| P0 | Build graph closure | Keep every source directory composed once; build registered validation executables before CTest; validate Windows UCRT64 debug and all-module presets in CI |
+| P0 | Journey automation bridge | Bind the new journey contracts to GTK interaction drivers, headless view-model drivers, evidence persistence, cancellation, timeouts and reproducible failure capture |
+| P0 | Live surface adoption audit | Compare each product's executable panel factories, command handlers and GTK surface registry with its canonical experience and journey references |
+| P0 | Release evidence store | Persist journey evidence, build/test provenance, package hashes, adapter versions and recovery checkpoints with retention and tamper-evident records |
+| P1 | Parameterised command interaction | Reusable forms, validation, confirmation and cancellation for commands that require instrument, quantity, price, path, configuration or credentials |
+| P1 | UI state contract | Standard loading, empty, stale, disconnected, permission-denied, error and recovery states for every panel and frontend adapter |
+| P1 | Visual/accessibility acceptance | Keyboard-only navigation, focus order, screen-reader roles, contrast, scaling, RTL/locale and screenshot/golden-layout evidence |
+| P1 | Multi-monitor runtime acceptance | Monitor topology change, floating-window recovery, off-screen correction, density/DPI migration and crash-safe layout persistence |
+| P1 | Process isolation contracts | Supervised boundaries and health/restart protocols for critical Trader market data, OMS, risk and execution Slave Controllers |
+| P1 | Latency and sequence evidence | Receive, normalize, decide, submit, acknowledge and fill timestamps; queue depth, sequence gaps, stale-data policy and journal position |
+| P2 | Adapter certification | Common conformance suites for language servers, debuggers, compilers, source control, broker/news feeds, replay sources and packaging backends |
+| P2 | Frontend parity | Finish behavior-level conformance for supported GTK4, Qt6 and web adapters without moving domain state into UI code |
+| P2 | Clean-machine delivery | Install, upgrade, rollback, signing, SBOM, offline mode and unprivileged-user validation for product packages |
+
+## Remaining Studio IDE implementation
+
+| Area | Existing base | Product work still required | Acceptance journey |
+|---|---|---|---|
+| First-run/workspace | Framework workspace/session and Resource Explorer | Clean-profile onboarding, real recent workspaces, missing-path recovery and session restore | `studio.first-run-workspace` |
+| Editor/build/test | Editor, task/build/test and Problems contracts | Prove save/configure/build/test/diagnostics as one cancellable user flow on GCC/Clang/MSVC profiles | `studio.edit-build-test` |
+| Debugger | DAP runtime and Debug workbench | Configuration UX, breakpoint persistence, variable/watch editing, attach/restart and failure recovery | `studio.debug-session` |
+| Source control/review | Git, diff/merge and quality contracts | Complete staged/unstaged operations, three-way conflicts, review navigation and safe confirmation | `studio.source-control-review` |
+| Visual designer | Declarative designer and preview foundations | Drag/drop, property binding, responsive preview, source round trip, undo/redo and accessibility proof | `studio.visual-designer-round-trip` |
+| AI/RAG | Context, routing, retrieval, approval and tool contracts | Explicit context inspection, offline/online model UX, permission prompts, patch review/revert and provenance | `studio.ai-assisted-change` |
+| Layout/accessibility | Docking, layout persistence and GTK host | Canonical live-surface audit, multi-monitor recovery, keyboard/focus, scaling and RTL/locale evidence | `studio.layout-recovery` |
+| Distribution | SDK, packaging and update foundations | Clean install, signed package, upgrade, rollback, extension compatibility and release acceptance | `studio.package-release` |
+| Production Centre | Production profiles, panels, commands and readiness | Render live Framework diagnostics, journey status, evidence, launch plan and recovery actions in the existing Quality/production surfaces | All Studio journeys |
+| Legacy path closure | Some older Studio files still contain explicit placeholders | Prove they are unreachable, migrate them to current Framework services or replace them only after regression evidence | All Studio journeys |
+
+Studio is not ready merely because its many focused model tests pass. Product
+readiness requires all eight journeys to pass on the installed GTK executable,
+plus clean-machine packaging and accessibility evidence.
+
+## Remaining Trader implementation
+
+| Area | Existing base | Product work still required | Acceptance journey |
+|---|---|---|---|
+| Safe startup | Simulation-default workspace, risk and kill switch | Visible environment banner, broker/data/risk health, live-disarmed proof and operator diagnostics | `trader.simulation-startup` |
+| Market navigation | Watchlist, chart, depth and linked context models | Real streaming adapter, timestamp display, stale/gap states, chart history and context propagation | `trader.market-data-navigation` |
+| Order workflow | Draft order, pre-trade risk, OMS and order ticket | Parameter controls, risk explanation, explicit confirmation, idempotency and simulation/paper execution UX | `trader.simulation-order` |
+| Cancellation/reconciliation | OMS, executions, positions, account view | Broker reconciliation, partial fills, rejects, bust/correct handling, immutable audit and recovery | `trader.cancel-reconcile` |
+| Emergency controls | Independent risk and kill switch | Isolated risk process, privileged reset, reason journal, rejection proof and controlled restart | `trader.kill-switch-recovery` |
+| Research/replay | Replay, factors, predictive models and all research panels | Historical data/replay adapter, strategy runner, MFE/MAE and follow-through evidence, export and reproducibility | `trader.replay-strategy` |
+| IBKR paper | Framework boundary and planned external adapter | TWS/Gateway lifecycle, subscriptions, reconnect, orders, fills, account state and reconciliation conformance | `trader.paper-session-recovery` |
+| Live execution | Explicitly planned and disabled | Production credentials, independent approvals, operational runbook, security, monitoring and all prior accepted evidence | `trader.live-release-gate` |
+| News | Capability-aware empty state | Optional licensed/provider adapter, symbol/entity linking, timestamps, source attribution and stale state | Market/research journeys |
+| Multi-monitor workstation | Three canonical layouts and GTK host | Persisted windows, DPI/topology recovery, focus/keyboard support and layout acceptance | All Trader journeys |
+
+Live order routing remains prohibited until every step of the live-release gate
+has accepted evidence. A rendered order ticket or a connected paper session is
+not sufficient authorization.
+
+## Recommended completion sequence
+
+1. Merge Batch 51 and validate the fixed root build graph with
+   `windows-ucrt64-debug`, then validate Studio and Trader together with
+   `windows-ucrt64-all-debug`.
+2. Implement the Framework live-surface adoption audit and GTK/headless journey
+   driver; persist evidence and render it in Studio's Production Centre.
+3. Close the eight Studio journeys, including clean-machine packaging, before
+   widening Studio feature scope.
+4. Complete Trader parameterised controls and simulation journeys; then add the
+   IBKR paper adapter behind independent risk and reconciliation.
+5. Keep live execution disabled while paper, recovery, security, latency and
+   operator evidence remain incomplete.
+6. Reuse the same Framework journey/evidence contracts for the remaining suite
+   applications instead of adding product-specific acceptance engines.

@@ -33,6 +33,21 @@ add_test(
     COMMAND umicom-applications-composition-test
 )
 
+add_executable(umicom-applications-cmake-graph-closure-test
+    test_cmake_graph_closure.c)
+target_compile_definitions(umicom-applications-cmake-graph-closure-test PRIVATE
+    UMICOM_APPLICATIONS_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+umicom_apply_warnings(umicom-applications-cmake-graph-closure-test)
+umicom_apply_sanitizers(umicom-applications-cmake-graph-closure-test)
+add_test(NAME applications.cmake_graph_closure
+    COMMAND umicom-applications-cmake-graph-closure-test)
+set_tests_properties(applications.cmake_graph_closure PROPERTIES
+    LABELS "applications;cmake;graph;regression")
+if(COMMAND umicom_register_validation_target)
+    umicom_register_validation_target(
+        umicom-applications-cmake-graph-closure-test)
+endif()
+
 add_executable(umicom-applications-resource-composition-test
     test_resource_composition.c
 )
