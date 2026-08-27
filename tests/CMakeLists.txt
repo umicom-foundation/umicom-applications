@@ -81,6 +81,24 @@ add_test(
     COMMAND umicom-applications-workbench-layout-test
 )
 
+add_executable(umicom-applications-production-control-plane-test
+    test_application_production_control_plane.c)
+target_link_libraries(umicom-applications-production-control-plane-test
+    PRIVATE Umicom::application)
+umicom_apply_warnings(umicom-applications-production-control-plane-test)
+umicom_apply_sanitizers(umicom-applications-production-control-plane-test)
+add_test(
+    NAME applications.production.control_plane
+    COMMAND umicom-applications-production-control-plane-test)
+set_tests_properties(
+    applications.production.control_plane
+    PROPERTIES LABELS
+        "applications;framework;production;portfolio;acceptance")
+if(COMMAND umicom_register_validation_target)
+    umicom_register_validation_target(
+        umicom-applications-production-control-plane-test)
+endif()
+
 if(UMICOM_APPLICATIONS_BUILD_ALL_MODULES)
     set(UMICOM_PRODUCTISATION_CONTRIBUTION_TARGETS
         umicom_accountant_productisation

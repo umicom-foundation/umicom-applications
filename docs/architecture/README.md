@@ -13,6 +13,10 @@ This directory records the high-impact decisions established while converting Um
 | ADR-0007 | Framework owns application runtime state and governed launch planning |
 | ADR-0008 | `umicom-os-module` is a user-space Control Centre, not the OS distribution |
 
-The companion `REPOSITORY-TOPOLOGY.md` records the approved superproject, module and Umicom OS dependency directions.
+The companion `REPOSITORY-TOPOLOGY.md` records the approved superproject,
+module and Umicom OS dependency directions.
+`APPLICATION-PRODUCTION-GAP-MATRIX.md` records the executable catalogue audit,
+Framework production contracts and remaining Studio, Trader and suite product
+work.
 
 Accepted ADRs govern implementation until explicitly superseded by a later accepted ADR. Historical documents and exploratory discussions remain useful evidence but do not silently override these decisions.
