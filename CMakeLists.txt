@@ -94,6 +94,9 @@ option(UMICOM_STUDIO_GUI
 option(UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES
        "Stage Framework-owned shared resources for compatibility with the current Studio module"
        ON)
+option(UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS
+       "Build registered focused validation executables with the normal product build"
+       ON)
 
 set(UMICOM_FRAMEWORK_RESOURCE_ROOT
     "${CMAKE_CURRENT_SOURCE_DIR}/framework/resources"
@@ -134,6 +137,18 @@ function(umicom_apply_sanitizers target)
             -fsanitize=address,undefined
         )
     endif()
+endfunction()
+
+# Focused platform tests may be declared in Framework or a thin application.
+# Registering them here allows the suite build to provide one explicit closure
+# target and prevents CTest discovery from getting ahead of built executables.
+function(umicom_register_validation_target target)
+    if(NOT TARGET "${target}")
+        message(FATAL_ERROR
+            "Cannot register missing validation target '${target}'")
+    endif()
+    set_property(GLOBAL APPEND PROPERTY
+        UMICOM_REGISTERED_VALIDATION_TARGETS "${target}")
 endfunction()
 
 function(umicom_require_cmake_project relative_path display_name)
@@ -355,6 +370,29 @@ if(TARGET umicom-desk AND TARGET umicom-studio-ide)
 endif()
 if(TARGET umicom-desk AND TARGET umicom-os-control-centre)
     add_dependencies(umicom-desk umicom-os-control-centre)
+endif()
+
+if(BUILD_TESTING AND UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS)
+    get_property(_umicom_registered_validation_targets GLOBAL PROPERTY
+        UMICOM_REGISTERED_VALIDATION_TARGETS)
+    if(_umicom_registered_validation_targets)
+        list(REMOVE_DUPLICATES _umicom_registered_validation_targets)
+        add_custom_target(umicom-registered-validation-tests ALL)
+        add_dependencies(umicom-registered-validation-tests
+            ${_umicom_registered_validation_targets})
+        if(TARGET umicom-studio-ide)
+            add_dependencies(umicom-studio-ide
+                umicom-registered-validation-tests)
+        endif()
+        if(TARGET umicom-trader-console)
+            add_dependencies(umicom-trader-console
+                umicom-registered-validation-tests)
+        endif()
+        list(LENGTH _umicom_registered_validation_targets
+            _umicom_registered_validation_target_count)
+        message(STATUS
+            "Registered validation target closure: ${_umicom_registered_validation_target_count} executables")
+    endif()
 endif()
 
 if(BUILD_TESTING)
