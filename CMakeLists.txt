@@ -151,6 +151,21 @@ function(umicom_register_validation_target target)
         UMICOM_REGISTERED_VALIDATION_TARGETS "${target}")
 endfunction()
 
+# Configure-time graph protection must run before CTest targets are generated.
+# It catches a duplicated root tests tree even when no regression executable can
+# be built, which is exactly the failure mode this guard is designed to prevent.
+function(umicom_assert_single_root_test_tree)
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
+        _umicom_root_test_tree_lines
+        REGEX "^[ \t]*add_subdirectory\\([ \t]*tests[ \t]*\\)")
+    list(LENGTH _umicom_root_test_tree_lines _umicom_root_test_tree_count)
+    if(NOT _umicom_root_test_tree_count EQUAL 1)
+        message(FATAL_ERROR
+            "The root test tree must be added exactly once; found "
+            "${_umicom_root_test_tree_count} root test-tree calls")
+    endif()
+endfunction()
+
 function(umicom_require_cmake_project relative_path display_name)
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${relative_path}/CMakeLists.txt")
         message(FATAL_ERROR
@@ -373,6 +388,7 @@ if(TARGET umicom-desk AND TARGET umicom-os-control-centre)
 endif()
 
 if(BUILD_TESTING)
+    umicom_assert_single_root_test_tree()
     add_subdirectory(tests)
 endif()
 
@@ -397,10 +413,6 @@ if(BUILD_TESTING AND UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS)
         message(STATUS
             "Registered validation target closure: ${_umicom_registered_validation_target_count} executables")
     endif()
-endif()
-
-if(BUILD_TESTING)
-    add_subdirectory(tests)
 endif()
 
 # Shared resources are installed once beside the modular Framework runtime.

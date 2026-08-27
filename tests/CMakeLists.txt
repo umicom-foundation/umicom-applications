@@ -48,6 +48,21 @@ if(COMMAND umicom_register_validation_target)
         umicom-applications-cmake-graph-closure-test)
 endif()
 
+add_executable(umicom-applications-validation-target-closure-test
+    test_validation_target_closure.c)
+target_compile_definitions(umicom-applications-validation-target-closure-test
+    PRIVATE UMICOM_APPLICATIONS_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+umicom_apply_warnings(umicom-applications-validation-target-closure-test)
+umicom_apply_sanitizers(umicom-applications-validation-target-closure-test)
+add_test(NAME applications.validation_target_closure
+    COMMAND umicom-applications-validation-target-closure-test)
+set_tests_properties(applications.validation_target_closure PROPERTIES
+    LABELS "applications;cmake;ctest;artifact;regression")
+if(COMMAND umicom_register_validation_target)
+    umicom_register_validation_target(
+        umicom-applications-validation-target-closure-test)
+endif()
+
 add_executable(umicom-applications-resource-composition-test
     test_resource_composition.c
 )
