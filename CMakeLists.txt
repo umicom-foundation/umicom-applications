@@ -140,8 +140,8 @@ function(umicom_apply_sanitizers target)
 endfunction()
 
 # Focused platform tests may be declared in Framework or a thin application.
-# Registering them here allows the suite build to provide one explicit closure
-# target and prevents CTest discovery from getting ahead of built executables.
+# Registering them here provides one explicit build closure and prevents CTest
+# discovery from getting ahead of its executable targets.
 function(umicom_register_validation_target target)
     if(NOT TARGET "${target}")
         message(FATAL_ERROR
@@ -370,6 +370,10 @@ if(TARGET umicom-desk AND TARGET umicom-studio-ide)
 endif()
 if(TARGET umicom-desk AND TARGET umicom-os-control-centre)
     add_dependencies(umicom-desk umicom-os-control-centre)
+endif()
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
 endif()
 
 if(BUILD_TESTING AND UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS)
