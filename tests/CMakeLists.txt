@@ -33,6 +33,22 @@ add_test(
     COMMAND umicom-applications-composition-test
 )
 
+add_executable(umicom-applications-portfolio-integrity-test
+    test_application_portfolio_integrity.c)
+target_compile_definitions(umicom-applications-portfolio-integrity-test PRIVATE
+    UMICOM_APPLICATIONS_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+umicom_apply_warnings(umicom-applications-portfolio-integrity-test)
+umicom_apply_sanitizers(umicom-applications-portfolio-integrity-test)
+add_test(
+    NAME applications.portfolio_integrity
+    COMMAND umicom-applications-portfolio-integrity-test)
+set_tests_properties(applications.portfolio_integrity PROPERTIES
+    LABELS "applications;portfolio;manifest;submodule;regression")
+if(COMMAND umicom_register_validation_target)
+    umicom_register_validation_target(
+        umicom-applications-portfolio-integrity-test)
+endif()
+
 add_executable(umicom-applications-cmake-graph-closure-test
     test_cmake_graph_closure.c)
 target_compile_definitions(umicom-applications-cmake-graph-closure-test PRIVATE

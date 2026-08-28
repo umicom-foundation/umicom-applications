@@ -87,25 +87,57 @@ static int require_condition(int condition, const char *message)
 int main(void)
 {
     static const char *const module_directories[] = {
-        "applications/desktop",
-        "applications/studio",
-        "applications/trader",
-        "applications/tms",
-        "applications/llm",
+        "applications/accountant",
         "applications/bank",
+        "applications/cad",
+        "applications/creator",
+        "applications/database-studio",
+        "applications/desktop",
+        "applications/education",
         "applications/exchange",
+        "applications/games",
+        "applications/integration-studio",
+        "applications/kitchen",
+        "applications/llm",
+        "applications/marketplace",
+        "applications/media",
+        "applications/mobile-studio",
+        "applications/music",
+        "applications/operations",
         "applications/os",
+        "applications/rag",
+        "applications/security-centre",
+        "applications/studio",
+        "applications/tms",
+        "applications/trader",
+        "applications/web-studio",
     };
     static const char *const repository_names[] = {
         "umicom-foundation/umicom-framework",
-        "umicom-foundation/umicom-desktop-module",
-        "umicom-foundation/umicom-studio-ide-module",
-        "umicom-foundation/umicom-trader-module",
-        "umicom-foundation/umicom-tms-module",
-        "umicom-foundation/umicom-llm-module",
+        "umicom-foundation/umicom-accountant-module",
         "umicom-foundation/umicom-bank-module",
+        "umicom-foundation/umicom-cad-module",
+        "umicom-foundation/umicom-ai-creator-module",
+        "umicom-foundation/umicom-database-studio-module",
+        "umicom-foundation/umicom-desktop-module",
+        "umicom-foundation/umicom-education-studio-module",
         "umicom-foundation/umicom-exchange-module",
+        "umicom-foundation/umicom-games-module",
+        "umicom-foundation/umicom-integration-studio-module",
+        "umicom-foundation/umicom-kitchen-designer-module",
+        "umicom-foundation/umicom-llm-module",
+        "umicom-foundation/umicom-marketplace-module",
+        "umicom-foundation/umicom-media-studio-module",
+        "umicom-foundation/umicom-mobile-studio-module",
+        "umicom-foundation/umicom-music-studio-module",
+        "umicom-foundation/umicom-operations-module",
         "umicom-foundation/umicom-os-module",
+        "umicom-foundation/umicom-rag-module",
+        "umicom-foundation/umicom-security-centre-module",
+        "umicom-foundation/umicom-studio-ide-module",
+        "umicom-foundation/umicom-tms-module",
+        "umicom-foundation/umicom-trader-module",
+        "umicom-foundation/umicom-web-studio-module",
     };
     static const char *const framework_resource_files[] = {
         "framework/resources/resource-catalogue.json",
@@ -174,8 +206,8 @@ int main(void)
         path_is_file("manifests/resources.json"),
         "Resource ownership manifest exists");
     success &= require_condition(
-        file_contains("manifests/applications.json", "umicom.applications/3"),
-        "Application catalogue uses schema version 3");
+        file_contains("manifests/applications.json", "umicom.applications/4"),
+        "Application catalogue uses schema version 4");
     success &= require_condition(
         file_contains("manifests/applications.json", "org.umicom.desktop"),
         "Umicom Desktop module is recorded in the application catalogue");
