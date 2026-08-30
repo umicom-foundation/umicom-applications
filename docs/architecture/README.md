@@ -24,5 +24,8 @@ Framework production contracts and remaining Studio, Trader and suite product
 work.
 `APPLICATION-PRODUCT-SURFACE-PORTFOLIO.md` explains which shared surface pieces
 now apply to every recipe and which thin product work remains.
+The [Framework-first application development roadmap](../roadmaps/FRAMEWORK-FIRST-APPLICATION-DEVELOPMENT-ROADMAP.md)
+lists the reusable contracts, layouts, panels and thin product updates planned
+for every application repository.
 
 Accepted ADRs govern implementation until explicitly superseded by a later accepted ADR. Historical documents and exploratory discussions remain useful evidence but do not silently override these decisions.
