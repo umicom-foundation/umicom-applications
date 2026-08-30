@@ -380,6 +380,26 @@ umicom_add_optional_application(
 # Add the extended thin application modules after the established core products.
 umicom_add_extended_application_modules()
 
+if(BUILD_TESTING AND
+   COMMAND umicom_register_header_portfolio_governance_test)
+    set(UMICOM_APPLICATION_HEADER_ROOTS
+        "${CMAKE_CURRENT_SOURCE_DIR}/framework/include")
+    if(UMICOM_APPLICATIONS_BUILD_STUDIO AND
+       IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/include")
+        list(APPEND UMICOM_APPLICATION_HEADER_ROOTS
+            "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/include")
+    endif()
+    if(UMICOM_APPLICATIONS_BUILD_TRADER AND
+       IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/applications/trader/include")
+        list(APPEND UMICOM_APPLICATION_HEADER_ROOTS
+            "${CMAKE_CURRENT_SOURCE_DIR}/applications/trader/include")
+    endif()
+    umicom_register_header_portfolio_governance_test(
+        applications.sdk.public_headers
+        "Umicom Applications"
+        ${UMICOM_APPLICATION_HEADER_ROOTS})
+endif()
+
 if(TARGET umicom-desk AND TARGET umicom-studio-ide)
     add_dependencies(umicom-desk umicom-studio-ide)
 endif()

@@ -14,6 +14,7 @@ This directory records the high-impact decisions established while converting Um
 | ADR-0008 | `umicom-os-module` is a user-space Control Centre, not the OS distribution |
 | ADR-0009 | Framework owns live application surface state and frontend hosting contracts |
 | ADR-0010 | Framework owns reusable panel behavior and workspace runtime policies |
+| ADR-0011 | Public SDK headers require unique guards and human-readable contracts |
 
 The companion `REPOSITORY-TOPOLOGY.md` records the approved superproject,
 module and Umicom OS dependency directions.
