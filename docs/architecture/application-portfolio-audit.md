@@ -41,7 +41,7 @@ identifier or executable.
 - Application repositories own product identity, feature/panel/layout
   composition, executable wiring and product-specific acceptance tests.
 - Bank and AI Creator already supplied reference runtime/readiness/command
-  bridges; Batch 54 does not recreate them.
+  bridges; the portfolio composition update does not recreate them.
 - Studio, Trader, TMS, Desktop and OS keep their specialised composition and
   are not forced through the generic thin-application bridge.
 - The other 17 products use `UmicomThinApplicationRuntime.cmake` so target and
@@ -49,7 +49,7 @@ identifier or executable.
 - The root `manifests/applications.json`, each `application.umicom.yaml`, and
   `.gitmodules` are checked together by `applications.portfolio_integrity`.
 
-## Batch 54 closure
+## Thin application composition closure
 
 Each of the 17 thin products now exposes three small composition contracts:
 

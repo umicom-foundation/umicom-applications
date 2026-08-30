@@ -173,7 +173,7 @@ and a Trader layout with chart, order/position, research and diagnostics areas.
 They also require the Master Controller to remain a composition root while
 Slave Controllers own editor, market, OMS, risk and other domain operations.
 
-Batch 51 adds sixteen executable, evidence-bearing user journeys rather than a
+The executable experience update adds sixteen evidence-bearing user journeys rather than a
 second feature catalogue. Every journey resolves its layout and panel references
 through the existing canonical experience catalogue. The catalogue contains
 eight Studio journeys and eight Trader journeys, each with five ordered steps.
@@ -261,7 +261,7 @@ not sufficient authorization.
 
 ## Recommended completion sequence
 
-1. Merge Batch 51 and validate the fixed root build graph with
+1. Merge the executable experience update and validate the fixed root build graph with
    `windows-ucrt64-debug`, then validate Studio and Trader together with
    `windows-ucrt64-all-debug`.
 2. Implement the Framework live-surface adoption audit and GTK/headless journey
