@@ -12,6 +12,7 @@ This directory records the high-impact decisions established while converting Um
 | ADR-0006 | Umicom Desk discovers validated applications and exposes a bottom taskbar |
 | ADR-0007 | Framework owns application runtime state and governed launch planning |
 | ADR-0008 | `umicom-os-module` is a user-space Control Centre, not the OS distribution |
+| ADR-0009 | Framework owns live application surface state and frontend hosting contracts |
 
 The companion `REPOSITORY-TOPOLOGY.md` records the approved superproject,
 module and Umicom OS dependency directions.

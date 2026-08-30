@@ -71,6 +71,12 @@ Framework process supervisor adapter
 Studio, OS Control Centre and future applications
 ```
 
+Inside an application, Framework component recipes are projected into portable
+presentation plans and live surface sessions. Studio and Trader contribute only
+their product-specific controllers while Framework owns common panel state,
+focus, checkpoints and frontend-host contracts. See
+[`ADR-0009`](docs/architecture/ADR-0009-application-surface-runtime.md).
+
 The application taskbar and layout strip remain separate:
 
 - the taskbar launches, activates, pins, restarts and stops applications;
