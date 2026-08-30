@@ -6,9 +6,12 @@
 #   Register the extended thin application module estate without duplicating
 #   Framework implementation in the suite root.
 #
-# Created by: Sammy Hegab
-# Organisation: Umicom Foundation
-# Licence: MIT
+# AUTHOR AND ORGANISATION:
+#   Sammy Hegab
+#   Umicom Foundation
+#
+# LICENCE:
+#   MIT
 #-----------------------------------------------------------------------------
 
 option(UMICOM_APPLICATIONS_BUILD_MUSIC_STUDIO

@@ -384,20 +384,27 @@ if(BUILD_TESTING AND
    COMMAND umicom_register_header_portfolio_governance_test)
     set(UMICOM_APPLICATION_HEADER_ROOTS
         "${CMAKE_CURRENT_SOURCE_DIR}/framework/include")
-    if(UMICOM_APPLICATIONS_BUILD_STUDIO AND
-       IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/include")
-        list(APPEND UMICOM_APPLICATION_HEADER_ROOTS
-            "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/include")
-    endif()
-    if(UMICOM_APPLICATIONS_BUILD_TRADER AND
-       IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/applications/trader/include")
-        list(APPEND UMICOM_APPLICATION_HEADER_ROOTS
-            "${CMAKE_CURRENT_SOURCE_DIR}/applications/trader/include")
-    endif()
+    file(GLOB UMICOM_APPLICATION_INCLUDE_ROOTS
+        LIST_DIRECTORIES TRUE
+        "${CMAKE_CURRENT_SOURCE_DIR}/applications/*/include")
+    list(APPEND UMICOM_APPLICATION_HEADER_ROOTS
+        ${UMICOM_APPLICATION_INCLUDE_ROOTS})
+    list(REMOVE_DUPLICATES UMICOM_APPLICATION_HEADER_ROOTS)
     umicom_register_header_portfolio_governance_test(
         applications.sdk.public_headers
         "Umicom Applications"
         ${UMICOM_APPLICATION_HEADER_ROOTS})
+
+    set(UMICOM_APPLICATION_SOURCE_ROOTS
+        "${CMAKE_CURRENT_SOURCE_DIR}/framework"
+        "${CMAKE_CURRENT_SOURCE_DIR}/applications")
+    umicom_register_source_comment_governance_test(
+        applications.source.comments
+        "Umicom Applications"
+        ${UMICOM_APPLICATION_SOURCE_ROOTS})
+    umicom_register_declaration_dependency_audit_test(
+        applications.catalogue.declaration_dependencies
+        ${UMICOM_APPLICATION_SOURCE_ROOTS})
 endif()
 
 if(TARGET umicom-desk AND TARGET umicom-studio-ide)

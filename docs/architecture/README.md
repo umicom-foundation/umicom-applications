@@ -15,11 +15,14 @@ This directory records the high-impact decisions established while converting Um
 | ADR-0009 | Framework owns live application surface state and frontend hosting contracts |
 | ADR-0010 | Framework owns reusable panel behavior and workspace runtime policies |
 | ADR-0011 | Public SDK headers require unique guards and human-readable contracts |
+| ADR-0012 | Framework owns one shared product-surface lifecycle for every application |
 
 The companion `REPOSITORY-TOPOLOGY.md` records the approved superproject,
 module and Umicom OS dependency directions.
 `APPLICATION-PRODUCTION-GAP-MATRIX.md` records the executable catalogue audit,
 Framework production contracts and remaining Studio, Trader and suite product
 work.
+`APPLICATION-PRODUCT-SURFACE-PORTFOLIO.md` explains which shared surface pieces
+now apply to every recipe and which thin product work remains.
 
 Accepted ADRs govern implementation until explicitly superseded by a later accepted ADR. Historical documents and exploratory discussions remain useful evidence but do not silently override these decisions.
