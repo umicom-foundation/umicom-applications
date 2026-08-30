@@ -13,6 +13,10 @@ application taskbar and semantic layout host.
 
 ## Canonical architecture
 
+The [Shared Application Session and Command Plane](docs/architecture/SHARED_APPLICATION_SESSION_AND_COMMAND_PLANE.md)
+is the common Framework connector for layouts, panels, linked context,
+readiness and state snapshots across every application submodule.
+
 Umicom Framework is the reusable source of truth.
 
 Reusable runtime services, libraries, components, widgets, adapters, data

@@ -6,11 +6,15 @@
  *   Verify every checked-in application module contributes executable,
  *   tested and surface-complete adoption evidence to Umicom Framework.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include <assert.h>
+#include <string.h>
 
 #include "umicom/application/productisation/adoption_registry.h"
 #include "umicom/application/productisation/surface_projection.h"
@@ -38,6 +42,9 @@
 #include "umicom/tms/productisation_contribution.h"
 #include "umicom/trader/productisation_contribution.h"
 #include "umicom/web_studio/productisation_contribution.h"
+
+typedef UmiStatus (*UmiApplicationProductSessionInitialiser)(
+    UmiProductApplicationSession *out_session);
 
 int main(void)
 {
@@ -67,11 +74,39 @@ int main(void)
         umi_trader_productisation_contribution(),
         umi_web_studio_productisation_contribution()
     };
+    const UmiApplicationProductSessionInitialiser session_initialisers[] = {
+        umi_accountant_product_session_init,
+        umi_bank_product_session_init,
+        umi_cad_product_session_init,
+        umi_ai_creator_product_session_init,
+        umi_database_studio_product_session_init,
+        umi_desktop_module_product_session_init,
+        umi_education_product_session_init,
+        umi_exchange_product_session_init,
+        umi_games_product_session_init,
+        umi_integration_studio_product_session_init,
+        umi_kitchen_product_session_init,
+        umi_llm_product_session_init,
+        umi_marketplace_product_session_init,
+        umi_media_product_session_init,
+        umi_mobile_studio_product_session_init,
+        umi_music_product_session_init,
+        umi_operations_product_session_init,
+        umi_os_module_product_session_init,
+        umi_rag_product_session_init,
+        umi_security_centre_product_session_init,
+        umi_studio_product_session_init,
+        umi_tms_product_session_init,
+        umi_trader_product_session_init,
+        umi_web_studio_product_session_init
+    };
     UmiProductAdoptionRegistry registry;
     UmiProductAdoptionRegistryReport report;
     UmiProductSurfacePortfolio surfaces;
     size_t index;
 
+    assert(sizeof(contributions) / sizeof(contributions[0]) ==
+           sizeof(session_initialisers) / sizeof(session_initialisers[0]));
     umi_product_adoption_registry_init(&registry);
     for (index = 0U;
          index < sizeof(contributions) / sizeof(contributions[0]);
@@ -79,6 +114,19 @@ int main(void)
         assert(contributions[index] != NULL);
         assert(umi_product_adoption_registry_register(
             &registry, contributions[index]) == UMI_STATUS_OK);
+        {
+            UmiProductApplicationSession session;
+            UmiProductApplicationSessionSnapshot snapshot;
+            assert(session_initialisers[index](&session) == UMI_STATUS_OK);
+            assert(umi_product_application_session_snapshot(
+                &session, &snapshot) == UMI_STATUS_OK);
+            assert(strcmp(snapshot.application_id,
+                          contributions[index]->application_id) == 0);
+            assert(snapshot.workspace.layout_id[0] != '\0');
+            assert(snapshot.workspace.active_panel_count > 0U);
+            assert(snapshot.runnable);
+            assert(snapshot.acceptance_ready);
+        }
     }
     assert(registry.count == 24U);
     assert(umi_product_adoption_registry_report(
