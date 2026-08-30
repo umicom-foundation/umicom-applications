@@ -1,5 +1,9 @@
 # Umicom Applications
 
+New to programming or Umicom? Begin with the
+[`Start Here` guide](docs/getting-started/ABSOLUTE_BEGINNER_GUIDE.md). It uses
+the PowerShell or Bash bootstrap before the native `umicom` command exists.
+
 Umicom Applications is the runnable multi-application superproject for the
 Umicom ecosystem.
 
@@ -145,6 +149,7 @@ git submodule status
 
 git submodule foreach --recursive `
     'echo ""; echo "===== $displaypath ====="; git status --short'
+```
 
 ## Windows UCRT64 GTK4 build
 
@@ -169,7 +174,6 @@ Launch Umicom Desk:
 
 ```powershell
 & ".\build\windows-ucrt64-debug\bin\umicom-desk.exe"
-```
 ```
 
 Launch Studio:
