@@ -9,7 +9,7 @@
     {
       "name": "headless-debug",
       "displayName": "Portable headless Debug",
-      "description": "Build Framework, Desk runtime, StudioCore, OS Control Centre and tests without GTK4.",
+      "description": "Build Framework, Desk runtime, Studio, Trader, Bank, TMS, OS Control Centre and tests without GTK4.",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/headless-debug",
       "cacheVariables": {
@@ -20,13 +20,14 @@
         "UMICOM_APPLICATIONS_BUILD_DESKTOP": "ON",
         "UMICOM_APPLICATIONS_BUILD_STUDIO": "ON",
         "UMICOM_APPLICATIONS_BUILD_OS": "ON",
-        "UMICOM_APPLICATIONS_BUILD_TRADER": "OFF",
-        "UMICOM_APPLICATIONS_BUILD_TMS": "OFF",
+        "UMICOM_APPLICATIONS_BUILD_TRADER": "ON",
+        "UMICOM_APPLICATIONS_BUILD_TMS": "ON",
         "UMICOM_APPLICATIONS_BUILD_LLM": "OFF",
-        "UMICOM_APPLICATIONS_BUILD_BANK": "OFF",
+        "UMICOM_APPLICATIONS_BUILD_BANK": "ON",
         "UMICOM_APPLICATIONS_BUILD_EXCHANGE": "OFF",
         "UMICOM_DESKTOP_BUILD_GTK": "OFF",
         "UMICOM_STUDIO_BUILD_GTK": "OFF",
+        "UMICOM_TRADER_BUILD_GTK4": "OFF",
         "UMICOM_ENABLE_STRICT_WARNINGS": "ON",
         "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "OFF"
       }
@@ -34,7 +35,7 @@
     {
       "name": "windows-ucrt64-headless-debug",
       "displayName": "Windows MSYS2 UCRT64 GCC headless Debug",
-      "description": "Canonical Windows GCC/UCRT64 headless validation of Framework, Desk runtime, StudioCore and OS Control Centre.",
+      "description": "Canonical Windows GCC/UCRT64 headless validation of Framework, Desk, Studio, Trader, Bank, TMS and OS Control Centre.",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/windows-ucrt64-headless-debug",
       "environment": {
@@ -54,13 +55,14 @@
         "UMICOM_APPLICATIONS_BUILD_DESKTOP": "ON",
         "UMICOM_APPLICATIONS_BUILD_STUDIO": "ON",
         "UMICOM_APPLICATIONS_BUILD_OS": "ON",
-        "UMICOM_APPLICATIONS_BUILD_TRADER": "OFF",
-        "UMICOM_APPLICATIONS_BUILD_TMS": "OFF",
+        "UMICOM_APPLICATIONS_BUILD_TRADER": "ON",
+        "UMICOM_APPLICATIONS_BUILD_TMS": "ON",
         "UMICOM_APPLICATIONS_BUILD_LLM": "OFF",
-        "UMICOM_APPLICATIONS_BUILD_BANK": "OFF",
+        "UMICOM_APPLICATIONS_BUILD_BANK": "ON",
         "UMICOM_APPLICATIONS_BUILD_EXCHANGE": "OFF",
         "UMICOM_DESKTOP_BUILD_GTK": "OFF",
         "UMICOM_STUDIO_BUILD_GTK": "OFF",
+        "UMICOM_TRADER_BUILD_GTK4": "OFF",
         "UMICOM_ENABLE_STRICT_WARNINGS": "ON",
         "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "OFF"
       }
@@ -68,7 +70,7 @@
     {
       "name": "windows-ucrt64-debug",
       "displayName": "Windows MSYS2 UCRT64 GCC GTK4 Debug",
-      "description": "Canonical Windows GCC/UCRT64 GTK4 build of Umicom Desk, Framework, Studio and OS Control Centre.",
+      "description": "Canonical Windows GCC/UCRT64 GTK4 build of Umicom Desk, Framework, Studio, Trader, Bank, TMS and OS Control Centre.",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/windows-ucrt64-debug",
       "environment": {
@@ -88,15 +90,16 @@
         "UMICOM_APPLICATIONS_BUILD_DESKTOP": "ON",
         "UMICOM_APPLICATIONS_BUILD_STUDIO": "ON",
         "UMICOM_APPLICATIONS_BUILD_OS": "ON",
-        "UMICOM_APPLICATIONS_BUILD_TRADER": "OFF",
-        "UMICOM_APPLICATIONS_BUILD_TMS": "OFF",
+        "UMICOM_APPLICATIONS_BUILD_TRADER": "ON",
+        "UMICOM_APPLICATIONS_BUILD_TMS": "ON",
         "UMICOM_APPLICATIONS_BUILD_LLM": "OFF",
-        "UMICOM_APPLICATIONS_BUILD_BANK": "OFF",
+        "UMICOM_APPLICATIONS_BUILD_BANK": "ON",
         "UMICOM_APPLICATIONS_BUILD_EXCHANGE": "OFF",
         "UMICOM_DESKTOP_BUILD_GTK": "ON",
         "UMICOM_DESKTOP_GUI": "ON",
         "UMICOM_STUDIO_BUILD_GTK": "ON",
         "UMICOM_STUDIO_GUI": "ON",
+        "UMICOM_TRADER_BUILD_GTK4": "ON",
         "UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES": "ON",
         "UMICOM_ENABLE_STRICT_WARNINGS": "ON",
         "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "OFF"

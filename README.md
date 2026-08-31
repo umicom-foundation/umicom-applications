@@ -187,7 +187,7 @@ Launch Studio:
 & ".\build\windows-ucrt64-debug\bin\umicom-studio-ide.exe" --console
 ```
 
-## Install and create a portable package
+## Install and create packages
 
 ```powershell
 cmake --install ".\build\windows-ucrt64-debug" `
@@ -196,6 +196,12 @@ cmake --install ".\build\windows-ucrt64-debug" `
 cpack --config ".\build\windows-ucrt64-debug\CPackConfig.cmake" `
     -C Debug
 ```
+
+On Windows, packaging creates a component installer and a portable archive.
+The installer lets each person tick the applications they want. Umicom
+Framework and the Umicom Applications launcher are installed once and shared
+by every chosen product. See the
+[Windows installer and application launcher guide](docs/getting-started/WINDOWS_INSTALLER_AND_APPLICATION_LAUNCHER.md).
 
 Framework resources are installed once below:
 
@@ -209,10 +215,10 @@ share/umicom/resources
 UMICOM_APPLICATIONS_BUILD_DESKTOP  ON
 UMICOM_APPLICATIONS_BUILD_STUDIO   ON
 UMICOM_APPLICATIONS_BUILD_OS       ON
-UMICOM_APPLICATIONS_BUILD_TRADER   OFF
-UMICOM_APPLICATIONS_BUILD_TMS      OFF
+UMICOM_APPLICATIONS_BUILD_TRADER   ON
+UMICOM_APPLICATIONS_BUILD_TMS      ON
 UMICOM_APPLICATIONS_BUILD_LLM      OFF
-UMICOM_APPLICATIONS_BUILD_BANK     OFF
+UMICOM_APPLICATIONS_BUILD_BANK     ON
 UMICOM_APPLICATIONS_BUILD_EXCHANGE OFF
 ```
 
@@ -235,6 +241,8 @@ use Framework extensively, while recovery remains independent.
 5. Stage the three updated submodule pointers and parent composition files.
 6. Build and test the pinned integrated state.
 7. Commit and push umicom-applications.
+```
+
 Changes must be committed in the repository that owns the source.
 
 For a Framework change:

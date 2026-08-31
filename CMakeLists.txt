@@ -62,16 +62,16 @@ option(UMICOM_APPLICATIONS_BUILD_STUDIO
        ON)
 option(UMICOM_APPLICATIONS_BUILD_TRADER
        "Build the Umicom Trader application module"
-       OFF)
+       ON)
 option(UMICOM_APPLICATIONS_BUILD_TMS
        "Build the Umicom Open TMS application module"
-       OFF)
+       ON)
 option(UMICOM_APPLICATIONS_BUILD_LLM
        "Build the Umicom LLM application module"
        OFF)
 option(UMICOM_APPLICATIONS_BUILD_BANK
        "Build the Umicom Bank application module"
-       OFF)
+       ON)
 option(UMICOM_APPLICATIONS_BUILD_EXCHANGE
        "Build the Umicom Exchange application module"
        OFF)
@@ -90,6 +90,9 @@ option(UMICOM_STUDIO_BUILD_GTK
        ON)
 option(UMICOM_STUDIO_GUI
        "Build Studio as a Windows GUI-subsystem executable"
+       ON)
+option(UMICOM_TRADER_BUILD_GTK4
+       "Build the Framework-rendered GTK4 Umicom Trader workstation"
        ON)
 option(UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES
        "Stage Framework-owned shared resources for compatibility with the current Studio module"
@@ -185,8 +188,27 @@ endfunction()
 
 function(umicom_add_optional_application option_name relative_path display_name)
     if(${option_name})
+        if(ARGC GREATER 3)
+            set(_umicom_application_component "${ARGV3}")
+        else()
+            string(REGEX REPLACE "[^A-Za-z0-9]" ""
+                _umicom_application_component "${display_name}")
+        endif()
+        if(_umicom_application_component STREQUAL "")
+            message(FATAL_ERROR
+                "Unable to derive an installer component for ${display_name}")
+        endif()
         umicom_require_cmake_project("${relative_path}" "${display_name}")
+        # Each application subdirectory inherits its own default install
+        # component. Existing install rules therefore become selectable in the
+        # generated installer without duplicating target lists in this file.
+        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME
+            "${_umicom_application_component}")
         add_subdirectory("${relative_path}")
+        set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_IDS
+            "${_umicom_application_component}")
+        set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_NAMES
+            "${display_name}")
         message(STATUS "Enabled application module: ${display_name}")
     else()
         message(STATUS "Disabled application module: ${display_name}")
@@ -260,7 +282,8 @@ endif()
 # Studio and Umicom Desk require the Framework GTK4 adapter when either
 # graphical application is built.
 if((UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK) OR
-   (UMICOM_APPLICATIONS_BUILD_DESKTOP AND UMICOM_DESKTOP_BUILD_GTK))
+   (UMICOM_APPLICATIONS_BUILD_DESKTOP AND UMICOM_DESKTOP_BUILD_GTK) OR
+   (UMICOM_APPLICATIONS_BUILD_TRADER AND UMICOM_TRADER_BUILD_GTK4))
     set(UMICOM_BUILD_GTK4_ADAPTER ON CACHE BOOL
         "Build the Framework GTK4 adapter required by enabled applications" FORCE)
 else()
@@ -269,6 +292,7 @@ else()
 endif()
 
 umicom_require_cmake_project("framework" "Umicom Framework")
+set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Framework")
 add_subdirectory(framework)
 
 if(NOT TARGET Umicom::Framework)
@@ -304,10 +328,38 @@ if(UMICOM_APPLICATIONS_BUILD_DESKTOP)
     set(UMICOM_DESKTOP_COMPOSE_STUDIO
         "${UMICOM_APPLICATIONS_BUILD_STUDIO}" CACHE BOOL
         "Expose Studio in Umicom Desk" FORCE)
+    set(UMICOM_DESKTOP_COMPOSE_TRADER
+        "${UMICOM_APPLICATIONS_BUILD_TRADER}" CACHE BOOL
+        "Expose Trader in Umicom Desk" FORCE)
+    set(UMICOM_DESKTOP_COMPOSE_BANK
+        "${UMICOM_APPLICATIONS_BUILD_BANK}" CACHE BOOL
+        "Expose Bank in Umicom Desk" FORCE)
+    set(UMICOM_DESKTOP_COMPOSE_TMS
+        "${UMICOM_APPLICATIONS_BUILD_TMS}" CACHE BOOL
+        "Expose TMS in Umicom Desk" FORCE)
     set(UMICOM_DESKTOP_COMPOSE_OS
         "${UMICOM_APPLICATIONS_BUILD_OS}" CACHE BOOL
         "Expose OS Control Centre in Umicom Desk" FORCE)
+    if(UMICOM_STUDIO_BUILD_GTK)
+        set(UMICOM_DESKTOP_STUDIO_EXECUTABLE "umicom-studio-ide" CACHE STRING
+            "Studio executable registered with Umicom Desk" FORCE)
+    else()
+        set(UMICOM_DESKTOP_STUDIO_EXECUTABLE "umicom-studio-console" CACHE STRING
+            "Studio executable registered with Umicom Desk" FORCE)
+    endif()
+    if(UMICOM_TRADER_BUILD_GTK4)
+        set(UMICOM_DESKTOP_TRADER_EXECUTABLE "umicom-trader" CACHE STRING
+            "Trader executable registered with Umicom Desk" FORCE)
+    else()
+        set(UMICOM_DESKTOP_TRADER_EXECUTABLE "umicom-trader-console" CACHE STRING
+            "Trader executable registered with Umicom Desk" FORCE)
+    endif()
+    set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Desktop")
     add_subdirectory(applications/desktop)
+    set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_IDS "Desktop")
+    set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_NAMES
+        "Umicom Applications Launcher")
+    set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Framework")
     if(NOT TARGET Umicom::desktop_module)
         message(FATAL_ERROR
             "The Desktop module did not provide Umicom::desktop_module.")
@@ -322,7 +374,11 @@ endif()
 # -----------------------------------------------------------------------------
 if(UMICOM_APPLICATIONS_BUILD_STUDIO)
     umicom_require_cmake_project("applications/studio" "Umicom Studio IDE")
+    set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Studio")
     add_subdirectory(applications/studio)
+    set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_IDS "Studio")
+    set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_NAMES
+        "Umicom Studio IDE")
 
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/cmake/UmicomStudioExperienceIntegration.cmake")
         include("${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/cmake/UmicomStudioExperienceIntegration.cmake")
@@ -336,6 +392,7 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/workspace-productivity/CMakeLists.txt")
         add_subdirectory(applications/studio/workspace-productivity)
     endif()
+    set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Framework")
 
     if(NOT TARGET Umicom::StudioCore)
         message(FATAL_ERROR
@@ -353,17 +410,20 @@ endif()
 umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_OS
     "applications/os"
-    "Umicom OS Control Centre")
+    "Umicom OS Control Centre"
+    "OperatingSystem")
 
 # Placeholder and future product modules.
 umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_TRADER
     "applications/trader"
-    "Umicom Trader")
+    "Umicom Trader"
+    "Trader")
 umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_TMS
     "applications/tms"
-    "Umicom Open TMS")
+    "Umicom TMS"
+    "TMS")
 umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_LLM
     "applications/llm"
@@ -371,7 +431,8 @@ umicom_add_optional_application(
 umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_BANK
     "applications/bank"
-    "Umicom Bank")
+    "Umicom Bank"
+    "Bank")
 umicom_add_optional_application(
     UMICOM_APPLICATIONS_BUILD_EXCHANGE
     "applications/exchange"
@@ -410,8 +471,23 @@ endif()
 if(TARGET umicom-desk AND TARGET umicom-studio-ide)
     add_dependencies(umicom-desk umicom-studio-ide)
 endif()
+if(TARGET umicom-desk AND TARGET umicom-studio-console)
+    add_dependencies(umicom-desk umicom-studio-console)
+endif()
 if(TARGET umicom-desk AND TARGET umicom-os-control-centre)
     add_dependencies(umicom-desk umicom-os-control-centre)
+endif()
+if(TARGET umicom-desk AND TARGET umicom-trader)
+    add_dependencies(umicom-desk umicom-trader)
+endif()
+if(TARGET umicom-desk AND TARGET umicom-trader-console)
+    add_dependencies(umicom-desk umicom-trader-console)
+endif()
+if(TARGET umicom-desk AND TARGET umicom-bank-console)
+    add_dependencies(umicom-desk umicom-bank-console)
+endif()
+if(TARGET umicom-desk AND TARGET umicom-tms-console)
+    add_dependencies(umicom-desk umicom-tms-console)
 endif()
 
 if(BUILD_TESTING)
@@ -449,8 +525,9 @@ install(DIRECTORY "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/"
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/licenses/umicom-applications")
 
-# Portable archives remain the initial package format. Platform-specific
-# signed installers remain governed by the delivery roadmap.
+# Windows packages use CPack's component-aware installer so users can choose
+# applications with checkboxes. Portable archives remain available for manual
+# and offline installation.
 set(CPACK_PACKAGE_NAME "Umicom Applications")
 set(CPACK_PACKAGE_VENDOR "Umicom Foundation")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
@@ -460,9 +537,76 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME
     "umicom-applications-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}")
 if(WIN32)
-    set(CPACK_GENERATOR "ZIP")
+    set(CPACK_GENERATOR "NSIS;ZIP")
+    set(CPACK_NSIS_COMPONENT_INSTALL ON)
+    set(CPACK_NSIS_DISPLAY_NAME "Umicom Applications")
+    set(CPACK_NSIS_PACKAGE_NAME "Umicom Applications")
+    set(CPACK_NSIS_MUI_ICON
+        "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom.ico")
+    set(CPACK_NSIS_MUI_UNIICON
+        "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom.ico")
+    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "Umicom Applications")
+    set(CPACK_PACKAGE_EXECUTABLES
+        "umicom-desk" "Umicom Applications")
+    set(CPACK_CREATE_DESKTOP_LINKS "umicom-desk")
 else()
     set(CPACK_GENERATOR "TGZ;ZIP")
+endif()
+
+include(CPackComponent)
+cpack_add_component_group(UmicomApplications
+    DISPLAY_NAME "Umicom Applications"
+    DESCRIPTION "Choose the Umicom applications to install.")
+cpack_add_component(Framework
+    DISPLAY_NAME "Umicom Framework"
+    DESCRIPTION "Shared runtime, components, contracts and resources."
+    REQUIRED
+    HIDDEN)
+
+get_property(_umicom_suite_component_ids GLOBAL PROPERTY
+    UMICOM_SUITE_COMPONENT_IDS)
+get_property(_umicom_suite_component_names GLOBAL PROPERTY
+    UMICOM_SUITE_COMPONENT_NAMES)
+if(_umicom_suite_component_ids)
+    list(LENGTH _umicom_suite_component_ids
+        _umicom_suite_component_count)
+    list(LENGTH _umicom_suite_component_names
+        _umicom_suite_component_name_count)
+    if(NOT _umicom_suite_component_count EQUAL
+       _umicom_suite_component_name_count)
+        message(FATAL_ERROR
+            "Installer component identifiers and names are out of sync")
+    endif()
+    set(CPACK_COMPONENTS_ALL Framework
+        ${_umicom_suite_component_ids})
+    math(EXPR _umicom_suite_component_last
+        "${_umicom_suite_component_count} - 1")
+    foreach(_umicom_suite_component_index
+            RANGE 0 ${_umicom_suite_component_last})
+        list(GET _umicom_suite_component_ids
+            ${_umicom_suite_component_index}
+            _umicom_suite_component_id)
+        list(GET _umicom_suite_component_names
+            ${_umicom_suite_component_index}
+            _umicom_suite_component_name)
+        if(_umicom_suite_component_id STREQUAL "Desktop")
+            cpack_add_component(${_umicom_suite_component_id}
+                DISPLAY_NAME "${_umicom_suite_component_name}"
+                DESCRIPTION
+                    "Application chooser and multi-application launcher."
+                DEPENDS Framework
+                REQUIRED
+                GROUP UmicomApplications)
+        else()
+            cpack_add_component(${_umicom_suite_component_id}
+                DISPLAY_NAME "${_umicom_suite_component_name}"
+                DESCRIPTION
+                    "Install ${_umicom_suite_component_name}."
+                DEPENDS Framework
+                GROUP UmicomApplications)
+        endif()
+    endforeach()
 endif()
 include(CPack)
 
