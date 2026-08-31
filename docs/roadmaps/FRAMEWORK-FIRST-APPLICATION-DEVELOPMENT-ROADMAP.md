@@ -17,6 +17,11 @@ MIT
 
 # Framework-First Application Development Roadmap
 
+The [Umicom Suite Delivery Roadmap](UMICOM-SUITE-DELIVERY-ROADMAP.md) turns
+this architecture into named major updates with integration dependencies and
+completion evidence. Read this document for application responsibilities and
+the delivery roadmap for implementation order.
+
 ## The simple idea
 
 Umicom applications should be assembled like a Lego model. A Lego brick has a
