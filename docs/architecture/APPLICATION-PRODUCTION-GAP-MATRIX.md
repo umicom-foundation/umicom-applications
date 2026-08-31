@@ -121,7 +121,7 @@ integrate governed external connectivity.
 | Market data | Framework feature implemented | Connect accepted real/paper feeds and prove session/recovery behaviour |
 | OMS and executions | Framework feature implemented | Complete application workflow, reconciliation and operator acceptance |
 | Independent risk | Framework feature implemented | Prove UI cannot bypass risk and emergency controls |
-| IBKR paper adapter | External-adapter feature remains planned | Implement TWS transport, subscriptions, orders, fills and reconciliation |
+| Optional paper-broker adapter | External-adapter feature remains planned | Implement connection lifecycle, subscriptions, orders, fills and reconciliation |
 | Research/replay | Implemented/foundation Framework features | Complete charts, scanners, factors, replay evidence and UX |
 | Live execution | Product-owned feature remains planned | Keep disabled until paper, OMS, risk and acceptance evidence are verified |
 | Latency evidence | Required by the Trader blueprint | Surface receive, normalize, decide, submit, acknowledge and fill timestamps |
@@ -142,7 +142,8 @@ sequence should use the same control plane:
 1. Close Framework-owned planned/foundation capabilities shared by multiple
    products.
 2. Render the production centre, diagnostics and recovery models in Studio.
-3. Complete Trader GTK4 paper workflow and IBKR adapter behind independent risk.
+3. Complete Trader GTK4 paper workflow and an optional broker adapter behind
+   independent risk.
 4. Move each remaining product from declaration to executable acceptance in
    priority order, without copying Framework mechanics.
 5. Record tests and user-flow evidence before advancing a feature to verified.
@@ -250,7 +251,7 @@ plus clean-machine packaging and accessibility evidence.
 | Cancellation/reconciliation | OMS, executions, positions, account view | Broker reconciliation, partial fills, rejects, bust/correct handling, immutable audit and recovery | `trader.cancel-reconcile` |
 | Emergency controls | Independent risk and kill switch | Isolated risk process, privileged reset, reason journal, rejection proof and controlled restart | `trader.kill-switch-recovery` |
 | Research/replay | Replay, factors, predictive models and all research panels | Historical data/replay adapter, strategy runner, MFE/MAE and follow-through evidence, export and reproducibility | `trader.replay-strategy` |
-| IBKR paper | Framework boundary and planned external adapter | TWS/Gateway lifecycle, subscriptions, reconnect, orders, fills, account state and reconciliation conformance | `trader.paper-session-recovery` |
+| Paper broker | Framework boundary and planned external adapter | Connection lifecycle, subscriptions, reconnect, orders, fills, account state and reconciliation conformance | `trader.paper-session-recovery` |
 | Live execution | Explicitly planned and disabled | Production credentials, independent approvals, operational runbook, security, monitoring and all prior accepted evidence | `trader.live-release-gate` |
 | News | Capability-aware empty state | Optional licensed/provider adapter, symbol/entity linking, timestamps, source attribution and stale state | Market/research journeys |
 | Multi-monitor workstation | Three canonical layouts and GTK host | Persisted windows, DPI/topology recovery, focus/keyboard support and layout acceptance | All Trader journeys |
@@ -268,8 +269,8 @@ not sufficient authorization.
    driver; persist evidence and render it in Studio's Production Centre.
 3. Close the eight Studio journeys, including clean-machine packaging, before
    widening Studio feature scope.
-4. Complete Trader parameterised controls and simulation journeys; then add the
-   IBKR paper adapter behind independent risk and reconciliation.
+4. Complete Trader parameterised controls and simulation journeys; then add an
+   optional paper-broker adapter behind independent risk and reconciliation.
 5. Keep live execution disabled while paper, recovery, security, latency and
    operator evidence remain incomplete.
 6. Reuse the same Framework journey/evidence contracts for the remaining suite

@@ -6,14 +6,18 @@
 
 ## Context
 
-Users require TWS-style custom layouts, layout tabs, locking, history, cross-application panels, coloured context links and restoration. A saved GTK widget tree would couple persistent state to one frontend and one process implementation.
+Users require familiar professional-workstation features: custom layouts,
+layout tabs, locking, history, cross-application panels, coloured context links
+and restoration. A saved GTK widget tree would couple persistent state to one
+frontend and one process implementation.
 
 ## Decision
 
 Layouts use four complementary ownership layers:
 
 1. **Umicom Framework** owns the toolkit-neutral semantic layout schema, validation, layout engine, history, Layout Browser contracts and frontend renderers.
-2. **Framework resources** contain generic immutable templates such as Blank, Mosaic and Standard Workbench.
+2. **Framework resources** contain generic immutable templates such as Blank,
+   Grid and Standard Workbench.
 3. **Application modules** contain product-specific default templates and panel contributions.
 4. **Framework Data Server** stores user layouts, revisions, ownership, permissions, active sessions, panel state and crash recovery.
 

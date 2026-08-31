@@ -91,7 +91,8 @@ The application taskbar and layout strip remain separate:
 - the layout strip changes the current semantic arrangement of panels and
   windows;
 - a future layout may contain panels from several applications;
-- typed context-link groups connect selected panels in the TWS-inspired model.
+- typed context-link groups connect selected panels through a reusable Umicom
+  model familiar to users of professional desktop applications.
 
 ## Repository catalogue
 

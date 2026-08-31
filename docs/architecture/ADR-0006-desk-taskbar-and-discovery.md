@@ -6,7 +6,10 @@
 
 ## Context
 
-Umicom Applications should present available products through a familiar bottom taskbar while retaining TWS-style bottom layout tabs. Simply executing every directory below `applications/` would be unsafe, non-reproducible and unable to enforce compatibility or permissions.
+Umicom Applications should present available products through a familiar bottom
+taskbar while retaining task-oriented bottom layout tabs. Simply executing
+every directory below `applications/` would be unsafe, non-reproducible and
+unable to enforce compatibility or permissions.
 
 ## Decision
 

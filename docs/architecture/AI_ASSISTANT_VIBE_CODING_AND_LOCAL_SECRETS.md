@@ -49,18 +49,14 @@ a reviewed patch are separate objects.
 The same contracts can support:
 
 - in-process or supervised local models;
-- Ollama chat and embedding endpoints;
-- LM Studio's local REST or compatible endpoints;
-- llama.cpp server adapters;
-- AuthorEngine;
+- local chat and embedding endpoints;
+- compatible local inference servers;
+- the Framework-owned AuthorEngine;
 - approved online providers through HTTPS.
 
-Ollama documents a local embedding endpoint suitable for RAG, while LM Studio
-documents local REST, stateful chat, model management and compatible endpoints.
-These are adapters, not new Studio-specific AI engines:
-
-- [Ollama embedding API](https://docs.ollama.com/api/embed)
-- [LM Studio REST API](https://lmstudio.ai/docs/developer/rest)
+These remain provider adapters, not new Studio-specific AI engines. Studio
+talks to the stable Framework contract so a user can change model runtimes
+without changing the workbench.
 
 Remote providers remain disabled by default. A configured endpoint is not
 reported healthy until its adapter completes a real health probe.
@@ -86,15 +82,9 @@ The secret value belongs in an operating-system credential provider:
 - Linux: a Secret Service/libsecret adapter;
 - macOS: a Keychain Services adapter.
 
-Microsoft explains that default DPAPI protection is tied to the same user on
-the same machine. GNOME's Secret Service stores secrets in the login session's
-secret service, while lookup attributes are not themselves secret. Apple
-recommends Keychain Services for small secrets and warns against implementing
-ad-hoc encryption:
-
-- [Microsoft DPAPI example and scope](https://learn.microsoft.com/en-us/windows/win32/seccrypto/example-c-program-using-cryptprotectdata)
-- [GNOME libsecret simple API](https://gnome.pages.gitlab.gnome.org/libsecret/libsecret-simple-api.html)
-- [Apple Keychain Services](https://developer.apple.com/documentation/security/keychain-services/)
+The important rule is consistent on every supported operating system: secret
+material belongs in the logged-in user's native credential provider, lookup
+labels are not secrets, and Umicom must not invent an ad-hoc encryption scheme.
 
 The Framework secret provider now has optional store and remove operations,
 understands `provider://name` references, and offers an explicit memory-clearing
@@ -134,7 +124,7 @@ local. Enabling remote access still requires a complete provider profile and a
 1. Land the provider/runtime settings and secret-reference rules.
 2. Implement DPAPI/Credential Manager, libsecret and Keychain adapters.
 3. Connect the Studio AI pane to the Framework operational agent event queue.
-4. Add Ollama, LM Studio and llama.cpp health and streaming adapters.
+4. Add health and streaming adapters for compatible local inference servers.
 5. Add local repository and documentation indexing controls.
 6. Render plan, tool, patch, approval and validation events in one timeline.
 7. Add consent prompts for sensitive context and online transmission.
@@ -142,5 +132,3 @@ local. Enabling remote access still requires a complete provider profile and a
 9. Add end-to-end tests with fake providers and disposable workspaces.
 10. Complete an external security review before calling online-key storage
     production ready.
-
-

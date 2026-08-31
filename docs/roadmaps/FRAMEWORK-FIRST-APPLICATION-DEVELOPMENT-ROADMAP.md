@@ -190,7 +190,8 @@ accepted.
 
 - complete simulation-first parameter entry and explicit order confirmation;
 - connect accepted streaming feeds without moving feed state into GTK widgets;
-- add IBKR paper connectivity behind independent risk and reconciliation;
+- add optional paper-broker connectivity behind independent risk and
+  reconciliation;
 - prove reconnect, partial fill, reject, cancel, bust/correct and recovery flows;
 - keep live execution disabled until security, risk and operator evidence passes.
 
