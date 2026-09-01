@@ -258,20 +258,12 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
             "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-icon-on-dark.svg"
             COPYONLY)
         configure_file(
-            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-icon.png"
-            "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom-icon.png"
-            COPYONLY)
-        configure_file(
             "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo.svg"
             "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-logo.svg"
             COPYONLY)
         configure_file(
             "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo-on-dark.svg"
             "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-logo-on-dark.svg"
-            COPYONLY)
-        configure_file(
-            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo.png"
-            "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom-logo.png"
             COPYONLY)
         configure_file(
             "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom.ico"

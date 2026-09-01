@@ -103,17 +103,17 @@ int main(void)
                               UMI_APPLICATION_RESOURCE_FILE),
             "Common Umicom SVG logo exists in Framework");
         success &= require_condition(
-            resolve_available("umicom.brand.logo.raster",
-                              UMI_APPLICATION_RESOURCE_FILE),
-            "Common Umicom raster logo exists in Framework");
-        success &= require_condition(
             resolve_available("umicom.brand.icon.primary",
                               UMI_APPLICATION_RESOURCE_FILE),
             "Common Umicom SVG icon exists in Framework");
+#ifdef _WIN32
+        /* Windows Explorer and the taskbar require a derived ICO container;
+         * other frontends consume the canonical vectors directly. */
         success &= require_condition(
             resolve_available("umicom.brand.icon.windows",
                               UMI_APPLICATION_RESOURCE_FILE),
             "Common Umicom Windows icon exists in Framework");
+#endif
     }
 
     studio = umi_application_presentation_find("org.umicom.studio");
