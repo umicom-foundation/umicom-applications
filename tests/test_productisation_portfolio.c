@@ -13,9 +13,10 @@
  * LICENCE:
  * MIT
  *---------------------------------------------------------------------------*/
-#include <assert.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include "umicom/application/experience_catalogue.h"
 #include "umicom/application/productisation/adoption_registry.h"
 #include "umicom/application/productisation/launch_guidance.h"
 #include "umicom/application/productisation/surface_projection.h"
@@ -45,6 +46,7 @@
 #include "umicom/tms/productisation_contribution.h"
 #include "umicom/trader/productisation_contribution.h"
 #include "umicom/web_studio/productisation_contribution.h"
+#include "umicom/test_runtime/check.h"
 
 typedef UmiStatus (*UmiApplicationProductSessionInitialiser)(
     UmiProductApplicationSession *out_session);
@@ -148,100 +150,119 @@ int main(void)
     };
     UmiProductAdoptionRegistry registry;
     UmiProductAdoptionRegistryReport report;
-    UmiProductSurfacePortfolio surfaces;
+    UmiProductSurfacePortfolio *surfaces =
+        (UmiProductSurfacePortfolio *)calloc(1U, sizeof(*surfaces));
     UmiProductWorkspaceGuidePortfolio workspace_guides;
     UmiApplicationRuntimeCatalogue *runtime_catalogue = NULL;
     UmiApplicationLaunchSelection *launch_selection = NULL;
     UmiProductGuidedLaunchPlan guided_launch;
     const UmiProductGuidedLaunchEntry *guided_entry;
+    size_t expected_surface_count = 0U;
     size_t index;
 
-    assert(sizeof(contributions) / sizeof(contributions[0]) ==
-           sizeof(session_initialisers) / sizeof(session_initialisers[0]));
+    UMI_TEST_REQUIRE(surfaces != NULL);
+    UMI_TEST_REQUIRE(sizeof(contributions) / sizeof(contributions[0]) ==
+                     sizeof(session_initialisers) /
+                         sizeof(session_initialisers[0]));
     umi_product_adoption_registry_init(&registry);
     for (index = 0U;
          index < sizeof(contributions) / sizeof(contributions[0]);
          ++index) {
-        assert(contributions[index] != NULL);
-        assert(umi_product_adoption_registry_register(
+        UMI_TEST_REQUIRE(contributions[index] != NULL);
+        UMI_TEST_REQUIRE(umi_product_adoption_registry_register(
             &registry, contributions[index]) == UMI_STATUS_OK);
         {
             UmiProductApplicationSession session;
             UmiProductApplicationSessionSnapshot snapshot;
-            assert(session_initialisers[index](&session) == UMI_STATUS_OK);
-            assert(umi_product_application_session_snapshot(
+            UMI_TEST_REQUIRE(session_initialisers[index](&session) ==
+                             UMI_STATUS_OK);
+            UMI_TEST_REQUIRE(umi_product_application_session_snapshot(
                 &session, &snapshot) == UMI_STATUS_OK);
-            assert(strcmp(snapshot.application_id,
-                          contributions[index]->application_id) == 0);
-            assert(snapshot.workspace.layout_id[0] != '\0');
-            assert(snapshot.workspace.active_panel_count > 0U);
-            assert(snapshot.runnable);
-            assert(snapshot.acceptance_ready);
+            UMI_TEST_REQUIRE(strcmp(snapshot.application_id,
+                                    contributions[index]->application_id) == 0);
+            UMI_TEST_REQUIRE(snapshot.workspace.layout_id[0] != '\0');
+            UMI_TEST_REQUIRE(snapshot.workspace.active_panel_count > 0U);
+            UMI_TEST_REQUIRE(snapshot.runnable);
+            UMI_TEST_REQUIRE(snapshot.acceptance_ready);
         }
     }
-    assert(registry.count == 24U);
-    assert(umi_product_adoption_registry_report(
+    UMI_TEST_REQUIRE(registry.count == 24U);
+    UMI_TEST_REQUIRE(umi_product_adoption_registry_report(
         &registry, &report) == UMI_STATUS_OK);
-    assert(report.contribution_count == 24U);
-    assert(report.canonical_count == 24U);
-    assert(report.runnable_count == 24U);
-    assert(report.tested_count == 24U);
-    assert(report.layout_ready_count == 24U);
-    assert(report.surface_complete_count == 24U);
-    assert(report.accepted_count == 24U);
-    assert(report.invalid_count == 0U);
+    UMI_TEST_REQUIRE(report.contribution_count == registry.count);
+    UMI_TEST_REQUIRE(report.canonical_count == registry.count);
+    UMI_TEST_REQUIRE(report.runnable_count == registry.count);
+    UMI_TEST_REQUIRE(report.tested_count == registry.count);
+    UMI_TEST_REQUIRE(report.layout_ready_count == registry.count);
+    UMI_TEST_REQUIRE(report.surface_complete_count == registry.count);
+    UMI_TEST_REQUIRE(report.accepted_count == registry.count);
+    UMI_TEST_REQUIRE(report.invalid_count == 0U);
 
     /* Build one compact guide index for the suite launcher composition root. */
-    assert(umi_product_workspace_guide_portfolio_build(
+    UMI_TEST_REQUIRE(umi_product_workspace_guide_portfolio_build(
         &registry, &workspace_guides) == UMI_STATUS_OK);
-    assert(workspace_guides.application_count == 24U);
-    assert(workspace_guides.acceptance_ready_count == 24U);
+    UMI_TEST_REQUIRE(workspace_guides.application_count == registry.count);
+    UMI_TEST_REQUIRE(workspace_guides.acceptance_ready_count ==
+                     registry.count);
 
-    assert(umi_application_runtime_catalogue_create(&runtime_catalogue) ==
-           UMI_STATUS_OK);
+    UMI_TEST_REQUIRE(umi_application_runtime_catalogue_create(
+        &runtime_catalogue) == UMI_STATUS_OK);
     /* Register every application from its contribution and canonical metadata. */
     for (index = 0U;
          index < sizeof(contributions) / sizeof(contributions[0]);
          ++index) {
-        assert(register_runtime_contribution(
+        UMI_TEST_REQUIRE(register_runtime_contribution(
             runtime_catalogue, contributions[index]) == UMI_STATUS_OK);
     }
 
     /* A running Trader must be activated while a stopped Studio is started. */
-    assert(umi_application_runtime_catalogue_set_process(
+    UMI_TEST_REQUIRE(umi_application_runtime_catalogue_set_process(
         runtime_catalogue, "org.umicom.trader", 101U) == UMI_STATUS_OK);
-    assert(umi_application_launch_selection_create(
+    UMI_TEST_REQUIRE(umi_application_launch_selection_create(
         runtime_catalogue, &launch_selection) == UMI_STATUS_OK);
-    assert(umi_application_launch_selection_set_selected(
+    UMI_TEST_REQUIRE(umi_application_launch_selection_set_selected(
         launch_selection, "org.umicom.studio", true) == UMI_STATUS_OK);
-    assert(umi_application_launch_selection_set_selected(
+    UMI_TEST_REQUIRE(umi_application_launch_selection_set_selected(
         launch_selection, "org.umicom.trader", true) == UMI_STATUS_OK);
-    assert(umi_product_guided_launch_plan_build(
+    UMI_TEST_REQUIRE(umi_product_guided_launch_plan_build(
         launch_selection, &workspace_guides, &guided_launch) == UMI_STATUS_OK);
-    assert(guided_launch.entry_count == 23U);
-    assert(guided_launch.selected_count == 2U);
-    assert(guided_launch.ready_to_execute_count == 2U);
-    assert(guided_launch.start_count == 1U);
-    assert(guided_launch.activate_count == 1U);
-    assert(guided_launch.missing_guidance_count == 0U);
-    assert(guided_launch.guidance_warning_count == 0U);
-    assert(guided_launch.executable);
+    UMI_TEST_REQUIRE(guided_launch.entry_count + 1U == registry.count);
+    UMI_TEST_REQUIRE(guided_launch.selected_count == 2U);
+    UMI_TEST_REQUIRE(guided_launch.ready_to_execute_count == 2U);
+    UMI_TEST_REQUIRE(guided_launch.start_count == 1U);
+    UMI_TEST_REQUIRE(guided_launch.activate_count == 1U);
+    UMI_TEST_REQUIRE(guided_launch.missing_guidance_count == 0U);
+    UMI_TEST_REQUIRE(guided_launch.guidance_warning_count == 0U);
+    UMI_TEST_REQUIRE(guided_launch.executable);
     guided_entry = umi_product_guided_launch_plan_find(
         &guided_launch, "org.umicom.studio");
-    assert(guided_entry != NULL);
-    assert(guided_entry->guidance_state ==
-           UMI_PRODUCT_LAUNCH_GUIDANCE_READY_TO_START);
+    UMI_TEST_REQUIRE(guided_entry != NULL);
+    UMI_TEST_REQUIRE(guided_entry->guidance_state ==
+                     UMI_PRODUCT_LAUNCH_GUIDANCE_READY_TO_START);
     guided_entry = umi_product_guided_launch_plan_find(
         &guided_launch, "org.umicom.trader");
-    assert(guided_entry != NULL);
-    assert(guided_entry->guidance_state ==
-           UMI_PRODUCT_LAUNCH_GUIDANCE_READY_TO_ACTIVATE);
+    UMI_TEST_REQUIRE(guided_entry != NULL);
+    UMI_TEST_REQUIRE(guided_entry->guidance_state ==
+                     UMI_PRODUCT_LAUNCH_GUIDANCE_READY_TO_ACTIVATE);
 
-    assert(umi_product_surface_portfolio_build(&surfaces) == UMI_STATUS_OK);
-    assert(surfaces.application_count == 25U);
-    assert(surfaces.surface_count == 263U);
-    assert(surfaces.covered_count == 263U);
-    assert(surfaces.missing_count == 0U);
+    UMI_TEST_REQUIRE(umi_product_surface_portfolio_build(surfaces) ==
+                     UMI_STATUS_OK);
+    /* The suite surface total is the sum of canonical panels. Deriving this
+     * value keeps the acceptance test accurate when a real panel is added. */
+    for (index = 0U;
+         index < umi_application_experience_catalogue_count();
+         ++index) {
+        const UmiApplicationExperienceDefinition *experience =
+            umi_application_experience_catalogue_at(index);
+        UMI_TEST_REQUIRE(experience != NULL);
+        expected_surface_count += experience->panel_count;
+    }
+    UMI_TEST_REQUIRE(surfaces->application_count ==
+                     umi_application_experience_catalogue_count());
+    UMI_TEST_REQUIRE(surfaces->surface_count == expected_surface_count);
+    UMI_TEST_REQUIRE(surfaces->covered_count == surfaces->surface_count);
+    UMI_TEST_REQUIRE(surfaces->missing_count == 0U);
+    free(surfaces);
     umi_application_launch_selection_destroy(launch_selection);
     umi_application_runtime_catalogue_destroy(runtime_catalogue);
     return 0;
