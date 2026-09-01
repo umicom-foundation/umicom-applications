@@ -229,7 +229,13 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
     umicom_require_framework_resource(
         "brand/umicom-icon.svg" "umicom.brand.icon.primary")
     umicom_require_framework_resource(
+        "brand/umicom-icon-on-dark.svg" "umicom.brand.icon.on-dark")
+    umicom_require_framework_resource(
+        "brand/umicom-icon.png" "umicom.brand.icon.raster")
+    umicom_require_framework_resource(
         "brand/umicom-logo.svg" "umicom.brand.logo.primary")
+    umicom_require_framework_resource(
+        "brand/umicom-logo-on-dark.svg" "umicom.brand.logo.on-dark")
     umicom_require_framework_resource(
         "brand/umicom-logo.png" "umicom.brand.logo.raster")
     umicom_require_framework_resource(
@@ -248,8 +254,20 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
             "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-icon.svg"
             COPYONLY)
         configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-icon-on-dark.svg"
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-icon-on-dark.svg"
+            COPYONLY)
+        configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-icon.png"
+            "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom-icon.png"
+            COPYONLY)
+        configure_file(
             "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo.svg"
             "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-logo.svg"
+            COPYONLY)
+        configure_file(
+            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo-on-dark.svg"
+            "${CMAKE_CURRENT_SOURCE_DIR}/assets/umicom-logo-on-dark.svg"
             COPYONLY)
         configure_file(
             "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom-logo.png"
@@ -259,20 +277,6 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
             "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom.ico"
             "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom.ico"
             COPYONLY)
-
-        set(UMICOM_WINDOWS_FILE_VERSION "0,23,0,0")
-        set(UMICOM_WINDOWS_PRODUCT_VERSION "0,23,0,0")
-        set(UMICOM_WINDOWS_FILE_VERSION_TEXT "0.23.0.0")
-        set(UMICOM_WINDOWS_PRODUCT_VERSION_TEXT "0.23.0.0")
-        set(UMICOM_WINDOWS_FILE_DESCRIPTION "Umicom Studio IDE")
-        set(UMICOM_WINDOWS_INTERNAL_NAME "umicom-studio-ide")
-        set(UMICOM_WINDOWS_ORIGINAL_FILENAME "umicom-studio-ide.exe")
-        set(UMICOM_WINDOWS_PRODUCT_NAME "Umicom Studio IDE")
-        configure_file(
-            "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/windows/umicom-application.rc.in"
-            "${CMAKE_CURRENT_SOURCE_DIR}/win/umicom.rc"
-            @ONLY
-            NEWLINE_STYLE WIN32)
 
         message(STATUS
             "Staged Framework-owned shared resources for the current Studio module")
