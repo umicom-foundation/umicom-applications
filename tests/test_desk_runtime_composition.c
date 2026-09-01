@@ -6,9 +6,12 @@
  *   Prove that the composition root can register Desktop, Studio and OS,
  *   launch through the Framework adapter boundary and preserve taskbar state.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include "umicom/desktop/desk_runtime.h"
 

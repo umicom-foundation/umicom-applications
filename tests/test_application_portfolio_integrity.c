@@ -7,9 +7,12 @@
  *   identity and executable, agrees with the root catalogue, and that thin
  *   applications expose the shared Framework runtime closure.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 
 #include <stdio.h>

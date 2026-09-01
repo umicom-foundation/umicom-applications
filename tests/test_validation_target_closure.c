@@ -1,10 +1,15 @@
 /*-----------------------------------------------------------------------------
  * Umicom Applications
  * File: tests/test_validation_target_closure.c
- * PURPOSE: Prevent CTest registration from outrunning executable build closure.
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * PURPOSE:
+ *   Prevent CTest registration from outrunning executable build closure.
+ *
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stdio.h>

@@ -6,9 +6,12 @@
  *   Prevent duplicate root test-source composition and the resulting CMake
  *   binary-directory collision before any test executable can be built.
  *
- * Created by: Sammy Hegab
- * Organisation: Umicom Foundation
- * Licence: MIT
+ * AUTHOR AND ORGANISATION:
+ * Sammy Hegab
+ * Umicom Foundation
+ *
+ * LICENCE:
+ * MIT
  *---------------------------------------------------------------------------*/
 #include <assert.h>
 #include <stdio.h>

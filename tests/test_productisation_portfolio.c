@@ -152,15 +152,27 @@ int main(void)
     UmiProductAdoptionRegistryReport report;
     UmiProductSurfacePortfolio *surfaces =
         (UmiProductSurfacePortfolio *)calloc(1U, sizeof(*surfaces));
-    UmiProductWorkspaceGuidePortfolio workspace_guides;
+    UmiProductWorkspaceGuidePortfolio *workspace_guides =
+        (UmiProductWorkspaceGuidePortfolio *)calloc(
+            1U, sizeof(*workspace_guides));
     UmiApplicationRuntimeCatalogue *runtime_catalogue = NULL;
     UmiApplicationLaunchSelection *launch_selection = NULL;
-    UmiProductGuidedLaunchPlan guided_launch;
+    UmiProductGuidedLaunchPlan *guided_launch =
+        (UmiProductGuidedLaunchPlan *)calloc(1U, sizeof(*guided_launch));
+    UmiProductApplicationSession *session =
+        (UmiProductApplicationSession *)calloc(1U, sizeof(*session));
+    UmiProductApplicationSessionSnapshot *session_snapshot =
+        (UmiProductApplicationSessionSnapshot *)calloc(
+            1U, sizeof(*session_snapshot));
     const UmiProductGuidedLaunchEntry *guided_entry;
     size_t expected_surface_count = 0U;
     size_t index;
 
-    UMI_TEST_REQUIRE(surfaces != NULL);
+    /* Portfolio values contain storage for every application and therefore
+     * belong on checked heap memory rather than the native test stack. */
+    UMI_TEST_REQUIRE(surfaces != NULL && workspace_guides != NULL &&
+                     guided_launch != NULL && session != NULL &&
+                     session_snapshot != NULL);
     UMI_TEST_REQUIRE(sizeof(contributions) / sizeof(contributions[0]) ==
                      sizeof(session_initialisers) /
                          sizeof(session_initialisers[0]));
@@ -171,22 +183,20 @@ int main(void)
         UMI_TEST_REQUIRE(contributions[index] != NULL);
         UMI_TEST_REQUIRE(umi_product_adoption_registry_register(
             &registry, contributions[index]) == UMI_STATUS_OK);
-        {
-            UmiProductApplicationSession session;
-            UmiProductApplicationSessionSnapshot snapshot;
-            UMI_TEST_REQUIRE(session_initialisers[index](&session) ==
-                             UMI_STATUS_OK);
-            UMI_TEST_REQUIRE(umi_product_application_session_snapshot(
-                &session, &snapshot) == UMI_STATUS_OK);
-            UMI_TEST_REQUIRE(strcmp(snapshot.application_id,
-                                    contributions[index]->application_id) == 0);
-            UMI_TEST_REQUIRE(snapshot.workspace.layout_id[0] != '\0');
-            UMI_TEST_REQUIRE(snapshot.workspace.active_panel_count > 0U);
-            UMI_TEST_REQUIRE(snapshot.runnable);
-            UMI_TEST_REQUIRE(snapshot.acceptance_ready);
-        }
+        UMI_TEST_REQUIRE(session_initialisers[index](session) ==
+                         UMI_STATUS_OK);
+        UMI_TEST_REQUIRE(umi_product_application_session_snapshot(
+            session, session_snapshot) == UMI_STATUS_OK);
+        UMI_TEST_REQUIRE(strcmp(session_snapshot->application_id,
+                                contributions[index]->application_id) == 0);
+        UMI_TEST_REQUIRE(session_snapshot->workspace.layout_id[0] != '\0');
+        UMI_TEST_REQUIRE(
+            session_snapshot->workspace.active_panel_count > 0U);
+        UMI_TEST_REQUIRE(session_snapshot->runnable);
+        UMI_TEST_REQUIRE(session_snapshot->acceptance_ready);
     }
-    UMI_TEST_REQUIRE(registry.count == 24U);
+    UMI_TEST_REQUIRE(registry.count ==
+                     sizeof(contributions) / sizeof(contributions[0]));
     UMI_TEST_REQUIRE(umi_product_adoption_registry_report(
         &registry, &report) == UMI_STATUS_OK);
     UMI_TEST_REQUIRE(report.contribution_count == registry.count);
@@ -200,9 +210,9 @@ int main(void)
 
     /* Build one compact guide index for the suite launcher composition root. */
     UMI_TEST_REQUIRE(umi_product_workspace_guide_portfolio_build(
-        &registry, &workspace_guides) == UMI_STATUS_OK);
-    UMI_TEST_REQUIRE(workspace_guides.application_count == registry.count);
-    UMI_TEST_REQUIRE(workspace_guides.acceptance_ready_count ==
+        &registry, workspace_guides) == UMI_STATUS_OK);
+    UMI_TEST_REQUIRE(workspace_guides->application_count == registry.count);
+    UMI_TEST_REQUIRE(workspace_guides->acceptance_ready_count ==
                      registry.count);
 
     UMI_TEST_REQUIRE(umi_application_runtime_catalogue_create(
@@ -225,22 +235,22 @@ int main(void)
     UMI_TEST_REQUIRE(umi_application_launch_selection_set_selected(
         launch_selection, "org.umicom.trader", true) == UMI_STATUS_OK);
     UMI_TEST_REQUIRE(umi_product_guided_launch_plan_build(
-        launch_selection, &workspace_guides, &guided_launch) == UMI_STATUS_OK);
-    UMI_TEST_REQUIRE(guided_launch.entry_count + 1U == registry.count);
-    UMI_TEST_REQUIRE(guided_launch.selected_count == 2U);
-    UMI_TEST_REQUIRE(guided_launch.ready_to_execute_count == 2U);
-    UMI_TEST_REQUIRE(guided_launch.start_count == 1U);
-    UMI_TEST_REQUIRE(guided_launch.activate_count == 1U);
-    UMI_TEST_REQUIRE(guided_launch.missing_guidance_count == 0U);
-    UMI_TEST_REQUIRE(guided_launch.guidance_warning_count == 0U);
-    UMI_TEST_REQUIRE(guided_launch.executable);
+        launch_selection, workspace_guides, guided_launch) == UMI_STATUS_OK);
+    UMI_TEST_REQUIRE(guided_launch->entry_count + 1U == registry.count);
+    UMI_TEST_REQUIRE(guided_launch->selected_count == 2U);
+    UMI_TEST_REQUIRE(guided_launch->ready_to_execute_count == 2U);
+    UMI_TEST_REQUIRE(guided_launch->start_count == 1U);
+    UMI_TEST_REQUIRE(guided_launch->activate_count == 1U);
+    UMI_TEST_REQUIRE(guided_launch->missing_guidance_count == 0U);
+    UMI_TEST_REQUIRE(guided_launch->guidance_warning_count == 0U);
+    UMI_TEST_REQUIRE(guided_launch->executable);
     guided_entry = umi_product_guided_launch_plan_find(
-        &guided_launch, "org.umicom.studio");
+        guided_launch, "org.umicom.studio");
     UMI_TEST_REQUIRE(guided_entry != NULL);
     UMI_TEST_REQUIRE(guided_entry->guidance_state ==
                      UMI_PRODUCT_LAUNCH_GUIDANCE_READY_TO_START);
     guided_entry = umi_product_guided_launch_plan_find(
-        &guided_launch, "org.umicom.trader");
+        guided_launch, "org.umicom.trader");
     UMI_TEST_REQUIRE(guided_entry != NULL);
     UMI_TEST_REQUIRE(guided_entry->guidance_state ==
                      UMI_PRODUCT_LAUNCH_GUIDANCE_READY_TO_ACTIVATE);
@@ -265,5 +275,9 @@ int main(void)
     free(surfaces);
     umi_application_launch_selection_destroy(launch_selection);
     umi_application_runtime_catalogue_destroy(runtime_catalogue);
+    free(session_snapshot);
+    free(session);
+    free(guided_launch);
+    free(workspace_guides);
     return 0;
 }
