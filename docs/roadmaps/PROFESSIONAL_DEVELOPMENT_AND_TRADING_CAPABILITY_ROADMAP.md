@@ -47,7 +47,7 @@ describe familiar professional behaviour in Umicom’s own language.
 
 | Capability | Remaining work |
 |---|---|
-| Docking, floating and multi-monitor layouts | Finish visible drop guides, detached native windows, keyboard docking and monitor recovery verification. |
+| Docking, floating and multi-monitor layouts | Atomic panel editing, linked context and Studio native floating/redocking are available. Finish visible drag targets, generic-suite detached windows, keyboard docking and monitor recovery verification. |
 | Remote development | Connect welcome screen, host manager, remote project opening, builds, tests and debugging into one guided workflow. |
 | Performance tools | Connect live capture adapters to call tree, flame graph, CPU, memory, coverage and regression panels. |
 | Database development | Complete production drivers, schema comparison/publish, data editor safety and query-result streaming. |
@@ -87,7 +87,7 @@ describe familiar professional behaviour in Umicom’s own language.
 
 | Capability | Remaining work |
 |---|---|
-| Trading workstation presentation | Complete high-density native tables, saved columns, detached monitors and keyboard workflows. |
+| Trading workstation presentation | Shared panel controls and linked context are integrated. Complete high-density native tables, saved columns, detached monitors and keyboard workflows. |
 | Time and sales | Add filtered sequence-checked tape storage, pause/resume, direction inference and native view. |
 | Market scanner | Add saved rules, calculated columns, live ranking, schedules and alert actions. |
 | Strategy analysis | Add multi-run coordinator, optimisation, walk-forward validation, simulation assumptions and evidence reports. |
@@ -109,8 +109,8 @@ describe familiar professional behaviour in Umicom’s own language.
 
 ## Delivery order
 
-1. Finish docking, detached windows and recovery because every application uses
-   them.
+1. Finish generic detached windows, drag targets, keyboard docking and monitor
+   recovery because every application uses them.
 2. Finish Studio’s Engine Explorer and project templates for the new engines.
 3. Finish Studio remote development, profiler, extension and database workflows.
 4. Add Trader time-and-sales, scanner, alert and options contracts to Framework.
