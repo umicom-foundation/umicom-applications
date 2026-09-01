@@ -51,6 +51,14 @@ The Source Guidance work now provides:
 - a toolkit-neutral Studio Quality Centre view;
 - a generated catalogue of engines, components, panels and feature maturity.
 
+The Application Workspace Guidance work now provides:
+
+- bounded welcome-screen choices derived from canonical layouts;
+- one recommended starting layout without restricting user customisation;
+- truthful feature maturity and next-priority guidance;
+- a compact, validated portfolio for suite launchers;
+- thin adoption wrappers and focused checks in all application repositories.
+
 ## Framework Contract and ABI Completion
 
 **Outcome:** applications can depend on stable contracts without guessing
