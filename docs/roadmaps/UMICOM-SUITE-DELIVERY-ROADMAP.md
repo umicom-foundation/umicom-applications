@@ -59,6 +59,19 @@ The Application Workspace Guidance work now provides:
 - a compact, validated portfolio for suite launchers;
 - thin adoption wrappers and focused checks in all application repositories.
 
+The Guided Application Launch work now provides:
+
+- one read-only preview joining runtime choices to workspace guidance;
+- start-versus-activation decisions for several selected applications;
+- explicit unavailable, missing-guide and acceptance-warning explanations;
+- fixed-capacity validation with duplicate identity and stale-revision checks;
+- a thin Desktop entry point and full-suite composition evidence.
+
+The next launcher update should render these Framework entries in the shared
+graphical application chooser, add a confirmation surface, and compare the
+confirmed preview revision immediately before governed execution. It must not
+move process or policy logic into the graphical adapter.
+
 ## Framework Contract and ABI Completion
 
 **Outcome:** applications can depend on stable contracts without guessing

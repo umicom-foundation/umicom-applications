@@ -37,6 +37,19 @@ forward instead of opening a duplicate process. A failure in one product does
 not prevent the other selected products from being attempted, and the launcher
 reports how many products started, were activated, or failed.
 
+Before **Launch selected** is confirmed, the launcher can show a plain-language
+preview. The preview explains:
+
+- which selected applications will start as new processes;
+- which running applications will be brought forward;
+- the recommended starting layout for each application;
+- whether product acceptance evidence still needs attention;
+- why an unavailable application cannot be selected; and
+- whether an installed application is missing workspace guidance.
+
+This preview is descriptive. Displaying it never starts an application. The
+existing Framework launcher performs execution only after the user confirms.
+
 ## Why the design is reusable
 
 The application checkbox state, launch results, process supervision and
@@ -88,8 +101,8 @@ with Umicom Desk and let Framework create and execute the launch plan.
 
 - Required installer components cannot be unticked.
 - Unavailable applications cannot be selected.
+- A launch preview is rebuilt when selection or runtime state changes.
 - Fixed-capacity records prevent unbounded checkbox or launch-result arrays.
 - Executable paths are constructed by the governed launcher, not shell text.
 - Each child process is tracked by the Framework process supervisor.
 - The installer includes an uninstaller for a normal Windows installation.
-
