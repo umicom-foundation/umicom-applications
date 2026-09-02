@@ -631,6 +631,10 @@ if(WIN32)
     set(CPACK_NSIS_MUI_UNIICON
         "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/brand/umicom.ico")
     set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+    # Offer an explicit installer choice to add the installed bin directory to
+    # PATH. CPack also removes that exact entry during uninstall, avoiding a
+    # permanent machine change when the user does not request one.
+    set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "Umicom Applications")
     set(CPACK_PACKAGE_EXECUTABLES
         "umicom-desk" "Umicom Applications")
