@@ -98,8 +98,8 @@ option(UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES
        "Stage Framework-owned shared resources for compatibility with the current Studio module"
        ON)
 option(UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS
-       "Build registered focused validation executables with the normal product build"
-       ON)
+       "Create the legacy focused-validation aggregate for explicit use"
+       OFF)
 
 set(UMICOM_FRAMEWORK_RESOURCE_ROOT
     "${CMAKE_CURRENT_SOURCE_DIR}/framework/resources"
@@ -532,48 +532,179 @@ if(WIN32 AND EXISTS
     endif()
 endif()
 
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-studio-ide)
-    add_dependencies(umicom-desk umicom-studio-ide)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-studio-console)
-    add_dependencies(umicom-desk umicom-studio-console)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-os-control-centre)
-    add_dependencies(umicom-desk umicom-os-control-centre)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-trader)
-    add_dependencies(umicom-desk umicom-trader)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-trader-console)
-    add_dependencies(umicom-desk umicom-trader-console)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-bank-console)
-    add_dependencies(umicom-desk umicom-bank-console)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-bank)
-    add_dependencies(umicom-desk umicom-bank)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-tms-console)
-    add_dependencies(umicom-desk umicom-tms-console)
-endif()
-# Configure the optional target only when its feature has created it.
-if(TARGET umicom-desk AND TARGET umicom-tms)
-    add_dependencies(umicom-desk umicom-tms)
-endif()
+# Umicom Desk discovers installed applications through the Framework runtime
+# catalogue. It therefore does not need build-time dependencies on every
+# application executable; removing that false coupling lets Desk rebuild alone.
 
 # Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING)
     umicom_assert_single_root_test_tree()
     add_subdirectory(tests)
 endif()
+
+# -----------------------------------------------------------------------------
+# Umicom Automated Build System target catalogue
+# -----------------------------------------------------------------------------
+# These generated aggregate targets give the Framework planner stable names
+# that work in both graphical and headless presets. Application manifests are
+# the source of truth, so adding an application does not require adding another
+# hard-coded branch to the command-line tool.
+add_custom_target(umicom-products)
+set(_umicom_automation_application_slugs "")
+file(GLOB _umicom_automation_application_manifests
+    RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/applications/*/application.umicom.yaml")
+list(SORT _umicom_automation_application_manifests)
+
+# Create one stable product target for each discovered application manifest.
+foreach(_umicom_automation_manifest
+        IN LISTS _umicom_automation_application_manifests)
+    get_filename_component(_umicom_automation_application_directory
+        "${_umicom_automation_manifest}" DIRECTORY)
+    get_filename_component(_umicom_automation_slug
+        "${_umicom_automation_application_directory}" NAME)
+    set(_umicom_automation_scope_target
+        "umicom-product-${_umicom_automation_slug}")
+
+    # Read only the primary executable field from the small stable manifest
+    # subset. The runtime parser remains authoritative for full validation.
+    file(STRINGS
+        "${CMAKE_CURRENT_SOURCE_DIR}/${_umicom_automation_manifest}"
+        _umicom_automation_executable_lines
+        REGEX "^[ \\t]+executable:[ \\t]*"
+        LIMIT_COUNT 1)
+    set(_umicom_automation_manifest_executable "")
+    if(_umicom_automation_executable_lines)
+        list(GET _umicom_automation_executable_lines 0
+            _umicom_automation_manifest_executable)
+        string(REGEX REPLACE "^[ \\t]*executable:[ \\t]*" ""
+            _umicom_automation_manifest_executable
+            "${_umicom_automation_manifest_executable}")
+        string(STRIP "${_umicom_automation_manifest_executable}"
+            _umicom_automation_manifest_executable)
+    endif()
+
+    # Prefer the normal graphical name, then the manifest entry and finally
+    # console fallbacks. Only an executable target can become the product root.
+    set(_umicom_automation_primary_candidates
+        "umicom-${_umicom_automation_slug}"
+        "${_umicom_automation_manifest_executable}"
+        "${_umicom_automation_manifest_executable}-console"
+        "umicom-${_umicom_automation_slug}-console")
+    set(_umicom_automation_primary_target "")
+    foreach(_umicom_automation_candidate
+            IN LISTS _umicom_automation_primary_candidates)
+        if(_umicom_automation_candidate AND
+           TARGET "${_umicom_automation_candidate}")
+            get_target_property(_umicom_automation_candidate_type
+                "${_umicom_automation_candidate}" TYPE)
+            if(_umicom_automation_candidate_type STREQUAL "EXECUTABLE")
+                set(_umicom_automation_primary_target
+                    "${_umicom_automation_candidate}")
+                break()
+            endif()
+        endif()
+    endforeach()
+    if(_umicom_automation_primary_target)
+        # Only configured applications receive runnable aggregate targets. A
+        # changed but disabled product then fails clearly as an unknown target
+        # instead of reporting a misleading successful no-op build.
+        list(APPEND _umicom_automation_application_slugs
+            "${_umicom_automation_slug}")
+        add_custom_target(${_umicom_automation_scope_target})
+        add_dependencies(${_umicom_automation_scope_target}
+            "${_umicom_automation_primary_target}")
+        add_dependencies(umicom-products ${_umicom_automation_scope_target})
+    endif()
+endforeach()
+
+# Building the native command also builds the exported Framework aggregate, so
+# it is the lightweight product root for shared Framework implementation work.
+if(TARGET umicom)
+    add_dependencies(umicom-products umicom)
+elseif(TARGET umicom-framework-demo)
+    add_dependencies(umicom-products umicom-framework-demo)
+endif()
+
+# Recursively collect targets that already exist after every application and
+# test tree has been configured. The result is local configuration metadata;
+# no generated file or source-tree mutation is required.
+function(umicom_collect_buildsystem_targets directory output_variable)
+    get_property(_umicom_directory_targets
+        DIRECTORY "${directory}" PROPERTY BUILDSYSTEM_TARGETS)
+    get_property(_umicom_child_directories
+        DIRECTORY "${directory}" PROPERTY SUBDIRECTORIES)
+    set(_umicom_collected_targets ${_umicom_directory_targets})
+    foreach(_umicom_child_directory IN LISTS _umicom_child_directories)
+        umicom_collect_buildsystem_targets(
+            "${_umicom_child_directory}" _umicom_child_targets)
+        list(APPEND _umicom_collected_targets ${_umicom_child_targets})
+    endforeach()
+    set(${output_variable} ${_umicom_collected_targets} PARENT_SCOPE)
+endfunction()
+
+umicom_collect_buildsystem_targets(
+    "${CMAKE_CURRENT_SOURCE_DIR}" _umicom_automation_existing_targets)
+list(REMOVE_DUPLICATES _umicom_automation_existing_targets)
+add_custom_target(umicom-tests)
+add_custom_target(umicom-tests-framework)
+add_custom_target(umicom-tests-integration)
+foreach(_umicom_automation_slug
+        IN LISTS _umicom_automation_application_slugs)
+    add_custom_target("umicom-tests-${_umicom_automation_slug}")
+endforeach()
+
+# Test executable naming is already governed by the repository's -test/-tests
+# convention. Grouping those targets by their declaring source directory lets
+# the automated planner compile tests for one affected application at a time.
+foreach(_umicom_automation_target
+        IN LISTS _umicom_automation_existing_targets)
+    if(NOT TARGET "${_umicom_automation_target}" OR
+       NOT _umicom_automation_target MATCHES "(^|-)tests?($|-)")
+        continue()
+    endif()
+    get_target_property(_umicom_automation_target_type
+        "${_umicom_automation_target}" TYPE)
+    if(NOT _umicom_automation_target_type STREQUAL "EXECUTABLE")
+        continue()
+    endif()
+    add_dependencies(umicom-tests "${_umicom_automation_target}")
+    get_target_property(_umicom_automation_target_source_directory
+        "${_umicom_automation_target}" SOURCE_DIR)
+    file(RELATIVE_PATH _umicom_automation_target_relative_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${_umicom_automation_target_source_directory}")
+    if(_umicom_automation_target_relative_directory MATCHES
+       "^framework($|/)")
+        add_dependencies(umicom-tests-framework
+            "${_umicom_automation_target}")
+    elseif(_umicom_automation_target_relative_directory MATCHES
+           "^tests($|/)")
+        # Root tests verify contracts shared across applications. They belong
+        # to the small integration group used by every affected scope.
+        add_dependencies(umicom-tests-integration
+            "${_umicom_automation_target}")
+    elseif(_umicom_automation_target_relative_directory MATCHES
+           "^applications/([^/]+)($|/)")
+        set(_umicom_automation_test_slug "${CMAKE_MATCH_1}")
+        if(TARGET "umicom-tests-${_umicom_automation_test_slug}")
+            add_dependencies(
+                "umicom-tests-${_umicom_automation_test_slug}"
+                "${_umicom_automation_target}")
+        endif()
+    endif()
+endforeach()
+
+# An application or Framework change can break the suite-level composition
+# contracts declared by the root test tree. Attach that bounded group to each
+# focused target so incremental testing remains safe without compiling every
+# unrelated application's private tests.
+add_dependencies(umicom-tests-framework umicom-tests-integration)
+foreach(_umicom_automation_slug
+        IN LISTS _umicom_automation_application_slugs)
+    add_dependencies("umicom-tests-${_umicom_automation_slug}"
+        umicom-tests-integration)
+endforeach()
 
 # Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING AND UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS)
@@ -582,19 +713,11 @@ if(BUILD_TESTING AND UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS)
     # Apply this operation only while the related capability or state is available.
     if(_umicom_registered_validation_targets)
         list(REMOVE_DUPLICATES _umicom_registered_validation_targets)
-        add_custom_target(umicom-registered-validation-tests ALL)
+        # Keep this legacy closure explicit. Product targets must never acquire
+        # thousands of validation dependencies merely because testing is on.
+        add_custom_target(umicom-registered-validation-tests)
         add_dependencies(umicom-registered-validation-tests
             ${_umicom_registered_validation_targets})
-        # Configure the optional target only when its feature has created it.
-        if(TARGET umicom-studio-ide)
-            add_dependencies(umicom-studio-ide
-                umicom-registered-validation-tests)
-        endif()
-        # Configure the optional target only when its feature has created it.
-        if(TARGET umicom-trader-console)
-            add_dependencies(umicom-trader-console
-                umicom-registered-validation-tests)
-        endif()
         list(LENGTH _umicom_registered_validation_targets
             _umicom_registered_validation_target_count)
         message(STATUS
