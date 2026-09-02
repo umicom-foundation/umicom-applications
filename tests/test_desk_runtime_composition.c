@@ -32,6 +32,10 @@ typedef struct FakeProcessAdapter {
     size_t starts;
 } FakeProcessAdapter;
 
+/*
+ * Exercise start process and return a clear result when the behaviour no longer matches
+ * its contract.
+ */
 static UmiStatus start_process(
     void *context,
     const UmiApplicationLaunchPlan *plan,
@@ -45,6 +49,10 @@ static UmiStatus start_process(
     return UMI_STATUS_OK;
 }
 
+/*
+ * Exercise make registration and return a clear result when the behaviour no longer
+ * matches its contract.
+ */
 static UmiApplicationRuntimeRegistration make_registration(
     const char *id,
     const char *name,
@@ -73,6 +81,10 @@ static UmiApplicationRuntimeRegistration make_registration(
     return value;
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     UmiDeskRuntime *runtime = NULL;

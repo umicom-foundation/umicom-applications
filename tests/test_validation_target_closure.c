@@ -16,6 +16,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Exercise read file and return a clear result when the behaviour no longer matches its
+ * contract.
+ */
 static char *read_file(const char *relative_path)
 {
     char path[1024];
@@ -38,11 +42,19 @@ static char *read_file(const char *relative_path)
     return text;
 }
 
+/*
+ * Exercise require text and return a clear result when the behaviour no longer matches its
+ * contract.
+ */
 static void require_text(const char *text, const char *expected)
 {
     assert(strstr(text, expected) != NULL);
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     char *root = read_file("CMakeLists.txt");

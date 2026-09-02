@@ -83,6 +83,10 @@ static const UmiExpectedThinRuntime THIN_RUNTIMES[] = {
     {"web-studio", "web_studio"},
 };
 
+/*
+ * Exercise make path and return a clear result when the behaviour no longer matches its
+ * contract.
+ */
 static int make_path(char *destination, size_t capacity, const char *relative)
 {
     const int written = snprintf(destination, capacity, "%s/%s",
@@ -90,15 +94,32 @@ static int make_path(char *destination, size_t capacity, const char *relative)
     return written >= 0 && (size_t)written < capacity;
 }
 
+/*
+ * Exercise file contains and return a clear result when the behaviour no longer matches
+ * its contract.
+ */
 static int file_contains(const char *relative, const char *text)
 {
     char path[UMI_PATH_CAPACITY];
     char line[4096];
     FILE *stream;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!make_path(path, sizeof(path), relative)) return 0;
     stream = fopen(path, "r");
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (stream == NULL) return 0;
+    /*
+     * Continue only while work remains available; the loop body advances the state on each
+     * pass.
+     */
     while (fgets(line, (int)sizeof(line), stream) != NULL) {
+        /*
+         * Protect caller-owned memory by checking that required state is available before it is
+         * used.
+         */
         if (strstr(line, text) != NULL) {
             (void)fclose(stream);
             return 1;
@@ -108,17 +129,34 @@ static int file_contains(const char *relative, const char *text)
     return 0;
 }
 
+/*
+ * Return the number of records represented by file occurrence without changing their
+ * state.
+ */
 static size_t file_occurrence_count(const char *relative, const char *text)
 {
     char path[UMI_PATH_CAPACITY];
     char line[4096];
     size_t count = 0U;
     FILE *stream;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!make_path(path, sizeof(path), relative)) return 0U;
     stream = fopen(path, "r");
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (stream == NULL) return 0U;
+    /*
+     * Continue only while work remains available; the loop body advances the state on each
+     * pass.
+     */
     while (fgets(line, (int)sizeof(line), stream) != NULL) {
         const char *cursor = line;
+        /*
+         * Continue only while work remains available; the loop body advances the state on each
+         * pass.
+         */
         while ((cursor = strstr(cursor, text)) != NULL) {
             ++count;
             cursor += strlen(text);
@@ -128,8 +166,13 @@ static size_t file_occurrence_count(const char *relative, const char *text)
     return count;
 }
 
+/*
+ * Exercise require condition and return a clear result when the behaviour no longer
+ * matches its contract.
+ */
 static int require_condition(int condition, const char *message)
 {
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!condition) {
         (void)fprintf(stderr, "[FAIL] %s\n", message);
         return 0;
@@ -138,6 +181,10 @@ static int require_condition(int condition, const char *message)
     return 1;
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     size_t index;
@@ -154,6 +201,7 @@ int main(void)
         !file_contains("manifests/applications.json", "planned_modules"),
         "root catalogue has no stale or duplicate planned-module collection");
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U; index < sizeof(APPLICATIONS) / sizeof(APPLICATIONS[0]);
          ++index) {
         char manifest_path[UMI_PATH_CAPACITY];
@@ -189,6 +237,7 @@ int main(void)
         success &= require_condition(file_contains(".gitmodules", git_path), git_path);
         success &= require_condition(file_contains(".gitmodules", git_url), git_url);
 
+        /* Visit each bounded item once so every record receives the same rule. */
         for (other = index + 1U;
              other < sizeof(APPLICATIONS) / sizeof(APPLICATIONS[0]); ++other) {
             success &= require_condition(
@@ -202,6 +251,7 @@ int main(void)
         }
     }
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(THIN_RUNTIMES) / sizeof(THIN_RUNTIMES[0]); ++index) {
         static const char *const runtime_files[] = {
@@ -214,6 +264,7 @@ int main(void)
         success &= require_condition(
             file_contains(cmake_path, "UmicomThinApplicationRuntime.cmake"),
             cmake_path);
+        /* Visit each bounded item once so every record receives the same rule. */
         for (file_index = 0U;
              file_index < sizeof(runtime_files) / sizeof(runtime_files[0]);
              ++file_index) {

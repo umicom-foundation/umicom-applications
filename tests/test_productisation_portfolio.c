@@ -177,6 +177,7 @@ int main(void)
                      sizeof(session_initialisers) /
                          sizeof(session_initialisers[0]));
     umi_product_adoption_registry_init(&registry);
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(contributions) / sizeof(contributions[0]);
          ++index) {

@@ -113,12 +113,15 @@ include(GNUInstallDirs)
 # the composition root guarantees one warning/sanitizer policy for every
 # enabled application without duplicating build logic inside application repos.
 function(umicom_apply_warnings target)
+    # Apply this branch only when its contract condition is satisfied.
     if(NOT UMICOM_ENABLE_STRICT_WARNINGS)
         return()
     endif()
 
+    # Select the warning options understood by the active compiler.
     if(MSVC)
         target_compile_options(${target} PRIVATE /W4)
+    # Use this fallback path when the earlier condition does not apply.
     else()
         target_compile_options(${target} PRIVATE
             -Wall
@@ -130,7 +133,10 @@ function(umicom_apply_warnings target)
     endif()
 endfunction()
 
+# Define the apply sanitizers build helper so parent and application projects apply one
+# consistent rule.
 function(umicom_apply_sanitizers target)
+    # Apply this branch only when its contract condition is satisfied.
     if(UMICOM_ENABLE_SANITIZERS AND NOT MSVC)
         target_compile_options(${target} PRIVATE
             -fsanitize=address,undefined
@@ -146,6 +152,7 @@ endfunction()
 # Registering them here provides one explicit build closure and prevents CTest
 # discovery from getting ahead of its executable targets.
 function(umicom_register_validation_target target)
+    # Load the dependency only when the parent build has not already provided its target.
     if(NOT TARGET "${target}")
         message(FATAL_ERROR
             "Cannot register missing validation target '${target}'")
@@ -162,6 +169,7 @@ function(umicom_assert_single_root_test_tree)
         _umicom_root_test_tree_lines
         REGEX "^[ \t]*add_subdirectory\\([ \t]*tests[ \t]*\\)")
     list(LENGTH _umicom_root_test_tree_lines _umicom_root_test_tree_count)
+    # Use the stable identifier comparison to choose the matching record or policy.
     if(NOT _umicom_root_test_tree_count EQUAL 1)
         message(FATAL_ERROR
             "The root test tree must be added exactly once; found "
@@ -169,7 +177,10 @@ function(umicom_assert_single_root_test_tree)
     endif()
 endfunction()
 
+# Define the require cmake project build helper so parent and application projects apply
+# one consistent rule.
 function(umicom_require_cmake_project relative_path display_name)
+    # Apply this branch only when its contract condition is satisfied.
     if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${relative_path}/CMakeLists.txt")
         message(FATAL_ERROR
             "${display_name} is enabled but ${relative_path}/CMakeLists.txt is missing. "
@@ -177,7 +188,10 @@ function(umicom_require_cmake_project relative_path display_name)
     endif()
 endfunction()
 
+# Define the require framework resource build helper so parent and application projects
+# apply one consistent rule.
 function(umicom_require_framework_resource relative_path logical_id)
+    # Apply this branch only when its contract condition is satisfied.
     if(NOT EXISTS "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/${relative_path}")
         message(FATAL_ERROR
             "Required Framework resource '${logical_id}' is missing at "
@@ -186,14 +200,20 @@ function(umicom_require_framework_resource relative_path logical_id)
     endif()
 endfunction()
 
+# Define the add optional application build helper so parent and application projects
+# apply one consistent rule.
 function(umicom_add_optional_application option_name relative_path display_name)
+    # Apply this branch only when its contract condition is satisfied.
     if(${option_name})
+        # Apply this branch only when its contract condition is satisfied.
         if(ARGC GREATER 3)
             set(_umicom_application_component "${ARGV3}")
+        # Use this fallback path when the earlier condition does not apply.
         else()
             string(REGEX REPLACE "[^A-Za-z0-9]" ""
                 _umicom_application_component "${display_name}")
         endif()
+        # Use the stable identifier comparison to choose the matching record or policy.
         if(_umicom_application_component STREQUAL "")
             message(FATAL_ERROR
                 "Unable to derive an installer component for ${display_name}")
@@ -210,6 +230,7 @@ function(umicom_add_optional_application option_name relative_path display_name)
         set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_NAMES
             "${display_name}")
         message(STATUS "Enabled application module: ${display_name}")
+    # Use this fallback path when the earlier condition does not apply.
     else()
         message(STATUS "Disabled application module: ${display_name}")
     endif()
@@ -244,6 +265,7 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
         "windows/umicom-application.rc.in"
         "umicom.windows.application-resource-template")
 
+    # Apply this branch only when its contract condition is satisfied.
     if(UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES)
         file(MAKE_DIRECTORY
             "${CMAKE_CURRENT_SOURCE_DIR}/assets"
@@ -275,13 +297,18 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
     endif()
 endif()
 
-# Studio and Umicom Desk require the Framework GTK4 adapter when either
-# graphical application is built.
+# Native suite products share one Framework GTK4 adapter. Enabling any product
+# with a native workstation therefore makes the adapter available before its
+# thin application subdirectory is evaluated.
 if((UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK) OR
    (UMICOM_APPLICATIONS_BUILD_DESKTOP AND UMICOM_DESKTOP_BUILD_GTK) OR
-   (UMICOM_APPLICATIONS_BUILD_TRADER AND UMICOM_TRADER_BUILD_GTK4))
+   (UMICOM_APPLICATIONS_BUILD_TRADER AND UMICOM_TRADER_BUILD_GTK4) OR
+   UMICOM_APPLICATIONS_BUILD_BANK OR
+   UMICOM_APPLICATIONS_BUILD_TMS OR
+   UMICOM_APPLICATIONS_BUILD_MUSIC_STUDIO)
     set(UMICOM_BUILD_GTK4_ADAPTER ON CACHE BOOL
         "Build the Framework GTK4 adapter required by enabled applications" FORCE)
+# Use this fallback path when the earlier condition does not apply.
 else()
     set(UMICOM_BUILD_GTK4_ADAPTER OFF CACHE BOOL
         "Build the Framework GTK4 adapter required by enabled applications" FORCE)
@@ -291,6 +318,7 @@ umicom_require_cmake_project("framework" "Umicom Framework")
 set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Framework")
 add_subdirectory(framework)
 
+# Load the dependency only when the parent build has not already provided its target.
 if(NOT TARGET Umicom::Framework)
     message(FATAL_ERROR
         "framework/CMakeLists.txt did not provide the required Umicom::Framework target.")
@@ -336,31 +364,41 @@ if(UMICOM_APPLICATIONS_BUILD_DESKTOP)
     set(UMICOM_DESKTOP_COMPOSE_OS
         "${UMICOM_APPLICATIONS_BUILD_OS}" CACHE BOOL
         "Expose OS Control Centre in Umicom Desk" FORCE)
+    # Create this optional product surface only when its build option is enabled.
     if(UMICOM_STUDIO_BUILD_GTK)
         set(UMICOM_DESKTOP_STUDIO_EXECUTABLE "umicom-studio-ide" CACHE STRING
             "Studio executable registered with Umicom Desk" FORCE)
+    # Use this fallback path when the earlier condition does not apply.
     else()
         set(UMICOM_DESKTOP_STUDIO_EXECUTABLE "umicom-studio-console" CACHE STRING
             "Studio executable registered with Umicom Desk" FORCE)
     endif()
+    # Create this optional product surface only when its build option is enabled.
     if(UMICOM_TRADER_BUILD_GTK4)
         set(UMICOM_DESKTOP_TRADER_EXECUTABLE "umicom-trader" CACHE STRING
             "Trader executable registered with Umicom Desk" FORCE)
+    # Use this fallback path when the earlier condition does not apply.
     else()
         set(UMICOM_DESKTOP_TRADER_EXECUTABLE "umicom-trader-console" CACHE STRING
             "Trader executable registered with Umicom Desk" FORCE)
     endif()
+    set(UMICOM_DESKTOP_BANK_EXECUTABLE "umicom-bank" CACHE STRING
+        "Bank executable registered with Umicom Desk" FORCE)
+    set(UMICOM_DESKTOP_TMS_EXECUTABLE "umicom-tms" CACHE STRING
+        "TMS executable registered with Umicom Desk" FORCE)
     set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Desktop")
     add_subdirectory(applications/desktop)
     set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_IDS "Desktop")
     set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_NAMES
         "Umicom Applications Launcher")
     set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Framework")
+    # Load the dependency only when the parent build has not already provided its target.
     if(NOT TARGET Umicom::desktop_module)
         message(FATAL_ERROR
             "The Desktop module did not provide Umicom::desktop_module.")
     endif()
     message(STATUS "Enabled application module: Umicom Desk")
+# Use this fallback path when the earlier condition does not apply.
 else()
     message(STATUS "Disabled application module: Umicom Desk")
 endif()
@@ -376,6 +414,7 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO)
     set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_NAMES
         "Umicom Studio IDE")
 
+    # Use the optional file only when it is present in this checkout.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/cmake/UmicomStudioExperienceIntegration.cmake")
         include("${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/cmake/UmicomStudioExperienceIntegration.cmake")
     endif()
@@ -385,17 +424,20 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/runtime-manager/CMakeLists.txt")
         add_subdirectory(applications/studio/runtime-manager)
     endif()
+    # Use the optional file only when it is present in this checkout.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/applications/studio/workspace-productivity/CMakeLists.txt")
         add_subdirectory(applications/studio/workspace-productivity)
     endif()
     set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Framework")
 
+    # Load the dependency only when the parent build has not already provided its target.
     if(NOT TARGET Umicom::StudioCore)
         message(FATAL_ERROR
             "The Studio application module did not provide Umicom::StudioCore.")
     endif()
 
     message(STATUS "Enabled application module: Umicom Studio IDE")
+# Use this fallback path when the earlier condition does not apply.
 else()
     message(STATUS "Disabled application module: Umicom Studio IDE")
 endif()
@@ -437,6 +479,7 @@ umicom_add_optional_application(
 # Add the extended thin application modules after the established core products.
 umicom_add_extended_application_modules()
 
+# Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING AND
    COMMAND umicom_register_header_portfolio_governance_test)
     set(UMICOM_APPLICATION_HEADER_ROOTS
@@ -464,45 +507,90 @@ if(BUILD_TESTING AND
         ${UMICOM_APPLICATION_SOURCE_ROOTS})
 endif()
 
+# Keep the thorough repository documentation scan as an explicit developer
+# target so an ordinary application build is not slowed by reading every
+# source file. The audit is read-only and does not start compiled programs.
+if(WIN32 AND EXISTS
+   "${CMAKE_CURRENT_SOURCE_DIR}/scripts/umicom-document-source.ps1")
+    find_program(UMICOM_DOCUMENTATION_POWERSHELL
+        NAMES pwsh powershell)
+    # Register the target only when the host can execute the checked-in script.
+    if(UMICOM_DOCUMENTATION_POWERSHELL)
+        add_custom_target(umicom-source-documentation-audit
+            COMMAND
+                "${UMICOM_DOCUMENTATION_POWERSHELL}"
+                -NoProfile
+                -ExecutionPolicy Bypass
+                -File
+                "${CMAKE_CURRENT_SOURCE_DIR}/scripts/umicom-document-source.ps1"
+                -Mode Audit
+                -ProjectRoot "${CMAKE_CURRENT_SOURCE_DIR}"
+                -IncludeTemplates
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            COMMENT "Auditing Umicom source explanations"
+            VERBATIM)
+    endif()
+endif()
+
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-desk AND TARGET umicom-studio-ide)
     add_dependencies(umicom-desk umicom-studio-ide)
 endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-desk AND TARGET umicom-studio-console)
     add_dependencies(umicom-desk umicom-studio-console)
 endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-desk AND TARGET umicom-os-control-centre)
     add_dependencies(umicom-desk umicom-os-control-centre)
 endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-desk AND TARGET umicom-trader)
     add_dependencies(umicom-desk umicom-trader)
 endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-desk AND TARGET umicom-trader-console)
     add_dependencies(umicom-desk umicom-trader-console)
 endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-desk AND TARGET umicom-bank-console)
     add_dependencies(umicom-desk umicom-bank-console)
 endif()
+# Configure the optional target only when its feature has created it.
+if(TARGET umicom-desk AND TARGET umicom-bank)
+    add_dependencies(umicom-desk umicom-bank)
+endif()
+# Configure the optional target only when its feature has created it.
 if(TARGET umicom-desk AND TARGET umicom-tms-console)
     add_dependencies(umicom-desk umicom-tms-console)
 endif()
+# Configure the optional target only when its feature has created it.
+if(TARGET umicom-desk AND TARGET umicom-tms)
+    add_dependencies(umicom-desk umicom-tms)
+endif()
 
+# Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING)
     umicom_assert_single_root_test_tree()
     add_subdirectory(tests)
 endif()
 
+# Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING AND UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS)
     get_property(_umicom_registered_validation_targets GLOBAL PROPERTY
         UMICOM_REGISTERED_VALIDATION_TARGETS)
+    # Apply this operation only while the related capability or state is available.
     if(_umicom_registered_validation_targets)
         list(REMOVE_DUPLICATES _umicom_registered_validation_targets)
         add_custom_target(umicom-registered-validation-tests ALL)
         add_dependencies(umicom-registered-validation-tests
             ${_umicom_registered_validation_targets})
+        # Configure the optional target only when its feature has created it.
         if(TARGET umicom-studio-ide)
             add_dependencies(umicom-studio-ide
                 umicom-registered-validation-tests)
         endif()
+        # Configure the optional target only when its feature has created it.
         if(TARGET umicom-trader-console)
             add_dependencies(umicom-trader-console
                 umicom-registered-validation-tests)
@@ -532,6 +620,7 @@ set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_FILE_NAME
     "umicom-applications-${PROJECT_VERSION}-${CMAKE_SYSTEM_NAME}")
+# Apply this branch only when its contract condition is satisfied.
 if(WIN32)
     set(CPACK_GENERATOR "NSIS;ZIP")
     set(CPACK_NSIS_COMPONENT_INSTALL ON)
@@ -546,6 +635,7 @@ if(WIN32)
     set(CPACK_PACKAGE_EXECUTABLES
         "umicom-desk" "Umicom Applications")
     set(CPACK_CREATE_DESKTOP_LINKS "umicom-desk")
+# Use this fallback path when the earlier condition does not apply.
 else()
     set(CPACK_GENERATOR "TGZ;ZIP")
 endif()
@@ -564,11 +654,13 @@ get_property(_umicom_suite_component_ids GLOBAL PROPERTY
     UMICOM_SUITE_COMPONENT_IDS)
 get_property(_umicom_suite_component_names GLOBAL PROPERTY
     UMICOM_SUITE_COMPONENT_NAMES)
+# Use the stable identifier comparison to choose the matching record or policy.
 if(_umicom_suite_component_ids)
     list(LENGTH _umicom_suite_component_ids
         _umicom_suite_component_count)
     list(LENGTH _umicom_suite_component_names
         _umicom_suite_component_name_count)
+    # Use the stable identifier comparison to choose the matching record or policy.
     if(NOT _umicom_suite_component_count EQUAL
        _umicom_suite_component_name_count)
         message(FATAL_ERROR
@@ -578,6 +670,7 @@ if(_umicom_suite_component_ids)
         ${_umicom_suite_component_ids})
     math(EXPR _umicom_suite_component_last
         "${_umicom_suite_component_count} - 1")
+    # Visit each bounded item once so every record receives the same rule.
     foreach(_umicom_suite_component_index
             RANGE 0 ${_umicom_suite_component_last})
         list(GET _umicom_suite_component_ids
@@ -586,6 +679,7 @@ if(_umicom_suite_component_ids)
         list(GET _umicom_suite_component_names
             ${_umicom_suite_component_index}
             _umicom_suite_component_name)
+        # Use the stable identifier comparison to choose the matching record or policy.
         if(_umicom_suite_component_id STREQUAL "Desktop")
             cpack_add_component(${_umicom_suite_component_id}
                 DISPLAY_NAME "${_umicom_suite_component_name}"
@@ -594,6 +688,7 @@ if(_umicom_suite_component_ids)
                 DEPENDS Framework
                 REQUIRED
                 GROUP UmicomApplications)
+        # Use this fallback path when the earlier condition does not apply.
         else()
             cpack_add_component(${_umicom_suite_component_id}
                 DISPLAY_NAME "${_umicom_suite_component_name}"

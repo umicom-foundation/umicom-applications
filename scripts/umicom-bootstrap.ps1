@@ -36,6 +36,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# Provide the show umicom bootstrap help operation used by this module and its client
+# applications.
 function Show-UmicomBootstrapHelp {
     Write-Host @"
 Umicom beginner bootstrap for Windows
@@ -64,6 +66,8 @@ First commands on a new computer:
 "@
 }
 
+# Provide the invoke checked command operation used by this module and its client
+# applications.
 function Invoke-CheckedCommand {
     param(
         [Parameter(Mandatory = $true)][string]$Program,
@@ -71,18 +75,25 @@ function Invoke-CheckedCommand {
     )
 
     & $Program @Arguments
+    # Apply this branch only when its contract condition is satisfied.
     if ($LASTEXITCODE -ne 0) {
         throw "Command failed with exit code ${LASTEXITCODE}: $Program"
     }
 }
 
+# Provide the assert project exists operation used by this module and its client
+# applications.
 function Assert-ProjectExists {
+    # Apply this branch only when its contract condition is satisfied.
     if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot "CMakePresets.json"))) {
         throw "Umicom Applications was not found at $ProjectRoot. Run the clone action first."
     }
 }
 
+# Provide the install umicom tools operation used by this module and its client
+# applications.
 function Install-UmicomTools {
+    # Preserve the original failure result so the caller can respond to the correct cause.
     if (-not (Get-Command winget.exe -ErrorAction SilentlyContinue)) {
         throw "Windows Package Manager (winget) is required. Install App Installer from Microsoft Store, then run this action again."
     }
@@ -96,6 +107,7 @@ function Install-UmicomTools {
     Write-Host "Installing MSYS2..." -ForegroundColor Cyan
     Invoke-CheckedCommand "winget.exe" install --id MSYS2.MSYS2 --exact --accept-package-agreements --accept-source-agreements
 
+    # Apply this branch only when its contract condition is satisfied.
     if (-not (Test-Path -LiteralPath "C:\msys64\usr\bin\bash.exe")) {
         throw "MSYS2 did not appear at C:\msys64. Restart Windows, then run the install action again."
     }
@@ -107,6 +119,8 @@ function Install-UmicomTools {
     Write-Host "Tool installation completed. Restart PowerShell, then run the doctor action." -ForegroundColor Green
 }
 
+# Provide the test umicom computer operation used by this module and its client
+# applications.
 function Test-UmicomComputer {
     $failed = $false
     $requiredFiles = @(
@@ -117,7 +131,9 @@ function Test-UmicomComputer {
         "C:\msys64\ucrt64\bin\pkg-config.exe"
     )
 
+    # Visit each bounded item once so every record receives the same rule.
     foreach ($requiredFile in $requiredFiles) {
+        # Apply this branch only when its contract condition is satisfied.
         if (Test-Path -LiteralPath $requiredFile) {
             Write-Host "[OK] $requiredFile" -ForegroundColor Green
         } else {
@@ -126,6 +142,7 @@ function Test-UmicomComputer {
         }
     }
 
+    # Preserve the original failure result so the caller can respond to the correct cause.
     if (Get-Command git.exe -ErrorAction SilentlyContinue) {
         Invoke-CheckedCommand "git.exe" --version
     } else {
@@ -133,15 +150,18 @@ function Test-UmicomComputer {
         $failed = $true
     }
 
+    # Preserve the original failure result so the caller can respond to the correct cause.
     if (-not $failed) {
         Invoke-CheckedCommand "C:\msys64\ucrt64\bin\gcc.exe" --version
         Invoke-CheckedCommand "C:\msys64\ucrt64\bin\cmake.exe" --version
         Invoke-CheckedCommand "C:\msys64\ucrt64\bin\ninja.exe" --version
 
+        # Visit each bounded item once so every record receives the same rule.
         foreach ($library in @(
             "gtk4", "gtksourceview-5", "json-glib-1.0", "libsoup-3.0",
             "libcurl", "sqlite3")) {
             & "C:\msys64\ucrt64\bin\pkg-config.exe" --modversion $library
+            # Apply this branch only when its contract condition is satisfied.
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "[OK] library $library" -ForegroundColor Green
             } else {
@@ -151,7 +171,9 @@ function Test-UmicomComputer {
         }
     }
 
+    # Apply this branch only when its contract condition is satisfied.
     if (Test-Path -LiteralPath $ProjectRoot) {
+        # Apply this branch only when its contract condition is satisfied.
         if (Test-Path -LiteralPath (Join-Path $ProjectRoot "CMakePresets.json")) {
             Write-Host "[OK] Umicom project $ProjectRoot" -ForegroundColor Green
         } else {
@@ -161,13 +183,17 @@ function Test-UmicomComputer {
         Write-Host "[INFO] The project has not been cloned yet." -ForegroundColor Yellow
     }
 
+    # Preserve the original failure result so the caller can respond to the correct cause.
     if ($failed) {
         throw "This computer is not ready yet. Run the install action, restart PowerShell, and run doctor again."
     }
     Write-Host "Your computer passed the Umicom checks." -ForegroundColor Green
 }
 
+# Provide the clone umicom project operation used by this module and its client
+# applications.
 function Clone-UmicomProject {
+    # Apply this branch only when its contract condition is satisfied.
     if (Test-Path -LiteralPath $Destination) {
         throw "The destination already exists: $Destination. Choose an empty destination or use the existing checkout."
     }
@@ -176,6 +202,8 @@ function Clone-UmicomProject {
     Write-Host "Umicom Applications was cloned to $Destination" -ForegroundColor Green
 }
 
+# Provide the configure umicom project operation used by this module and its client
+# applications.
 function Configure-UmicomProject {
     Assert-ProjectExists
     Push-Location $ProjectRoot
@@ -186,6 +214,8 @@ function Configure-UmicomProject {
     }
 }
 
+# Provide the build umicom project operation used by this module and its client
+# applications.
 function Build-UmicomProject {
     Assert-ProjectExists
     Push-Location $ProjectRoot
@@ -196,6 +226,8 @@ function Build-UmicomProject {
     }
 }
 
+# Provide the test umicom project operation used by this module and its client
+# applications.
 function Test-UmicomProject {
     Assert-ProjectExists
     Push-Location $ProjectRoot
@@ -206,7 +238,10 @@ function Test-UmicomProject {
     }
 }
 
+# Provide the show repository status operation used by this module and its client
+# applications.
 function Show-RepositoryStatus {
+    # Apply this branch only when its contract condition is satisfied.
     if (-not (Test-Path -LiteralPath (Join-Path $ProjectRoot ".git"))) {
         throw "A Git checkout was not found at $ProjectRoot."
     }
@@ -219,6 +254,7 @@ function Show-RepositoryStatus {
     }
 }
 
+# Apply this branch only when its contract condition is satisfied.
 switch ($Action) {
     "help" { Show-UmicomBootstrapHelp }
     "install" { Install-UmicomTools }
@@ -236,6 +272,7 @@ switch ($Action) {
     "run-studio" {
         Assert-ProjectExists
         $studioExecutable = Join-Path $ProjectRoot "build\$Preset\bin\umicom-studio-ide.exe"
+        # Apply this branch only when its contract condition is satisfied.
         if (-not (Test-Path -LiteralPath $studioExecutable)) {
             throw "Studio has not been built at $studioExecutable. Run the build action first."
         }
@@ -244,6 +281,7 @@ switch ($Action) {
     "status" { Show-RepositoryStatus }
     "add" { Invoke-CheckedCommand "git.exe" -C $ProjectRoot add -A }
     "commit" {
+        # Apply this branch only when its contract condition is satisfied.
         if ([string]::IsNullOrWhiteSpace($Message)) {
             throw 'The commit action needs -Message "a meaningful description".'
         }
@@ -251,6 +289,7 @@ switch ($Action) {
     }
     "push" { Invoke-CheckedCommand "git.exe" -C $ProjectRoot push }
     "new-branch" {
+        # Apply this branch only when its contract condition is satisfied.
         if ([string]::IsNullOrWhiteSpace($Branch)) {
             throw 'The new-branch action needs -Branch "feature/short-name".'
         }

@@ -39,16 +39,25 @@
         }                                                                     \
     } while (0)
 
+/*
+ * Exercise copy text and return a clear result when the behaviour no longer matches its
+ * contract.
+ */
 static int copy_text(char *destination,
                      size_t capacity,
                      const char *source)
 {
     size_t length;
 
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (destination == NULL || capacity == 0U || source == NULL) {
         return 0;
     }
     length = strlen(source);
+    /* Keep the operation inside its valid bounds before reading, writing or adding data. */
     if (length >= capacity) {
         return 0;
     }
@@ -56,6 +65,10 @@ static int copy_text(char *destination,
     return 1;
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     UmiWorkbenchMemoryStore *store =

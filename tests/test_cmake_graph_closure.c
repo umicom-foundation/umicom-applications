@@ -18,6 +18,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     const char *needle = "add_subdirectory(tests)";
@@ -30,8 +34,16 @@ int main(void)
                    UMICOM_APPLICATIONS_SOURCE_DIR);
     stream = fopen(path, "rb");
     assert(stream != NULL);
+    /*
+     * Continue only while work remains available; the loop body advances the state on each
+     * pass.
+     */
     while (fgets(buffer, (int)sizeof(buffer), stream) != NULL) {
         const char *cursor = buffer;
+        /*
+         * Continue only while work remains available; the loop body advances the state on each
+         * pass.
+         */
         while ((cursor = strstr(cursor, needle)) != NULL) {
             matches++;
             cursor += strlen(needle);

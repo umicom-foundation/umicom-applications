@@ -26,6 +26,10 @@
 
 #define UMICOM_APPLICATIONS_PATH_CAPACITY 1024U
 
+/*
+ * Exercise make path and return a clear result when the behaviour no longer matches its
+ * contract.
+ */
 static int make_path(char *destination,
                      size_t capacity,
                      const char *relative_path)
@@ -38,33 +42,62 @@ static int make_path(char *destination,
     return written >= 0 && (size_t)written < capacity;
 }
 
+/*
+ * Exercise path is file and return a clear result when the behaviour no longer matches its
+ * contract.
+ */
 static int path_is_file(const char *relative_path)
 {
     char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
     struct stat information;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!make_path(path, sizeof(path), relative_path)) return 0;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (stat(path, &information) != 0) return 0;
     return S_ISREG(information.st_mode) != 0;
 }
 
+/*
+ * Exercise path is directory and return a clear result when the behaviour no longer
+ * matches its contract.
+ */
 static int path_is_directory(const char *relative_path)
 {
     char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
     struct stat information;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!make_path(path, sizeof(path), relative_path)) return 0;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (stat(path, &information) != 0) return 0;
     return S_ISDIR(information.st_mode) != 0;
 }
 
+/*
+ * Exercise file contains and return a clear result when the behaviour no longer matches
+ * its contract.
+ */
 static int file_contains(const char *relative_path, const char *expected_text)
 {
     char path[UMICOM_APPLICATIONS_PATH_CAPACITY];
     char line[4096];
     FILE *stream;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!make_path(path, sizeof(path), relative_path)) return 0;
     stream = fopen(path, "r");
+    /*
+     * Protect caller-owned memory by checking that required state is available before it is
+     * used.
+     */
     if (stream == NULL) return 0;
+    /*
+     * Continue only while work remains available; the loop body advances the state on each
+     * pass.
+     */
     while (fgets(line, (int)sizeof(line), stream) != NULL) {
+        /*
+         * Protect caller-owned memory by checking that required state is available before it is
+         * used.
+         */
         if (strstr(line, expected_text) != NULL) {
             (void)fclose(stream);
             return 1;
@@ -74,8 +107,13 @@ static int file_contains(const char *relative_path, const char *expected_text)
     return 0;
 }
 
+/*
+ * Exercise require condition and return a clear result when the behaviour no longer
+ * matches its contract.
+ */
 static int require_condition(int condition, const char *message)
 {
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!condition) {
         (void)fprintf(stderr, "[FAIL] %s\n", message);
         return 0;
@@ -84,6 +122,10 @@ static int require_condition(int condition, const char *message)
     return 1;
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     static const char *const module_directories[] = {
@@ -226,6 +268,7 @@ int main(void)
                       "\"kernel_inside_framework\": false"),
         "Linux kernel remains outside Framework");
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(module_directories) / sizeof(module_directories[0]);
          ++index) {
@@ -233,6 +276,7 @@ int main(void)
             path_is_directory(module_directories[index]),
             module_directories[index]);
     }
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(repository_names) / sizeof(repository_names[0]);
          ++index) {
@@ -241,6 +285,7 @@ int main(void)
             repository_names[index]);
     }
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(framework_resource_files) /
                      sizeof(framework_resource_files[0]);
@@ -250,6 +295,7 @@ int main(void)
             framework_resource_files[index]);
     }
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(required_module_files) /
                      sizeof(required_module_files[0]);
@@ -259,6 +305,7 @@ int main(void)
             required_module_files[index]);
     }
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(framework_application_runtime_files) /
                      sizeof(framework_application_runtime_files[0]);
@@ -268,6 +315,7 @@ int main(void)
             framework_application_runtime_files[index]);
     }
 
+    /* Visit each bounded item once so every record receives the same rule. */
     for (index = 0U;
          index < sizeof(framework_workbench_layout_files) /
                      sizeof(framework_workbench_layout_files[0]);

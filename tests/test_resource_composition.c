@@ -27,8 +27,13 @@
 #define UMICOM_APPLICATIONS_SHARED_BRAND_REQUIRED 0
 #endif
 
+/*
+ * Exercise require condition and return a clear result when the behaviour no longer
+ * matches its contract.
+ */
 static int require_condition(int condition, const char *message)
 {
+    /* Apply this branch only when its contract condition is satisfied. */
     if (!condition) {
         (void)fprintf(stderr, "[FAIL] %s\n", message);
         return 0;
@@ -37,10 +42,15 @@ static int require_condition(int condition, const char *message)
     return 1;
 }
 
+/*
+ * Exercise resolve available and return a clear result when the behaviour no longer
+ * matches its contract.
+ */
 static int resolve_available(const char *resource_id,
                              UmiApplicationResourceKind expected_kind)
 {
     UmiApplicationResourceLocation location;
+    /* Apply this branch only when its contract condition is satisfied. */
     if (umi_application_resource_resolve(
             UMICOM_APPLICATIONS_RESOURCE_ROOT,
             resource_id,
@@ -49,6 +59,10 @@ static int resolve_available(const char *resource_id,
     return location.kind == expected_kind && location.available;
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     UmiApplicationResourceLocation icon;
@@ -97,6 +111,7 @@ int main(void)
                           UMI_APPLICATION_RESOURCE_WINDOWS_TEMPLATE),
         "Product-neutral Windows resource template resolves");
 
+    /* Apply this branch only when its contract condition is satisfied. */
     if (UMICOM_APPLICATIONS_SHARED_BRAND_REQUIRED != 0) {
         success &= require_condition(
             resolve_available("umicom.brand.logo.primary",

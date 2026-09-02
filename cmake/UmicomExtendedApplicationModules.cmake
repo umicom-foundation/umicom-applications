@@ -67,6 +67,7 @@ option(UMICOM_APPLICATIONS_BUILD_ALL_MODULES
        "Build every checked-in Umicom application module"
        OFF)
 
+# Create this optional product surface only when its build option is enabled.
 if(UMICOM_APPLICATIONS_BUILD_ALL_MODULES)
     set(UMICOM_APPLICATIONS_BUILD_DESKTOP ON CACHE BOOL
         "Build Umicom Desk" FORCE)
@@ -118,6 +119,8 @@ if(UMICOM_APPLICATIONS_BUILD_ALL_MODULES)
         "Build Umicom Education Studio" FORCE)
 endif()
 
+# Define the add extended application modules build helper so parent and application
+# projects apply one consistent rule.
 function(umicom_add_extended_application_modules)
     umicom_add_optional_application(
         UMICOM_APPLICATIONS_BUILD_MUSIC_STUDIO

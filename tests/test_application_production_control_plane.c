@@ -19,12 +19,20 @@
 #include "umicom/application/production/production.h"
 #include "umicom/test_runtime/check.h"
 
+/*
+ * Exercise structural capability probe and return a clear result when the behaviour no
+ * longer matches its contract.
+ */
 static int structural_capability_probe(const char *capability_id, void *context)
 {
     (void)context;
     return capability_id != NULL && capability_id[0] != '\0';
 }
 
+/*
+ * Start this command or application, report setup failures, and return a process exit code
+ * to the operating system.
+ */
 int main(void)
 {
     UmiApplicationProductionControlPlane *control_plane =
@@ -58,14 +66,16 @@ int main(void)
         expected_panels += experience->panel_count;
         expected_layouts += experience->layout_count;
         expected_features += experience->feature_count;
+        /* Visit each bounded item once so every record receives the same rule. */
         for (feature_index = 0U;
              feature_index < experience->feature_count;
              ++feature_index) {
             const UmiExperienceFeatureDefinition *feature =
                 &experience->features[feature_index];
+            /* Apply this branch only when its contract condition is satisfied. */
             if (feature->owner == UMI_EXPERIENCE_OWNER_APPLICATION) {
                 expected_application_features += 1U;
-            } else if (feature->owner ==
+            } else /* Apply this branch only when its contract condition is satisfied. */ if (feature->owner ==
                        UMI_EXPERIENCE_OWNER_EXTERNAL_ADAPTER) {
                 expected_external_features += 1U;
             }
