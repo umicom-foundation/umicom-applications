@@ -54,6 +54,8 @@ core.*
 # Local editors, operating-system state and temporary files
 # Local automation journals and runtime state are machine-specific evidence.
 /.umicom/
+# research notes remain local
+/tmp/
 *.log
 *.tmp
 *.temp
