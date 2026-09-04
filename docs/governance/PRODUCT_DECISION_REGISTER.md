@@ -390,3 +390,50 @@
 **Acceptance evidence**
 
 - The documentation explains features, ownership, application adoption, constraints, validation, limitations and roadmap.
+
+## UX-014 — Application identity always remains visible
+
+**Status:** Approved
+
+The shared Framework header shows the packaged Umicom vector mark when
+available and the native `<>` fallback otherwise. The readable product name is
+always present.
+
+## UX-015 — Normal mode uses compact panel controls
+
+**Status:** Approved
+
+Normal mode prioritises product work while retaining close and the complete
+panel command set through compact Framework-owned controls. Structural editing
+controls become prominent only during Edit Layout mode.
+
+## UX-016 — Duplicate navigation surfaces are consolidated
+
+**Status:** Approved
+
+A command, layout or window catalogue must have one primary presentation in a
+workspace. Existing commands remain searchable and accessible when redundant
+permanent strips are removed.
+
+## LAYOUT-001 — Semantic regions use shared responsive bounds
+
+**Status:** Approved
+
+Left, centre, right, top, bottom and floating regions are materialised through
+Framework geometry. The centre remains dominant and empty regions consume no
+permanent split.
+
+## LAYOUT-002 — Generic product panels avoid horizontal scrolling
+
+**Status:** Approved
+
+Generic panels scroll vertically and start at their logical left edge. A
+specialised surface explicitly owns horizontal navigation when required.
+
+## MIGRATION-001 — Build output and saved-layout migration are separate
+
+**Status:** Approved
+
+Deleting a build directory is not a layout migration mechanism. Framework
+changes compile independently from versioned user-layout migration and an
+explicit reset-to-product-default journey.
