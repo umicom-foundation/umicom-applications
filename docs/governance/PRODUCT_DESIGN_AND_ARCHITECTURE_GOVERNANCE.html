@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Umicom Product Design and Application Architecture Governance</title>
+<style>
+:root{--bg:#07111c;--panel:#102235;--panel2:#162d45;--text:#edf7ff;--muted:#adc1d3;--line:#31516d;--accent:#65c9ff;--good:#7de5ad}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(145deg,#06101a,#0d1d2c);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:70px clamp(28px,7vw,100px);border-bottom:1px solid var(--line);background:radial-gradient(circle at 82% 10%,#1c5278 0,#07111c 42%)}
+header p{max-width:920px;color:var(--muted);font-size:20px}h1{font-size:clamp(38px,6vw,72px);line-height:1.05;margin:.2em 0}h2{font-size:34px}h3{margin:.35em 0}
+nav{position:sticky;top:0;z-index:5;display:flex;gap:8px;flex-wrap:wrap;padding:10px 18px;background:#07111cf2;border-bottom:1px solid var(--line)}nav a{color:var(--text);text-decoration:none;padding:7px 10px;border:1px solid var(--line);border-radius:8px}
+main{max-width:1240px;margin:auto;padding:30px}section{padding:45px 0;border-bottom:1px solid var(--line)}.callout{border-left:5px solid var(--good);background:var(--panel);padding:18px 20px;border-radius:0 10px 10px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.decision{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--good);border-radius:13px;padding:18px}.decision .id{font:700 12px ui-monospace,monospace;color:var(--accent)}details summary{cursor:pointer;color:var(--accent)}code,pre{font-family:"Cascadia Code",Consolas,monospace}pre{background:#030a11;border:1px solid var(--line);border-radius:10px;padding:18px;overflow:auto}
+.table{overflow:auto;border:1px solid var(--line);border-radius:12px}table{border-collapse:collapse;width:100%;min-width:800px}th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:var(--panel2)}td{background:var(--panel)}footer{padding:35px;text-align:center;color:var(--muted)}
+@media(max-width:850px){.grid{grid-template-columns:1fr}main{padding:20px}}@media print{nav{display:none}body{background:white;color:black}header{background:white}.decision,td,th{background:white;color:black}}
+</style>
+</head>
+<body>
+<header id="top">
+<div>Umicom Foundation · Canonical living governance</div>
+<h1>Product Design and Application Architecture</h1>
+<p>Durable decisions, Framework ownership, complete application coverage, source-preservation rules and acceptance standards for the Umicom application family.</p>
+<div class="callout"><strong>Single source of truth:</strong> Umicom Framework owns every reusable capability. Applications select and apply Framework capabilities; they do not recreate them.</div>
+</header>
+<nav>
+<a href="#architecture">Architecture</a><a href="#decisions">Decisions</a>
+<a href="#applications">Applications</a><a href="#standards">Standards</a><a href="#roadmap">Roadmap</a>
+</nav>
+<main>
+<section id="architecture"><h2>Canonical architecture</h2>
+<pre>Framework Master Controller
+├── lifecycle, policy and capability composition
+├── universal workbench and application surfaces
+├── commands, queries, events and typed context
+├── Data Server, security, audit and observability
+└── bounded Slave Controllers, services, engines and workers
+
+Thin applications
+├── identity and selected Framework experience
+├── product configuration, adapters and permissions
+└── genuinely product-specific behaviour</pre>
+<p>The common visible hierarchy is startup surface → host window → application-surface tab → application header → product workspace → document/tool and layout tabs → panels → activity and status areas.</p>
+</section>
+<section id="decisions"><h2>Approved decision register</h2><div class="grid">
+    <article class="decision">
+      <div class="id">GOV-001 · Approved</div>
+      <h3>Durable documentation is mandatory</h3>
+      <p><strong>Decision.</strong> Every approved product-design, UX, application-architecture, coding, delivery, security, data-ownership or roadmap decision must be recorded in source-controlled project documentation. Chat discussion is provisional until the relevant canonical document and decision register are updated.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> The product family is too large and long-lived to depend on conversational memory. Durable documentation makes decisions reviewable, teachable, auditable and recoverable.</p>
+        <h4>Constraints</h4><ul><li>Every design-affecting delivery updates the relevant canonical documents.</li><li>Earlier decisions are never silently deleted; a replacement marks them as superseded.</li><li>Git history records revisions; numbered copies of canonical filenames are not created.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>A reviewer can understand the intended behaviour without reading the originating chat.</li><li>The decision register records status, rationale, constraints and acceptance evidence.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">ARCH-001 · Approved</div>
+      <h3>Umicom Framework is the single source of truth</h3>
+      <p><strong>Decision.</strong> Umicom Framework owns, controls and implements every reusable capability. All applications consume Framework contracts and must not recreate, fork or duplicate a reusable mechanism.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> One implementation prevents incompatible shells, services, controllers, layouts, persistence models and operational rules across the application family.</p>
+        <h4>Constraints</h4><ul><li>Reusable implementation belongs in Framework libraries, controllers, models, services, commands, events, view contracts, adapters and tests.</li><li>Application repositories contain identity, configuration, product composition and genuinely product-specific behaviour only.</li><li>A capability used, or reasonably reusable, by more than one application belongs in Framework.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Repository audits find no second generic implementation in application repositories.</li><li>Shared defects are fixed once in Framework and validated through every consumer.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">ARCH-002 · Approved</div>
+      <h3>The Master Controller delegates bounded work</h3>
+      <p><strong>Decision.</strong> The Framework Master Controller is the root composition and policy authority. It coordinates lifecycle, capability registration, startup, shutdown and high-level routing while delegating bounded domain work to Slave Controllers, services, engines and workers.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Central authority is required for consistency, while bounded ownership is required for testability and maintainability.</p>
+        <h4>Constraints</h4><ul><li>The Master Controller does not contain product-specific business logic.</li><li>Slave Controllers communicate through public commands, queries and events.</li><li>No controller reads another module&#x27;s private state.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Lifecycle and dependency tests run without starting a complete application.</li><li>Domain controllers can be tested with injected ports and simulated adapters.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">ARCH-003 · Approved</div>
+      <h3>Applications are thin independently runnable clients</h3>
+      <p><strong>Decision.</strong> Every application remains independently runnable, buildable, testable and packageable, but reusable runtime, shell, presentation, domain services and operational infrastructure are supplied by Umicom Framework.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Focused products remain understandable while sharing one governed foundation.</p>
+        <h4>Constraints</h4><ul><li>Applications never call another application&#x27;s private API.</li><li>Cross-application communication uses Framework commands, queries, events, streams or application-surface sessions.</li><li>A product selects capabilities without owning a parallel framework.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Each registered application resolves a Framework portfolio definition and experience profile.</li><li>Each application can run independently and can participate in a shared host where supported.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">ARCH-004 · Approved</div>
+      <h3>The Data Server is the sole persistence authority</h3>
+      <p><strong>Decision.</strong> Layouts, sessions, product state, audit evidence, user preferences and other Umicom-owned durable state are persisted through Framework Data Server contracts rather than direct application database access.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> A single persistence authority protects transactions, schema evolution, audit, recovery and adapter neutrality.</p>
+        <h4>Constraints</h4><ul><li>Applications and frontend adapters do not issue raw SQL for Umicom-owned state.</li><li>Persistence is exposed through typed repositories, commands or services.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Static checks reject direct persistence access from application and presentation layers.</li><li>Crash-safe save, restore and migration journeys are tested.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-001 · Approved</div>
+      <h3>Framework owns the universal application workbench</h3>
+      <p><strong>Decision.</strong> Startup presentation, host windows, application-surface sessions, application tabs, document and tool tabs, layout tabs, panel chrome, docking, floating, layout editing, layout persistence, context linking and multi-monitor restoration are Framework capabilities.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Every graphical application requires the same structural mechanics even though its product content differs.</p>
+        <h4>Constraints</h4><ul><li>No application repository contains a second generic splash engine, tab host, docking engine, panel frame, layout store or workspace engine.</li><li>Application profiles configure the shared implementation.</li><li>Frontend adapters implement the same toolkit-neutral semantics.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>The complete application family displays consistent lifecycle, panel and layout behaviour.</li><li>Framework tests validate shared mechanics; application tests validate composition and product journeys.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-002 · Approved</div>
+      <h3>Every graphical application follows one visible hierarchy</h3>
+      <p><strong>Decision.</strong> Every graphical application follows the sequence: startup surface, host window, application-surface tab, application header, product workspace, document or tool tabs, optional layout tabs, panels, activity and status areas.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> A predictable hierarchy reduces learning cost and makes skills transferable between applications.</p>
+        <h4>Constraints</h4><ul><li>Product differences are expressed by profiles, panels, commands and data, not incompatible shell mechanics.</li><li>Normal mode does not permanently expose layout-editing controls.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>A user familiar with one Umicom application can operate the common mechanics of another.</li><li>Responsive tests preserve the hierarchy at supported sizes and scaling levels.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-003 · Approved</div>
+      <h3>Every application has a truthful startup lifecycle</h3>
+      <p><strong>Decision.</strong> Each graphical application presents an original Umicom startup surface with icon, application name, build identity, operating mode, current task, measurable progress, failure information and recovery actions when startup is not effectively instantaneous.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Users need honest progress and recoverable failures while modules, services, adapters and layouts are prepared.</p>
+        <h4>Constraints</h4><ul><li>Applications provide startup tasks and identity; Framework owns rendering and lifecycle.</li><li>Sensitive credentials never enter generic presentation state or logs.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Cold-start progress corresponds to real work.</li><li>Failure leaves a readable state, diagnostic identifier and recovery path.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-004 · Approved</div>
+      <h3>Application, document and layout tabs are distinct</h3>
+      <p><strong>Decision.</strong> Application tabs switch complete product sessions; document or tool tabs switch content within one product; layout tabs switch named panel arrangements. Each level has independent identity, close policy, persistence and restoration.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Conflating tab levels creates ambiguous close behaviour and lost state.</p>
+        <h4>Constraints</h4><ul><li>The plus action at each level opens the appropriate Framework catalogue.</li><li>Closing an application tab cannot bypass unsaved-work or active-operation policy.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Automated tests verify all three tab levels independently.</li><li>Restoration recreates the correct application, document and layout identities.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-005 · Approved</div>
+      <h3>Every eligible panel has a complete lifecycle</h3>
+      <p><strong>Decision.</strong> Every eligible panel, section and tool window supports close or hide, restore, move, resize, dock, split, tab, maximise, auto-hide, detach, reattach and multi-monitor placement according to declared capabilities.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Panel behaviour must be consistent and complete across the application family.</p>
+        <h4>Constraints</h4><ul><li>Panel identity is separate from placement and transient session state.</li><li>Closing an instance never removes its catalogue definition.</li><li>Mutations update the authoritative layout model before native widgets are rebuilt.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Every declared panel action has a working journey or a truthful unavailable reason.</li><li>Cancel restores the complete pre-edit layout and context-link state.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-006 · Approved</div>
+      <h3>Normal mode and Edit Layout mode are separate</h3>
+      <p><strong>Decision.</strong> Normal mode prioritises product work and compact chrome. Edit Layout mode reveals movement, docking, resizing, catalogue, grouping, save, apply, cancel, reset and lock controls.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Permanent layout controls create clutter and compete with product commands.</p>
+        <h4>Constraints</h4><ul><li>Layout mutation is transactional and reversible.</li><li>Locked layouts cannot be changed silently.</li><li>Existing layout features remain available through the appropriate mode.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Entering Edit Layout mode is visually and accessibly unambiguous.</li><li>Cancel restores the prior snapshot; Apply and Lock persist a validated result.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-007 · Approved</div>
+      <h3>Layout state is user-owned and the mechanism is Framework-owned</h3>
+      <p><strong>Decision.</strong> Users own named arrangements and workspace preferences. Framework owns the schema, validation, editing, migration, persistence, recovery and rendering.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Users require customisation without fragmenting the implementation.</p>
+        <h4>Constraints</h4><ul><li>Default layouts are registered in Framework application experiences.</li><li>User layouts are stored through the Data Server.</li><li>Applications do not define another layout format.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Create, duplicate, rename, save, restore, reset, export and import are tested.</li><li>Missing panels or monitors degrade safely without corrupting the last good layout.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-008 · Approved</div>
+      <h3>Context-linked panels use typed channels</h3>
+      <p><strong>Decision.</strong> Panels may join named and colour-presented groups as source, destination or bidirectional participants. The underlying Framework channel transports typed selections such as project, document, instrument, account, legal entity, model or connection.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> One interaction concept must work across development, finance, creative, engineering and operational products.</p>
+        <h4>Constraints</h4><ul><li>Colour is presentation metadata, never the only identifier.</li><li>Incompatible context types are rejected clearly.</li><li>Group membership participates in layout transactions and restoration.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Linked panels update only for compatible context contracts.</li><li>Accessibility exposes group identity, name, role and state.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">UX-009 · Approved</div>
+      <h3>Every visible command is truthful</h3>
+      <p><strong>Decision.</strong> A visible command is Available, Unavailable with reason, Busy, Awaiting approval, Requires setup, Requires connection, or Failed with recovery. It must not appear usable and then fail generically.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Trust depends on accurate presentation of capability, policy and operational state.</p>
+        <h4>Constraints</h4><ul><li>Command state is part of the Framework presentation contract.</li><li>Product controllers remain the business authority.</li><li>Frontend adapters render state but do not invent it.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Acceptance tests enumerate visible commands in each default workspace.</li><li>Unavailable commands expose an accessible explanation.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">APP-001 · Approved</div>
+      <h3>Every registered application is in scope</h3>
+      <p><strong>Decision.</strong> Every shared product-design, workbench, lifecycle, panel, layout, accessibility and command-state enhancement is assessed against every registered application. New applications automatically enter the same coverage obligation.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> The product family must not split into first-class and forgotten applications.</p>
+        <h4>Constraints</h4><ul><li>Shared changes are implemented once in Framework.</li><li>Application repositories change only when identity, composition or genuinely product-specific behaviour requires it.</li><li>Coverage never justifies copied code or meaningless edits.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Each delivery contains an application coverage record.</li><li>The all-application build and test configuration is used before completion.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">CODE-001 · Approved</div>
+      <h3>Existing features, names and comments are preserved</h3>
+      <p><strong>Decision.</strong> Existing features are not removed for convenience. Existing variables, public functions, structures, constants and files are not renamed unnecessarily. Existing comments are not rewritten unless related implementation is enhanced or the comment becomes inaccurate.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Large cosmetic churn hides defects, damages history and risks regressions.</p>
+        <h4>Constraints</h4><ul><li>Enhancements are additive or backward compatible unless an approved breaking decision exists.</li><li>Tooltips, commands, panels, layouts, tests and accessibility behaviour are retained.</li><li>Version suffixes are not added to identifiers as a shortcut for evolution.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Reviews show focused changes with preserved history.</li><li>Compatibility tests cover existing public contracts.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">CODE-002 · Approved</div>
+      <h3>C23 and stable C ABI govern shared boundaries</h3>
+      <p><strong>Decision.</strong> Framework core and public module boundaries use C23 and a stable C ABI. Ownership, lifetime, threading, errors, cancellation, capacity and failure rollback are explicit.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Predictable boundaries are necessary for reusable modules, adapters, plugins and multiple frontends.</p>
+        <h4>Constraints</h4><ul><li>Exceptions, private toolkit objects and language-specific containers do not cross the public C ABI.</li><li>Every source file directly includes the declarations it uses.</li><li>Text operations are bounded and GUI objects remain inside frontend adapters.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Strict-warning builds contain no implicit declarations or unsafe conversions.</li><li>Public headers compile in isolation and partial-failure tests prove cleanup.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">DOC-001 · Approved</div>
+      <h3>Documentation is feature-oriented and uses Umicom terminology</h3>
+      <p><strong>Decision.</strong> Canonical documentation filenames and headings describe durable features and architecture. They do not use delivery numbers, phase labels or version-numbered copies. Product-design documentation uses Umicom terminology.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Feature-oriented documentation remains useful after sequencing and research inputs change.</p>
+        <h4>Constraints</h4><ul><li>Git history records document revisions.</li><li>Research observations are translated into original Umicom requirements and designs.</li><li>Canonical product documentation does not name external reference products.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Automated governance checks validate filenames, required sections and prohibited terminology.</li></ul>
+      </details>
+    </article>
+
+    <article class="decision">
+      <div class="id">DELIVERY-001 · Approved</div>
+      <h3>Every delivery includes documentation and evidence</h3>
+      <p><strong>Decision.</strong> A source delivery is incomplete without updated design or architecture documentation, the decision register, application coverage, roadmap status and validation evidence relevant to the change.</p>
+      <details><summary>Rationale, constraints and acceptance</summary>
+        <p><strong>Rationale.</strong> Implementation and project memory must evolve together.</p>
+        <h4>Constraints</h4><ul><li>Only genuinely changed source and documentation files are included.</li><li>Archives match the repository root and preserve paths.</li><li>No patch files or helper scripts are supplied unless explicitly requested.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>The documentation explains features, ownership, application adoption, constraints, validation, limitations and roadmap.</li></ul>
+      </details>
+    </article></div></section>
+<section id="applications"><h2>Complete application family</h2>
+<p>Every shared lifecycle, workbench, panel, layout, accessibility and command-state change is assessed against every registered application.</p>
+<div class="table"><table><thead><tr><th>Repository</th><th>Application ID</th><th>Product</th><th>Workspace focus</th></tr></thead><tbody><tr><td><code>applications/desktop</code></td><td><code>org.umicom.desktop</code></td><td>Umicom Desk</td><td>Universal host, application catalogue, sessions, recent work, notifications and system status.</td></tr>
+<tr><td><code>applications/studio</code></td><td><code>org.umicom.studio</code></td><td>Umicom Studio IDE</td><td>Projects, editors, visual design, build, test, debug, terminal, source control, documentation and AI assistance.</td></tr>
+<tr><td><code>applications/trader</code></td><td><code>org.umicom.trader</code></td><td>Umicom Trader</td><td>Market data, watchlists, charts, depth, orders, risk, positions, account and blotter.</td></tr>
+<tr><td><code>applications/tms</code></td><td><code>org.umicom.tms</code></td><td>Umicom TMS</td><td>Trade capture, lifecycle, workflow, pricing, positions, risk, settlement, accounting and operations.</td></tr>
+<tr><td><code>applications/llm</code></td><td><code>org.umicom.llm</code></td><td>Umicom LLM</td><td>Model catalogue, runtime, chat, tools, sessions, serving and performance.</td></tr>
+<tr><td><code>applications/bank</code></td><td><code>org.umicom.bank</code></td><td>Umicom Bank</td><td>Overview, customers, accounts, balances, payments, beneficiaries, approvals, reconciliation and liquidity.</td></tr>
+<tr><td><code>applications/exchange</code></td><td><code>org.umicom.exchange</code></td><td>Umicom Commodity Exchange</td><td>Markets, listings, matching, orders, contracts, logistics, surveillance and operations.</td></tr>
+<tr><td><code>applications/os</code></td><td><code>org.umicom.os</code></td><td>Umicom OS Control Centre</td><td>Systems, services, processes, storage, network, packages, users and security.</td></tr>
+<tr><td><code>applications/music</code></td><td><code>org.umicom.music-studio</code></td><td>Umicom Music Studio</td><td>Library, arrangement, timeline, mixer, instruments, effects and properties.</td></tr>
+<tr><td><code>applications/media</code></td><td><code>org.umicom.media-studio</code></td><td>Umicom Media Studio</td><td>Media library, timeline, preview, effects, audio, captions and export.</td></tr>
+<tr><td><code>applications/accountant</code></td><td><code>org.umicom.accountant</code></td><td>Umicom Accountant</td><td>Dashboard, chart of accounts, journals, ledger, reconciliation, close and reporting.</td></tr>
+<tr><td><code>applications/rag</code></td><td><code>org.umicom.rag</code></td><td>Umicom RAG</td><td>Collections, sources, ingestion, chunks, retrieval, evaluation and knowledge chat.</td></tr>
+<tr><td><code>applications/games</code></td><td><code>org.umicom.games</code></td><td>Umicom Games</td><td>Projects, scenes, game view, assets, scripts, properties and runtime diagnostics.</td></tr>
+<tr><td><code>applications/creator</code></td><td><code>org.umicom.creator</code></td><td>Umicom AI Creator</td><td>Projects, generation canvas, prompts, history, assets and export.</td></tr>
+<tr><td><code>applications/kitchen</code></td><td><code>org.umicom.kitchen-designer</code></td><td>Umicom Kitchen Designer</td><td>Catalogue, plan, three-dimensional view, materials, properties and estimate.</td></tr>
+<tr><td><code>applications/cad</code></td><td><code>org.umicom.cad</code></td><td>Umicom CAD</td><td>Model tree, drawing area, three-dimensional view, constraints, layers and properties.</td></tr>
+<tr><td><code>applications/web-studio</code></td><td><code>org.umicom.web-studio</code></td><td>Umicom Web Studio</td><td>Projects, source editor, visual designer, preview, console and network activity.</td></tr>
+<tr><td><code>applications/mobile-studio</code></td><td><code>org.umicom.mobile-studio</code></td><td>Umicom Mobile Studio</td><td>Projects, device preview, designer, components, properties, build and deployment.</td></tr>
+<tr><td><code>applications/database-studio</code></td><td><code>org.umicom.database-studio</code></td><td>Umicom Database Studio</td><td>Connections, schemas, query editor, results, execution plans and data inspection.</td></tr>
+<tr><td><code>applications/integration-studio</code></td><td><code>org.umicom.integration-studio</code></td><td>Umicom Integration Studio</td><td>Flows, connectors, mappings, messages, monitoring and failures.</td></tr>
+<tr><td><code>applications/operations</code></td><td><code>org.umicom.operations</code></td><td>Umicom Operations</td><td>Service health, deployments, jobs, logs, metrics, incidents and recovery.</td></tr>
+<tr><td><code>applications/security-centre</code></td><td><code>org.umicom.security-centre</code></td><td>Umicom Security Centre</td><td>Identity, permissions, policy, secrets, events, findings and response.</td></tr>
+<tr><td><code>applications/marketplace</code></td><td><code>org.umicom.marketplace</code></td><td>Umicom Marketplace</td><td>Catalogue, installed components, updates, publishing, licences and reviews.</td></tr>
+<tr><td><code>applications/education</code></td><td><code>org.umicom.education</code></td><td>Umicom Education Studio</td><td>Courses, lessons, learner preview, assessment, progress and teaching assistance.</td></tr></tbody></table></div>
+</section>
+<section id="standards"><h2>Non-negotiable standards</h2>
+<ul>
+<li>Preserve existing features, public names, comments, tooltips, layouts, tests and accessibility behaviour.</li>
+<li>Implement reusable behaviour once in Framework.</li>
+<li>Use C23, stable C ABI boundaries, explicit ownership and rollback-safe state changes.</li>
+<li>Keep toolkit and provider types in private adapters.</li>
+<li>Persist Umicom-owned state through the Data Server.</li>
+<li>Make every visible command truthful.</li>
+<li>Update decisions, architecture, coverage, roadmap and evidence with source changes.</li>
+</ul>
+</section>
+<section id="roadmap"><h2>Feature roadmap</h2>
+<ol>
+<li>Governance and architecture-conformance enforcement.</li>
+<li>Universal startup and identity migration.</li>
+<li>Application-surface host, catalogue and host-window transfer.</li>
+<li>Complete docking, detached windows and multi-monitor recovery.</li>
+<li>Named layout library and Data Server persistence.</li>
+<li>Typed context linking.</li>
+<li>Product-focused default experiences for every application.</li>
+<li>Complete vertical user journeys.</li>
+<li>Accessibility, responsive design and frontend conformance.</li>
+</ol>
+</section>
+</main><footer>Umicom Product Design and Application Architecture Governance · revisioned through Git history</footer>
+</body></html>

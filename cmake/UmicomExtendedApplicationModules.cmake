@@ -187,3 +187,8 @@ function(umicom_add_extended_application_modules)
         "applications/education"
         "Umicom Education Studio")
 endfunction()
+
+# Product and architecture decisions are part of the suite contract. The shared
+# audit is included here because this catalogue is already loaded by every
+# suite configuration and therefore cannot be bypassed by disabling one product.
+include("${CMAKE_CURRENT_LIST_DIR}/UmicomProductGovernance.cmake")
