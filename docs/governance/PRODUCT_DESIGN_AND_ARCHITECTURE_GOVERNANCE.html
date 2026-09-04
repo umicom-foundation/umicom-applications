@@ -229,6 +229,16 @@ Thin applications
         <h4>Acceptance evidence</h4><ul><li>Strict-warning builds contain no implicit declarations or unsafe conversions.</li><li>Public headers compile in isolation and partial-failure tests prove cleanup.</li></ul>
       </details>
     </article>
+    <article class="decision">
+      <div class="id">CODE-003 · Approved</div>
+      <h3>Public Framework contracts govern adapter extensions</h3>
+      <p><strong>Decision.</strong> Frontend adapters and application hosts implement the current public Framework contracts. They do not invent parallel callback types, substitute structure fields, unofficial helpers or undeclared headers.</p>
+      <details><summary>Rationale and acceptance</summary>
+        <p><strong>Rationale.</strong> Contract drift in one shared adapter blocks the complete application family and creates a second source of truth.</p>
+        <h4>Constraints</h4><ul><li>Preserve compatible APIs and existing names.</li><li>Access opaque models through public functions.</li><li>Update headers and implementations atomically when a genuine contract is added.</li></ul>
+        <h4>Acceptance evidence</h4><ul><li>Strict C23 adapter compilation succeeds.</li><li>Configure-time conformance checks reject known parallel symbols and phantom headers.</li></ul>
+      </details>
+    </article>
 
     <article class="decision">
       <div class="id">DOC-001 · Approved</div>

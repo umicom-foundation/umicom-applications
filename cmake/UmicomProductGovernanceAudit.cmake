@@ -34,7 +34,8 @@ set(_umicom_required_documents
     "docs/governance/REPOSITORY_ARCHITECTURE_AUDIT.md"
     "docs/architecture/UNIVERSAL_APPLICATION_WORKBENCH.md"
     "docs/architecture/FRAMEWORK_APPLICATION_ADOPTION.md"
-    "docs/architecture/WORKBENCH_FEATURE_ROADMAP.md")
+    "docs/architecture/WORKBENCH_FEATURE_ROADMAP.md"
+    "docs/architecture/WORKSTATION_PUBLIC_CONTRACT_ALIGNMENT.md")
 
 # Fail with the repository-relative path so the correction can be made without
 # reverse engineering a generated or machine-specific absolute path.
@@ -57,6 +58,8 @@ set(_umicom_adoption_document
     "${_umicom_root}/docs/architecture/FRAMEWORK_APPLICATION_ADOPTION.md")
 set(_umicom_roadmap_document
     "${_umicom_root}/docs/architecture/WORKBENCH_FEATURE_ROADMAP.md")
+set(_umicom_contract_alignment_document
+    "${_umicom_root}/docs/architecture/WORKSTATION_PUBLIC_CONTRACT_ALIGNMENT.md")
 
 file(READ "${_umicom_governance_document}" _umicom_governance_text)
 file(READ "${_umicom_decision_document}" _umicom_decision_text)
@@ -64,6 +67,8 @@ file(READ "${_umicom_coverage_document}" _umicom_coverage_text)
 file(READ "${_umicom_workbench_document}" _umicom_workbench_text)
 file(READ "${_umicom_adoption_document}" _umicom_adoption_text)
 file(READ "${_umicom_roadmap_document}" _umicom_roadmap_text)
+file(READ "${_umicom_contract_alignment_document}"
+    _umicom_contract_alignment_text)
 
 # Check a durable semantic marker rather than whitespace or formatting details.
 function(_umicom_require_text document_text required_text description)
@@ -106,6 +111,14 @@ _umicom_require_text(
     "${_umicom_roadmap_text}"
     "Functional vertical journeys"
     "Workbench feature roadmap")
+_umicom_require_text(
+    "${_umicom_decision_text}"
+    "Public Framework contracts govern adapter extensions"
+    "Product decision register")
+_umicom_require_text(
+    "${_umicom_contract_alignment_text}"
+    "Existing public types, constants, structures and function signatures are the source of truth"
+    "Workstation public contract alignment")
 
 # Decision identifiers remain stable. Duplicates would make implementation,
 # supersession and acceptance evidence ambiguous.
@@ -245,8 +258,88 @@ foreach(_umicom_document IN LISTS _umicom_required_documents)
     endforeach()
 endforeach()
 
+
+# Workstation adapters must use the Framework contracts already exported by
+# their public headers. These checks prevent a feature implementation from
+# creating a parallel callback, model or include surface that blocks every
+# application sharing the workbench.
+set(_umicom_workstation_contract_files
+    "framework/adapters/gtk4/workstation/panel_frame_gtk4.c"
+    "framework/adapters/gtk4/workstation/tab_host_gtk4.c"
+    "framework/adapters/gtk4/workstation/view_model_panel_gtk4.c"
+    "framework/adapters/gtk4/workstation/workspace_layout_host_gtk4.c"
+    "framework/include/umicom/ui/gtk4/workstation/panel_frame.h"
+    "framework/include/umicom/ui/gtk4/workstation/workspace_layout_host.h")
+
+set(_umicom_workstation_contract_text "")
+foreach(_umicom_contract_file IN LISTS _umicom_workstation_contract_files)
+    if(NOT EXISTS "${_umicom_root}/${_umicom_contract_file}")
+        message(FATAL_ERROR
+            "Required workstation contract file is missing: "
+            "${_umicom_contract_file}")
+    endif()
+    file(READ
+        "${_umicom_root}/${_umicom_contract_file}"
+        _umicom_contract_file_text)
+    string(APPEND
+        _umicom_workstation_contract_text
+        "\n${_umicom_contract_file_text}")
+endforeach()
+
+set(_umicom_forbidden_workstation_contract_fragments
+    "umicom/ui/gtk4/workstation/table_surface.h"
+    "umicom/ui/gtk4/workstation/trading_chart.h"
+    "UmiGtk4PanelFrameActionHandler"
+    "UmiGtk4WorkspaceLayoutPanelActionHandler"
+    "UmiGtk4ViewModelPanelActionHandler"
+    "umi_gtk4_automation_set_id"
+    "UMI_WS_ID_CAPACITY"
+    "UMI_UI_WORKSPACE_MAX_WINDOWS"
+    "->tab_count")
+
+foreach(_umicom_fragment IN LISTS
+        _umicom_forbidden_workstation_contract_fragments)
+    string(FIND
+        "${_umicom_workstation_contract_text}"
+        "${_umicom_fragment}"
+        _umicom_fragment_position)
+    if(NOT _umicom_fragment_position EQUAL -1)
+        message(FATAL_ERROR
+            "Workstation adapter contract drift contains forbidden fragment: "
+            "${_umicom_fragment}")
+    endif()
+endforeach()
+
+set(_umicom_required_workstation_contract_fragments
+    "UmiGtk4WsPanelActionHandler"
+    "umi_gtk4_ws_panel_frame_create_interactive"
+    "UmiGtk4WorkspaceLayoutActionHandler"
+    "umi_gtk4_workspace_layout_host_create_interactive"
+    "UMI_UI_WORKSPACE_LAYOUT_MAX_WINDOWS"
+    "UMI_UI_ID_CAPACITY"
+    "umi_gtk4_automation_tag_widget"
+    "stack->count"
+    "umi_ui_view_model_get_property"
+    "umi_ui_property_bag_at"
+    "umi_ui_command_view_action_at"
+    "umi_gtk4_ws_chart_surface_create_with_scene")
+
+foreach(_umicom_fragment IN LISTS
+        _umicom_required_workstation_contract_fragments)
+    string(FIND
+        "${_umicom_workstation_contract_text}"
+        "${_umicom_fragment}"
+        _umicom_fragment_position)
+    if(_umicom_fragment_position EQUAL -1)
+        message(FATAL_ERROR
+            "Workstation adapter contract is missing required fragment: "
+            "${_umicom_fragment}")
+    endif()
+endforeach()
+
+list(LENGTH _umicom_required_documents _umicom_document_count)
 message(
     "Umicom product governance validated: "
     "${_umicom_decision_count} decisions, "
     "${_umicom_application_count} registered applications, "
-    "${_umicom_required_documents} canonical document set")
+    "${_umicom_document_count} canonical documents")

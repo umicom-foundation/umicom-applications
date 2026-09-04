@@ -120,6 +120,10 @@ Early depth priorities are Studio, Trader, TMS and Bank, while shared mechanics 
 
 ## Architecture and quality conformance
 
+- public Framework contract and adapter alignment;
+- compatible constructor and callback preservation;
+- opaque-model access through public functions only;
+- phantom-header and parallel-symbol rejection;
 - public headers compile in isolation;
 - direct declaration ownership;
 - strict warnings;

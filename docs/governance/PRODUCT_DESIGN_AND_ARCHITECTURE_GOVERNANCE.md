@@ -175,6 +175,12 @@ Ordinary panels show user tasks and authoritative state. Internal identifiers, r
 
 Every registered application must adopt the same Framework lifecycle, host, tabs, panels, layouts, command-state, accessibility and persistence concepts. Shared updates occur once in Framework. Application repositories change only when identity, profile, composition or genuinely product-specific behaviour requires it.
 
+## Public contract alignment
+
+Framework public headers govern adapter and application integration. Frontend code must not invent substitute type names, structure fields, helper functions or include files. Existing compatible entry points remain available; enhanced behaviour uses a deliberate Framework companion API. Opaque models are read only through their public functions, and public headers and implementations change atomically.
+
+The configure-time governance audit checks the universal workstation adapter source for known contract-drift patterns. This does not replace compiler validation; it prevents previously identified invalid parallel contracts from reappearing silently.
+
 ## Source-preservation constraints
 
 - Do not remove an existing feature to simplify redesign or migration.

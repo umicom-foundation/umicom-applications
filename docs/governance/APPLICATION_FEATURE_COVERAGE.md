@@ -54,6 +54,21 @@ Coverage never requires meaningless source edits. A clean application repository
 | `applications/marketplace` | `org.umicom.marketplace` | Umicom Marketplace | Framework portfolio and experience registered; thin runtime enabled; product journey and specialised panel maturity remain under coverage. | Catalogue, installed components, updates, publishing, licences and reviews. |
 | `applications/education` | `org.umicom.education` | Umicom Education Studio | Framework portfolio and experience registered; thin runtime enabled; product journey and specialised panel maturity remain under coverage. | Courses, lessons, learner preview, assessment, progress and teaching assistance. |
 
+## Shared workstation contract alignment
+
+The Framework GTK4 workstation correction is inherited by every registered application. It preserves compact normal-mode panel chrome, explicit Edit Layout controls, managed tab close, detached windows, linked-context presentation, truthful product view-model rendering and existing chart behaviour while aligning every adapter with the public Framework contracts.
+
+| Coverage item | Result |
+|---|---|
+| Implementation owner | Umicom Framework only |
+| Application-local duplicate | None permitted or required |
+| Direct application source impact | None for this shared repair |
+| Inherited consumers | Every application listed above when it renders a Framework workstation or surface |
+| Contract evidence | Existing public panel-frame, workspace-host, tab-stack, automation, view-model, property, command and chart contracts |
+| Build evidence required | Framework UI target, normal suite build and all-application build |
+| Journey evidence required | Application startup plus affected panel, tab, detach, close and layout journeys |
+| Remaining limitation | Complete Windows UCRT64 and GTK4 integration validation must be recorded after local execution |
+
 ## Common acceptance matrix
 
 Every registered graphical application must eventually satisfy:

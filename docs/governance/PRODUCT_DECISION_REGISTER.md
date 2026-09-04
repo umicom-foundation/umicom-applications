@@ -28,6 +28,7 @@
 | APP-001 | Approved | Every registered application is in scope |
 | CODE-001 | Approved | Existing features, names and comments are preserved |
 | CODE-002 | Approved | C23 and stable C ABI govern shared boundaries |
+| CODE-003 | Approved | Public Framework contracts govern adapter extensions |
 | DOC-001 | Approved | Documentation is feature-oriented and uses Umicom terminology |
 | DELIVERY-001 | Approved | Every delivery includes documentation and evidence |
 
@@ -334,6 +335,27 @@
 
 - Strict-warning builds contain no implicit declarations or unsafe conversions.
 - Public headers compile in isolation and partial-failure tests prove cleanup.
+
+### CODE-003 — Public Framework contracts govern adapter extensions
+
+**Status:** Approved  
+**Decision:** Frontend adapters, shared renderers and application hosts must implement the current public Framework contracts. They must not introduce parallel callback types, substitute structure fields, private public-API copies, unofficial automation helpers or phantom headers. Existing compatible APIs remain available while enhanced behaviour uses an explicit Framework companion contract.
+
+**Rationale:** The workbench is shared by every application. Contract drift in one adapter blocks the complete application estate and can silently create a second source of truth.
+
+**Constraints**
+
+- Inspect the current public header, implementation and callers before changing an adapter.
+- Update a public header and its implementation atomically when a genuinely new contract is required.
+- Access opaque models only through their public functions.
+- Preserve existing function, variable and type names unless an approved migration makes a change unavoidable.
+- A missing reusable contract is added to Framework; it is not invented privately inside an adapter or application.
+
+**Acceptance evidence**
+
+- Strict C23 compilation succeeds without implicit declarations, incompatible callbacks or undeclared fields.
+- The workstation contract audit rejects known parallel symbols and undeclared headers.
+- Every registered application builds against the same corrected Framework implementation.
 
 ### DOC-001 — Documentation is feature-oriented and uses Umicom terminology
 

@@ -1,8 +1,8 @@
 # Umicom Repository Architecture Audit
 
 **Audit date:** 4 September 2026  
-**Suite baseline:** `1b36798ba214bf17f76b394968b6ed4c9f28b905`  
-**Framework baseline:** `9af3da7b95c12b265de5e2edc940fc0e14b8fe2d`  
+**Suite baseline:** `ed23f0b138baf603ae7dfd1da2e6eba565655935`  
+**Framework baseline:** `459540b2697a35166073c38dfbafca15bf31cd3d`  
 **Scope:** `umicom-applications`, `umicom-framework`, all registered application submodules, canonical workbench design and build integration.
 
 ## Executive finding
@@ -59,6 +59,19 @@ Framework already contains shared GTK4 adapters and toolkit-neutral models for i
 - canonical document-name and terminology checks;
 - stronger Framework portfolio and experience alignment assertions;
 - explicit preservation and delivery constraints.
+
+## Workstation adapter contract alignment
+
+The current Framework baseline contained a workbench presentation enhancement whose implementation drifted from the public headers already exported by Framework. The build evidence identified four affected GTK4 adapter translation units:
+
+- `panel_frame_gtk4.c` used a parallel callback type and replaced the compatible constructor signature;
+- `tab_host_gtk4.c` used an undeclared identifier capacity, an undeclared automation helper and a field absent from `UmiWsTabStack`;
+- `workspace_layout_host_gtk4.c` used a parallel callback type, the wrong panel constructor, the wrong workspace capacity and an incompatible constructor implementation;
+- `view_model_panel_gtk4.c` depended on undeclared table and chart headers and assumed a different value and opaque-model representation.
+
+The corrected implementation now uses the existing Framework contracts, restores compatible constructors, preserves the new product-facing workbench features, renders tables and charts through existing shared mechanisms, and adds a configure-time conformance scan for this class of contract drift.
+
+No application-local implementation was added. The repair remains Framework-owned and is inherited by the complete application family.
 
 ## Remaining implementation work
 
