@@ -53,6 +53,8 @@ The host, tabs, panel lifecycle and layout mechanisms are Framework-owned. Appli
 
 A host window may contain several authorised application sessions. Tabs may be opened, reordered, closed and transferred between Framework host windows according to session and policy rules.
 
+The current GTK4 implementation presents the active product identity, workspace subtitle and operating-mode badge as one stable active application tab. Adjacent plus, new-window and close actions use the same Framework controller. This is the visible and behavioural foundation for several simultaneous application tabs; the multi-session container and transfer protocol remain roadmap work.
+
 ### Document and tool tabs
 
 These tabs belong to a product workspace. They can represent source documents, charts, designs, queries, reports, terminals or other tool surfaces.
@@ -125,7 +127,11 @@ Users own:
 
 ## Application catalogue
 
-A searchable plus action opens applications, panels, tools, documents and templates. Each entry exposes required capabilities and a truthful unavailable reason. An entry can open in the current region, a new tab, a new host window or a selected monitor.
+The Framework GTK4 header now implements the first executable application-catalogue slice. Its plus action enumerates the canonical application portfolio and searches stable application identity, product name and purpose. The default adapter resolves an independently runnable executable beside the current installation or on the operating-system search path. A missing executable produces a visible failure reason.
+
+The public application-open callback allows Umicom Desk or another Framework host to replace process launch with application-surface-session placement while preserving the same catalogue, application identifiers and controls. Several simultaneous in-host application sessions, drag transfer and monitor-aware rehydration remain future host work.
+
+The complete catalogue will also open panels, tools, documents and templates. Each entry exposes required capabilities and a truthful unavailable reason. An entry can ultimately open in the current region, a new tab, a new host window or a selected monitor.
 
 ## Context-linked panels
 
@@ -142,6 +148,8 @@ The Data Server stores named layouts, application sessions, tab identity, monito
 ## Accessibility and responsive behaviour
 
 The Workbench must support keyboard operation, focus traversal, accessible names and descriptions, high contrast, reduced motion and supported display scaling. Optional panels collapse before central work content becomes unusable.
+
+Framework default geometry now reserves approximately 18% for each side region, 64% for the centre and 24% for the bottom activity area. These are semantic starting proportions rather than fixed pixels. Saved user layouts remain authoritative, and every frontend may adapt the same regions to available size and monitor topology.
 
 ## Acceptance journeys
 

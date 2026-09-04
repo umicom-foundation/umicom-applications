@@ -100,3 +100,39 @@ Every shared delivery updates this document. For each affected application, reco
 - next roadmap action.
 
 A missing application row is a governance failure.
+
+## Universal application header and launcher coverage
+
+The shared GTK4 application header now provides a semantic active-application
+tab, searchable application catalogue, plus action, new-window action and
+window-close action. The catalogue is populated from the canonical Framework
+portfolio; no application repository owns another product list.
+
+### Coverage classification
+
+| Consumer | Coverage | Evidence required on Windows |
+|---|---|---|
+| Umicom Desk | Inherited through the managed Framework shell header used by the Desk GTK entry point. | Header shows the active Desk tab, catalogue search, plus action, new-window action and close action. |
+| Umicom Studio IDE | Inherited through the managed Framework shell header in the existing Studio application bar. | Header shows `<>` or the packaged mark, the application catalogue opens, and closing follows the Studio close guard. |
+| Umicom Trader and Umicom Bank | Inherited through the Framework product workstation and suite workstation. | Each product shows its own identity and can discover the canonical application portfolio. |
+| TMS, LLM, Exchange, Music, Media, Accountant, RAG, Games, Creator, Kitchen, CAD, Web Studio, Mobile Studio, Database Studio, Integration Studio, Operations, Security Centre, Marketplace, Education and OS Control Centre | Inherited when their graphical surface uses the Framework product or managed shell-header composition. | Each configured graphical executable or surface must show the same controls; an unavailable executable reports a reason rather than a false success. |
+
+### Source-of-truth evidence
+
+- application names, purposes, repository slugs and executable names come from
+  `UmiApplicationDefinition` records;
+- catalogue enumeration uses `umi_application_portfolio_count()` and
+  `umi_application_portfolio_at()`;
+- selection resolves again through `umi_application_portfolio_find()` before
+  launch;
+- a future universal host supplies one callback and does not replace the
+  catalogue or copy its rows;
+- no application-local source file is changed merely to reproduce shared
+  controls.
+
+### Current limitation
+
+The implementation opens an independently runnable process unless a host
+installs the new application-open callback. Several application surfaces in one
+native host, drag transfer between host windows and state rehydration remain
+roadmap capabilities. They are not represented as complete by this update.

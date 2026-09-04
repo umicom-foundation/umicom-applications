@@ -27,14 +27,24 @@ This roadmap describes durable capability areas rather than numbered deliveries.
 
 ## Universal application host
 
-- application catalogue;
-- multiple application-surface sessions;
-- closeable and reorderable application tabs;
+Implemented foundation:
+
+- Framework-owned searchable application catalogue sourced from the canonical portfolio;
+- active application-surface tab in the shared header;
+- plus action available to Studio, Desk and shared product workstations;
+- independent new-window process fallback;
+- public host callback for later in-process application-surface sessions;
+- close action routed through the normal native close-request path.
+
+Remaining work:
+
+- multiple application-surface sessions in one host;
+- closeable and reorderable application tabs for several simultaneous sessions;
 - transfer between host windows;
-- new independent host windows;
-- multi-monitor restoration;
+- acknowledged transfer tokens and destination rehydration;
+- multi-monitor host restoration;
 - session checkpoint and recovery;
-- security and unsaved-work close policy.
+- complete security and unsaved-work transfer policy.
 
 ## Tabs and document surfaces
 
@@ -109,6 +119,14 @@ request
 Early depth priorities are Studio, Trader, TMS and Bank, while shared mechanics and coverage apply to the entire application family.
 
 ## Accessibility and responsive design
+
+Implemented foundation:
+
+- centre-dominant default semantic geometry shared by all workstations;
+- accessible names for application catalogue, search, new-window and close controls;
+- packaged Umicom mark with `<>` fallback.
+
+Remaining work:
 
 - keyboard-only operation;
 - focus order and restoration;

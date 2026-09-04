@@ -31,6 +31,9 @@
 | CODE-003 | Approved | Public Framework contracts govern adapter extensions |
 | DOC-001 | Approved | Documentation is feature-oriented and uses Umicom terminology |
 | DELIVERY-001 | Approved | Every delivery includes documentation and evidence |
+| UX-017 | Approved | The application header exposes one Framework-owned application catalogue |
+| UX-018 | Approved | The active application is presented as a stable application-surface tab |
+| HOST-001 | Approved | Application opening delegates to host policy with a process fallback |
 
 ## Approved decisions
 
@@ -437,3 +440,93 @@ specialised surface explicitly owns horizontal navigation when required.
 Deleting a build directory is not a layout migration mechanism. Framework
 changes compile independently from versioned user-layout migration and an
 explicit reset-to-product-default journey.
+
+## UX-017 — The application header exposes one Framework-owned application catalogue
+
+**Status:** Approved
+
+**Decision:** The shared application header owns the searchable application
+catalogue and its plus action. Catalogue rows are generated from the canonical
+Framework application portfolio. An application repository must not maintain a
+second list, menu or launcher implementation.
+
+**Rationale:** One catalogue lets every graphical application discover the same
+product family while keeping application identity, executable naming,
+authorisation and maturity in Framework-owned data.
+
+**Constraints**
+
+- The catalogue uses stable application identifiers.
+- The default launcher resolves packaged executables beside the running
+  application and then uses the operating-system search path.
+- Launch failure remains visible in the catalogue and does not pretend that a
+  session opened.
+- A host may replace process launch through the public callback without
+  replacing the catalogue UI.
+- Applications do not copy the portfolio into local arrays or menus.
+
+**Acceptance evidence**
+
+- Studio, Desk and product workstations obtain the same plus action through the
+  shared GTK4 header.
+- Search matches product name, purpose and stable identifier.
+- Every visible catalogue row originates from the Framework portfolio.
+- Unavailable executables produce a readable failure message.
+
+## UX-018 — The active application is presented as a stable application-surface tab
+
+**Status:** Approved
+
+**Decision:** The Framework application header groups the Umicom mark, product
+name, active workspace subtitle and operating-mode badge as one active
+application-surface tab. New-window and close controls belong to the same
+application lifecycle region.
+
+**Rationale:** A recognisable active application surface creates the foundation
+for several application sessions in one host without confusing application,
+document and layout tabs.
+
+**Constraints**
+
+- The packaged Umicom mark or `<>` fallback remains visible.
+- Application close routes through the native window close request, preserving
+  product close guards and unsaved-work policy.
+- The active application tab is not a document tab or a named layout tab.
+- Existing titles, modes and appearance updates continue through the current
+  public functions.
+
+**Acceptance evidence**
+
+- The existing title and snapshot APIs remain source-compatible.
+- The active tab updates when the application title or workspace subtitle
+  changes.
+- Close invokes the owning window's normal close-request path.
+
+## HOST-001 — Application opening delegates to host policy with a process fallback
+
+**Status:** Approved
+
+**Decision:** The shared header publishes one application-open callback using a
+stable application identifier and an explicit standard or new-window mode. In
+the absence of a host callback, the GTK4 adapter starts the executable resolved
+from the canonical portfolio.
+
+**Rationale:** The same UI must support the current independently runnable
+applications and the future application-surface-session host without a second
+launcher or a breaking API replacement.
+
+**Constraints**
+
+- The callback is borrowed and has an explicit controller lifetime.
+- Default process launch never serialises application business state.
+- In-host session attachment, transfer tokens and cross-window rehydration
+  remain separate roadmap work.
+- A failed host callback or missing executable leaves the current application
+  fully usable.
+
+**Acceptance evidence**
+
+- A caller can install and later remove a host callback.
+- The default implementation resolves canonical, repository-based and packaged
+  executable naming conventions.
+- New-window requests are distinguishable from standard host-policy requests.
