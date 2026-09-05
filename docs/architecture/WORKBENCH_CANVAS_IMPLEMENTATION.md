@@ -1,6 +1,6 @@
 # Workbench Canvas Core Implementation
 
-**Status:** Portable core implemented and tested; graphical integration pending.  
+**Status:** Portable core implemented; validation pending in the copied worktree; graphical integration pending.  
 **Recorded:** 5 September 2026  
 **Owner:** Umicom Framework  
 **Approved requirements:** `UMICOM_WORKBENCH_CANVAS_AND_INTEROPERABILITY.md`
@@ -9,9 +9,38 @@
 
 This change begins the approved user-composed canvas implementation. It extends the existing Framework workspace customisation contract. It does not create another layout store, application registry, GUI shell or docking engine.
 
-**This is not a finished graphical workbench update. Rebuilding an application with these files alone will not add a blank-canvas button, draggable internal windows or resize handles. No application frontend calls the new operations yet.**
+The portable coordinator also exposes one shared application-host bootstrap:
+`umi_ui_workbench_canvas_add_application_host()` loads a validated Framework
+experience, registers its panels and product layouts, and then attaches that
+model to a Workbench Host. Moving, resizing and snapping use the semantic
+in-canvas placement token; the existing `floating` flag remains reserved for a
+detached native window. The application-aware bridge is compiled with the
+suite-layout application target, while the lower-level canvas mechanics stay
+in the UI target. `UmicomApplicationSuiteLayoutPlatform.cmake` declares the
+application-to-UI link explicitly, keeping static-library dependency direction
+one-way.
 
-Two existing production files change: the public workspace customisation header and its C implementation. The existing public structures, declarations, function bodies, variable names and comments are preserved. The source adds a direct `<math.h>` dependency and new operations. A separate result structure and placement token are additive; existing structure layouts and enum values do not change.
+Host lifetime is explicit as well: `umi_ui_workbench_canvas_remove_host()`
+unregisters a closing native window, leaves its caller-owned customisation
+model untouched, repairs the active-host selection and publishes one revision.
+This prevents a multi-application session from routing commands to a window
+that no longer exists. The shared GTK4 suite workstation stores its generated
+host key and invokes this operation before releasing the native layout host, so
+failed startup and normal window shutdown follow the same ownership rule.
+
+Canvas command commits also synchronise surface metadata while the edit
+baseline is still available. If validation or commit rejects an edit, the
+coordinator cancels the transaction and refreshes its surface table instead of
+leaving a half-open edit or a stale detached-window record behind.
+
+**This is not a finished graphical workbench update. Rebuilding an application with these files alone will not add a blank-canvas button, draggable internal windows or resize handles. The shared GTK4 suite workstation now registers the portable canvas host, while gesture dispatch, internal-window rendering and monitor transfer remain separate integration work.**
+
+The canvas coordinator and suite-layout bridge are additive production units.
+The existing public structures, declarations, function bodies, variable names
+and comments are preserved. The coordinator uses a direct `<math.h>` dependency
+for safe normalised-grid calculations. A separate result structure and
+placement token are additive; existing structure layouts and enum values do
+not change.
 
 The companion approved specification remains the product-design authority. Its requirements are not a statement that all described behaviour is implemented.
 
@@ -95,8 +124,8 @@ The Framework Master Controller and bounded Slave Controllers retain lifecycle a
 | Free in-canvas rectangle | Implemented; portable tests pass | Compatible render plan, placement serialization and actual internal-window renderer |
 | Apply/Cancel model reuse | Tested for affected layout/group state | GTK scene restoration and detached-window lifecycle restoration |
 | Official icon | Catalogue located only | Actual resource resolution, staging and native header rendering |
-| Grid and snapping | Not implemented | Portable snap policy, visual previews and pointer/keyboard tests |
-| Drag and resize | Not implemented | Gesture-to-command binding, eight resize directions and boundary tests |
+| Grid and snapping | Portable coordinator operation implemented | Visual previews, pointer/keyboard tests and adapter binding |
+| Drag and resize | Portable move/resize operations implemented | Gesture-to-command binding, eight resize directions and boundary tests |
 | Dock, split and tab integration | Not changed | Reuse/audit existing contracts; no competing dock model |
 | Native detach/reattach | Existing mechanism not changed or retested | Same-instance state preservation and monitor/host journeys |
 | Multiple canvas hosts and application sessions | Not implemented here | Session ownership and acknowledged cross-host transfer |
@@ -108,6 +137,12 @@ The immediate graphical acceptance gate is: product default -> Create Blank Layo
 
 ## Testing and integration
 
-The new standalone test project is `framework/tests/workspace_canvas`. It compiles the changed customisation source and the real existing layout and window-group sources. It uses linker section collection to include only the portable operations exercised by the tests; consequently it does not prove linkage of the complete Framework UI library.
+The transaction-focused standalone test project is `framework/tests/workspace_canvas`. It compiles the changed customisation source and the real existing layout and window-group sources. It uses linker section collection to include only the portable operations exercised by the tests; consequently it does not prove linkage of the complete Framework UI library.
 
-The test project is not yet registered in the suite-wide CTest tree. Existing suite build files are not replaced. The changed production implementation remains in its existing source file, while the isolated test is configured separately. Exact commands, results and limitations are in the validation record.
+The higher-level coordinator test is `framework/tests/test_workbench_canvas.c`
+and is registered as `framework.ui.workbench_canvas` by the Framework CMake
+file. It exercises the canonical application catalogue, host bootstrap and
+canvas lifecycle. Neither test is a substitute for GTK event-loop, monitor,
+resource-packaging or full application acceptance evidence. The coordinator
+changes made after the historical validation record require a fresh local
+validation run.

@@ -1,7 +1,7 @@
 # Workbench Canvas Core Validation
 
 **Recorded:** 5 September 2026  
-**Result:** Portable model tests passed; graphical, Windows and suite-wide validation not performed.
+**Result:** Historical portable model tests passed; graphical, Windows and suite-wide validation not performed. The Workbench Canvas coordinator has since received host-bootstrap, dependency-boundary and in-canvas move/resize fixes in the copied worktree and requires fresh local validation there.
 
 ## Exact source baselines
 
@@ -10,7 +10,7 @@
 | `umicom-foundation/umicom-applications` | `885018f02b92f1595277955f3d86723df5ab1b6e` |
 | `umicom-foundation/umicom-framework` | `caaa56fd3c2aa5f881a4b963ed73682b7b144c3c` |
 
-The connected repository reader resolved these main-branch commits during this work. Required individual source files were retrieved at the pinned Framework commit. Their complete bytes were checked against the Git blob SHA supplied by the reader. Twelve original files were materialised for the isolated compilation. Only two existing production files are changed in the delivery; unchanged dependencies are excluded.
+The connected repository reader resolved these main-branch commits during this work. Required individual source files were retrieved at the pinned Framework commit. Their complete bytes were checked against the Git blob SHA supplied by the reader. Twelve original files were materialised for the isolated compilation. The copied worktree now contains the coordinator, suite-layout bridge, build registration and regression-test updates; unchanged dependencies are excluded.
 
 **This was not a complete repository clone.** The attempted container clone failed with `Could not resolve host: github.com`. The connected reader remained available. No local Windows working-tree state, previous delivery archive or fabricated source snapshot was used as the implementation baseline. No remote commits or pushes were performed.
 
@@ -119,14 +119,14 @@ The 24 paths below were read from the pinned parent `.gitmodules`. The core is s
 | `applications/trader` | Present in pinned `.gitmodules` | Not integrated or started here |
 | `applications/web-studio` | Present in pinned `.gitmodules` | Not integrated or started here |
 
-A later integration change must show the default-to-blank-to-panel-to-move/resize-to-cancel journey for every supported graphical client, either through the shared runtime or a verified thin binding. Do not mark clients complete because they link Framework or are listed here.
+A later integration change must show the default-to-blank-to-panel-to-move/resize-to-cancel journey for every supported graphical client, either through the shared runtime or a verified thin binding. The shared GTK4 suite workstation now registers each product's portable canvas host, but that registration alone is not graphical acceptance evidence. Do not mark clients complete because they link Framework or are listed here.
 
 ## Checks not performed
 
 - Complete parent checkout, suite configuration, full build or full CTest run.
 - Windows UCRT64 compile, link or execution.
 - GTK4 adapter compile/link, window presentation or screenshot acceptance.
-- Registration of this standalone test into the existing suite-wide test tree.
+- Fresh validation of the coordinator test after the host-bootstrap and in-canvas placement changes.
 - Official icon loading or placement repair.
 - Widget dragging, resize handles, snapping, docking or z-order interaction.
 - Canvas placement serialization, migration or Data Server persistence.
