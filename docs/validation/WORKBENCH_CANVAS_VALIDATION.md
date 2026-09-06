@@ -1,5 +1,18 @@
 # Workbench Canvas Core Validation
 
+## Current source integration notice
+
+The 6 September native canvas update supersedes the older centre-tab projection
+described below. It adds independent canvas geometry, shared native controls and
+C regression sources. No current compiler or native test result is asserted.
+The earlier portable results remain historical evidence only.
+
+Use [Native canvas validation](NATIVE_CANVAS_VALIDATION.md) for the current
+targets, client coverage, manual journey and remaining limitations. Studio's
+main GUI has not yet migrated to the shared canvas owner.
+
+## Historical portable evidence
+
 **Recorded:** 5 September 2026  
 **Result:** Historical portable model tests passed; graphical, Windows and suite-wide validation not performed. The Workbench Canvas coordinator has since received host-bootstrap, dependency-boundary and in-canvas move/resize fixes in the copied worktree and requires fresh local validation there.
 

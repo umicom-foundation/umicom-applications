@@ -1,7 +1,7 @@
 # Workbench Canvas Core Implementation
 
-**Status:** Portable core and explicit GTK4 centre projection implemented; validation pending in the copied worktree; full gesture and monitor integration pending.  
-**Recorded:** 5 September 2026  
+**Status:** Portable model, native free canvas and Studio shell source integration are present; compilation and native acceptance remain pending. Durable canvas recovery and monitor transfer remain open.  
+**Recorded:** 6 September 2026  
 **Owner:** Umicom Framework  
 **Approved requirements:** `UMICOM_WORKBENCH_CANVAS_AND_INTEROPERABILITY.md`
 
@@ -42,14 +42,36 @@ baseline is still available. If validation or commit rejects an edit, the
 coordinator cancels the transaction and refreshes its surface table instead of
 leaving a half-open edit or a stale detached-window record behind.
 
-**This is not a finished graphical workbench update. Rebuilding an application with these files alone will not add a blank-canvas button, draggable internal windows or resize handles. The shared GTK4 suite workstation now registers the portable canvas host, while gesture dispatch, internal-window rendering and monitor transfer remain separate integration work.**
+The shared GTK4 suite workstation now has New Layout, Canvas placement, Clear
+Panels and numeric position/size controls in source. Its renderer uses separate
+in-canvas rectangles, title-bar movement, a lower-right resize handle and an
+edit grid. It no longer turns free panels into centre tabs. Valid empty layouts
+also produce a native canvas rather than a render-plan error.
 
-The canvas coordinator and suite-layout bridge are additive production units.
-The existing public structures, declarations, function bodies, variable names
-and comments are preserved. The coordinator uses a direct `<math.h>` dependency
+This is source integration, not a verified application result. Studio's main
+GTK shell now constructs the same native host using its professional-workspace
+customisation owner. Its old placement arrays are derived display information;
+the separate GTK edit baseline is removed. The original editor is retained as
+one real panel body. Named empty canvases, opening tools and Apply/Cancel use
+the shared model. No second canvas is inserted beside the former shell.
+
+Studio opts into bounded provider-body retention across layout rebuilds.
+Disposable mounts separate each body from its old frame before frame actions
+are invalidated. The editor adapter also reconciles document views so routine
+status updates do not replace unchanged text buffers. Context colours resolve
+through the existing group store rather than treating a group ID as a colour.
+These changes have C regression coverage in source, not passing test evidence.
+Native interaction and restart journeys have not been executed here.
+
+The canvas coordinator and suite-layout bridge keep their existing entry
+points. Studio migration changes runtime function bodies and private
+presentation state; existing comments are preserved or replaced with relevant
+explanations. The coordinator uses a direct `<math.h>` dependency
 for safe normalised-grid calculations. A separate result structure and
-placement token are additive; existing structure layouts and enum values do
-not change.
+placement token are additive. The current render plan and observable GTK
+snapshots append canvas fields; all consumers must be rebuilt together. Existing
+placement enum values are unchanged. This is not a binary-compatibility claim
+for an old executable loading a newly built library.
 
 The companion approved specification remains the product-design authority. Its requirements are not a statement that all described behaviour is implemented.
 
@@ -65,13 +87,13 @@ The caller must have exclusive synchronous ownership of the customisation while 
 
 The operation rejects an active edit, an empty or overlong ID/name, an existing layout ID, exhausted capacity, malformed bounded records and revision overflow. Duplicate readable names are allowed; stable layout IDs remain unique. Allocation or validation failure leaves the original customisation unchanged. Input strings may refer to the original customisation because the candidate is separate.
 
-Blank-layout creation is a separate committed operation. Call the existing begin-edit operation to start arranging its contents. Cancel then returns the contents to that blank layout; it does not undo creation of the named layout itself. Automatic name generation, UI confirmation and undoing creation are frontend/controller integration work.
+Blank-layout creation is a separate committed operation. Call the existing begin-edit operation to start arranging its contents. Cancel then returns the contents to that blank layout; it does not undo creation of the named layout itself. The shared native New Layout control accepts a display name and creates an application-qualified stable ID. Undoing creation itself remains future work.
 
 ## Clear the active canvas
 
 `umi_ui_workspace_customisation_clear_canvas(customisation, out_result)` runs inside the existing edit transaction. It removes closable, unpinned instances from the active layout and reports removed/retained counts. This includes detached instances owned by that active layout, but does not remove instances from other stored layouts.
 
-Pinned or non-closable records remain. The future UI must explain those retained records rather than claiming the entire canvas is empty. The result pointer is optional, must not overlap the customisation, and is written only on success.
+Pinned or non-closable records remain. The shared Clear Panels control reports retained instances rather than claiming the entire canvas is empty. The result pointer is optional, must not overlap the customisation, and is written only on success.
 
 The operation preserves catalogue definitions, product data, theme, named layouts and the transaction baseline. It removes reverse linked-context membership only when the removed instance ID no longer appears in any stored layout. This protects legacy saved layouts that reuse an instance ID. Context-group definitions remain available. Cancel restores the existing layout and group baselines; commit uses the established lock/validation path.
 
@@ -87,11 +109,23 @@ It requires an active edit and an unlocked active layout. It rejects a pinned in
 
 The placement token is `UMI_UI_WORKSPACE_CANVAS_PLACEMENT`, whose value is `canvas`. The existing `floating` flag is set to false because its established meaning is a **detached native window**, not a movable window contained by a canvas. The instance receives its own stack identity rather than remaining accidentally grouped with a previous dock stack.
 
-The GTK layout host now explicitly recognises this token and projects canvas-managed
-panels into the centre workspace. Pointer gesture dispatch, internal-window chrome,
-serialization/migration, and monitor transfer still require frontend conformance
-work; the additive core and this projection are not a claim of completed
-end-to-end desktop editing.
+The render plan separates up to 64 canvas items from the existing 16 dock-stack
+slots. Each canvas item keeps its source window index, rectangle and z-order.
+GTK renders those items independently of dock tabs and native detached windows.
+Invalid or non-finite rectangles are rejected before conversion to pixels.
+
+Pointer movement changes only a temporary view rectangle. Drag completion
+queues one copied request with the source layout revision. The existing
+customisation operation accepts it inside the current edit; it does not begin
+or commit a nested edit. Cancel therefore retains the original baseline.
+Rebuilding, changing the callback or destroying the host cancels queued work.
+Geometry-only updates retain existing panel widgets so movement does not erase
+an unsent field or move focus into a recreated form.
+
+The shared panel editor also submits Canvas position and size as percentages.
+Geometry, placement and linked context are validated on one candidate. Canvas
+auto-hide is rejected because it has no dock edge. Full docking gestures,
+eight-direction resizing, monitor restoration and native acceptance remain open.
 
 ## Apply several panel changes together
 
@@ -163,19 +197,19 @@ The Framework Master Controller and bounded Slave Controllers retain lifecycle a
 
 | Feature | Current state | Required next evidence |
 |---|---|---|
-| Blank-layout model operation | Implemented; portable tests pass | Framework command binding and visible layout selection |
-| Clear removable instances | Implemented; portable tests pass | Unsaved-work/permission checks, confirmation and rendered removal |
-| Free in-canvas rectangle | Implemented; portable tests pass | Compatible render plan, placement serialization and actual internal-window renderer |
+| Blank-layout model operation | Core and shared New Layout control implemented in source | Native creation, selection and capacity validation |
+| Clear removable instances | Core and shared reversible Clear Panels control implemented in source | Product unsaved-work guards and native retained-panel validation |
+| Free in-canvas rectangle | Separate render-plan items and native renderer implemented in source | Compile, native gesture acceptance and restart recovery |
 | Multi-panel edit transaction | Implemented; coordinator test covers success and rollback | Bind multi-selection and docking gestures in each graphical adapter |
 | Surface-state snapshot | Implemented; coordinator test covers complete and short outputs | Use the copied records in menus, accessibility and monitor views |
 | Apply/Cancel model reuse | Tested for affected layout/group state | GTK scene restoration and detached-window lifecycle restoration |
 | Official icon | Shared resource lookup, staging and native identity integrated in source; artwork unchanged | Verify the approved asset in headers, native windows and installed executables at supported scales |
-| Grid and snapping | Portable coordinator operation implemented | Visual previews, pointer/keyboard tests and adapter binding |
-| Drag and resize | Portable move/resize operations implemented | Gesture-to-command binding, eight resize directions and boundary tests |
+| Grid and snapping | Portable geometry and native edit grid/preview implemented in source | Native pointer and keyboard acceptance; configurable grid |
+| Drag and resize | Native title movement and lower-right resize implemented in source | Eight resize directions, Studio migration and boundary acceptance |
 | Dock, split and tab integration | Not changed | Reuse/audit existing contracts; no competing dock model |
 | Native detach/reattach | The shared GTK4 layout host creates detached native windows; runtime acceptance pending | Same-instance state preservation, reattachment and monitor/host journeys |
 | Multiple canvas hosts and application sessions | Not implemented here | Session ownership and acknowledged cross-host transfer |
-| Layout persistence | Data Server-backed stores exist; shared suite Save/Restore currently retains an in-memory checkpoint | Connect durable storage and prove compatible schema/recovery across restart |
+| Layout persistence | Explicit native canvas checkpoint bridge uses the existing Data Server chunk store and UI codec in source; memory and disk backends are distinguished | Run restart/conflict/corruption acceptance; complete library, migration and repair workflows |
 | Semantic clipboard | Not implemented here | Typed payloads, capability policy and cross-application journeys |
 | Complete client adoption | Six dedicated frontends and eighteen shared native layout-preview entry points exist in source | Product startup, real service bindings and visible acceptance, not just catalogue presence |
 

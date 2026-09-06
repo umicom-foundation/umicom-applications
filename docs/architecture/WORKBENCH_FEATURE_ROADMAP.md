@@ -34,11 +34,16 @@ documents and selected source paths; it is not an exhaustive source audit.
 - The shared header, catalogue, native detached windows, appearance contracts,
   typed context groups and transactional layout model have source implementations.
   Native rendering, keyboard use and monitor restoration still need acceptance.
-- Free canvas placement currently projects into the GTK centre region. Movable
-  internal windows, resize handles, grid feedback and gesture binding remain
-  implementation work.
-- The suite Save/Restore checkpoint currently stays in memory. Existing Data
-  Server-backed layout storage must be connected and tested across restart.
+- Free canvas placement now has separate native rectangles, title dragging,
+  lower-right resizing, an edit grid and numeric geometry controls in source.
+  It does not consume dock-stack slots. Native verification is pending.
+- Trader, Bank, TMS, Music and shared product previews use the suite path.
+  Studio's main shell now has source integration with the same Framework host,
+  retaining its original editor inside a model-owned panel. Desk still needs
+  adoption. The new actual-Studio regression has not been compiled or run.
+- Explicit native canvas checkpoints now connect to the existing Data Server
+  chunk store and UI layout codec in source. Restart, corruption recovery and
+  concurrent-save acceptance still need native execution.
 
 ### Current native launcher update
 
@@ -54,6 +59,47 @@ it does not silently substitute a console program. Missing executables remain
 visible with a reason. This work is source-integrated; compilation, native
 interaction and launched-application readiness have not been verified here.
 
+### Current native canvas update
+
+The shared suite can create named empty layouts, add registered panels directly
+to the canvas, edit their geometry, apply/lock, or cancel back to the baseline.
+Clear Panels removes only unpinned, closable instances during the edit; it does
+not delete product data or the catalogue. Canonical presets remain available.
+
+Geometry requests carry the source layout revision and run after the GTK
+gesture callback finishes. Geometry-only updates keep the existing provider
+widgets. Hosts that do not enable body retention still rebuild provider views
+for full model changes and need separate draft/focus recovery validation.
+Hosts invalidate shared frame and tab actions
+before replacing or removing a view. This also cancels queued requests when
+another part of the program still holds a reference to an old button.
+
+Studio's source integration now uses its existing professional-workspace facade
+as the sole outer-panel layout authority. GTK placement arrays are display
+projections, not a second edit baseline. Named blank canvases, reopening the
+actual Editor, model-owned panel edits and explicit Apply/Cancel are connected.
+The host can retain provider bodies across structural changes, while the editor
+adapter reconciles document views without replacing unchanged text buffers.
+These changes need native acceptance; source code and test registration are
+not evidence that the application journey has passed.
+
+Editor reconciliation now preserves the native document widget and translates
+UTF-8 cursor positions. A bounded insertion guard prevents silent truncation at
+the existing 16,383-byte snapshot limit. Large-file editing needs a direct
+document-store integration; the guard does not complete that requirement.
+
+The new checkpoint bridge saves the last explicitly applied active layout,
+retains a previous valid copy and validates a restore before native publication.
+Storage revisions prevent stale windows from silently overwriting newer saves.
+SQLite-backed disk storage and memory-only test backends are reported separately.
+The UI layout codec stays unchanged; dedicated record namespaces separate these
+payloads from semantic workbench documents in the existing chunk store.
+
+This is not a complete named-layout library or a document/session checkpoint.
+Full-library storage, explicit damaged-metadata repair, layout migrations,
+monitor recovery and native execution remain outstanding. The old shell-session
+format must not overwrite the canvas during routine status synchronization.
+
 ## Priority order and finish lines
 
 Every row includes normal, invalid-input, unavailable-provider and recovery
@@ -62,8 +108,8 @@ warnings are requirements throughout, not a final cleanup task.
 
 | Priority | Major feature area | Work remaining | Required finish evidence |
 |---|---|---|---|
-| 1 | Universal native canvas | Internal movable windows, eight-direction resizing, snap/grid feedback, docking previews, menu and toolbar placement, lock/apply/cancel and keyboard equivalents. | Create a blank layout, add a real panel, move/resize/dock it, apply and cancel later edits without state drift in Studio and Trader; assess the same mechanism in every client. |
-| 2 | Durable workspaces and recovery | Connect layouts, appearance, document state and monitor records to existing Framework Data Server stores; validate migrations and last-good recovery. | Close and reopen a saved workspace; survive corrupt records, interrupted writes and a missing monitor without losing the usable layout. |
+| 1 | Universal native canvas | Validate Studio's new source integration and shared free canvas; migrate Desk; complete eight-direction resizing, internal maximisation, docking previews, menu/toolbar placement, keyboard dragging and draft/focus recovery. | Create a blank layout, add a real panel, move/resize/dock it, apply and cancel later edits without state drift in Studio and Trader; assess the same mechanism in every client. |
+| 2 | Durable workspaces and recovery | Validate the new explicit canvas checkpoint across restart and concurrent saves; complete the named-layout library, damaged-metadata repair, appearance/document/monitor records and migrations through existing Data Server stores. | Close and reopen a saved workspace; survive corrupt records, interrupted writes and a missing monitor without losing the usable layout. |
 | 3 | Native developer operations and GUI acceptance tools | Expose existing C build, repository, change discovery, scheduling and UI automation services through native tools and Framework panels. | One reviewed request plans changed targets, reports failures and supports cancellation; GUI tests record button/menu actions and observable results without script-owned business logic. |
 | 4 | Studio daily development loop | Project navigation, multi-document editing, completion, diagnostics, build/test/run/debug, diff and repository operations, searchable C/GTK4 lessons and documentation. | Open a C project, edit/save, inspect completion and diagnostics, build/test/debug, review changes and resume the project after restart. |
 | 5 | Trader paper-trading workstation | Linked watchlist/chart/depth/order views, indicators, guarded amend/cancel, cash/fees/P&L, reconciliation, replay and connection health. | Deterministic paper orders reconcile through fills and balances; stale data, limits, disconnects and emergency stops are tested before live routing is considered. |
@@ -196,8 +242,10 @@ Remaining work:
 - Data Server persistence.
 
 Reuse the existing Data Server-backed document and chunk stores. The shared
-GTK suite's current memory checkpoint is not durable storage and must not be
-used as evidence of successful restart restoration.
+GTK suite now supports explicit storage binding; native launchers request a
+file-backed checkpoint. Unbound constructors and memory-only connections still
+cannot provide restart recovery. Source integration must be followed by native
+acceptance before durability is reported as verified.
 
 ## Typed context linking
 

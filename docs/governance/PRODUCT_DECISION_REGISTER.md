@@ -12,6 +12,7 @@
 | Decision | Status | Title |
 |---|---|---|
 | GOV-001 | Approved | Durable documentation is mandatory |
+| LAYOUT-003 | Approved requirement; source integrated | Canvas geometry extends the existing workspace owner |
 | ARCH-001 | Approved | Umicom Framework is the single source of truth |
 | ARCH-002 | Approved | The Master Controller delegates bounded work |
 | ARCH-003 | Approved | Applications are thin independently runnable clients |
@@ -230,7 +231,8 @@
 **Acceptance evidence**
 
 - Entering Edit Layout mode is visually and accessibly unambiguous.
-- Cancel restores the prior snapshot; Apply and Lock persist a validated result.
+- Cancel restores the prior snapshot; Apply and Lock accept a validated result
+  in memory. An explicit Save action writes its durable checkpoint.
 
 ### UX-007 — Layout state is user-owned and the mechanism is Framework-owned
 
@@ -570,3 +572,96 @@ launcher or a breaking API replacement.
 - The default implementation resolves canonical, repository-based and packaged
   executable naming conventions.
 - New-window requests are distinguishable from standard host-policy requests.
+
+## LAYOUT-003 — Canvas geometry extends the existing workspace owner
+
+**Status:** Approved requirement; shared native source integrated, runtime
+acceptance pending. Recorded 6 September 2026.
+
+**Decision:** Use `UmiUiWorkspaceCustomisation` and its existing edit baseline
+for independent in-canvas windows. A canvas item is not a centre tab and is not
+a detached operating-system window. Do not create another layout registry,
+session store or application-local geometry authority.
+
+**Rationale:** A user-created layout must support independent rectangles while
+preserving the same panel identity, product policy, context links and Cancel
+behaviour. Sharing the implementation should not require duplicating it in
+every client repository.
+
+**Constraints**
+
+- A valid empty layout is renderable. Canvas items do not consume dock-stack
+  capacity. Coordinates are finite, bounded fractions of the viewport.
+- Gesture previews do not mutate saved state. Completed requests carry a source
+  revision and use the current edit; they do not start nested transactions.
+- Geometry-only accepted changes retain provider widgets. Structural rebuilds
+  need their own draft, focus and service-state preservation evidence.
+- User-layout IDs retain the application prefix so canonical panel permissions
+  are not lost. Import validates on a candidate before publishing live state.
+- Releasing or replacing a host invalidates pending actions, including actions
+  attached to retained old controls. No callback may retain a released owner.
+- Studio must migrate its existing professional-workspace model into the shared
+  native host. Its old GTK arrays must not be mirrored into a second owner.
+- Native checkpoint adapters use the existing Data Server and UI layout codec.
+  Memory-only backends must not claim restart durability. Studio's existing
+  document/session persistence remains separate from canvas checkpoints.
+
+**Acceptance evidence required**
+
+Run the portable canvas projection test and the native workspace canvas test,
+then record the default-to-blank-to-panel-to-move/resize-to-apply/cancel journey
+in each adopting client. The Studio experience test does not certify Studio's
+main GUI. No compiler, native launch or restart result is claimed here.
+
+### Studio source integration record
+
+The live Studio shell now constructs one shared native host and uses its
+professional-workspace customisation model for outer-panel placement. Native
+surface arrays are derived display information only; the separate GTK rollback
+arrays are no longer an edit authority. The retained Editor body contains the
+existing Framework document adapter. Provider body retention is opt-in so other
+clients keep their established refresh behaviour.
+
+Repository discovery, native presentation and personal session storage have
+explicit off switches for the actual-Studio regression fixture. Existing
+production entry points preserve their defaults. The offline VCS provider
+reports unavailable; it must never imply a clean or successfully published
+repository. No test execution or desktop acceptance is claimed by this record.
+
+The UI distinguishes an in-memory Apply operation from explicit checkpoint
+Save, and the old semantic session must not overwrite a custom canvas during
+routine status synchronization. Editor
+refreshes reconcile existing document views; unchanged buffers must survive
+ordinary status ticks. These ownership changes require native acceptance.
+
+### Native canvas checkpoint decision
+
+The checkpoint bridge stores the last explicitly saved active layout, scoped
+by application and workspace, using the existing Data Server chunk store and
+UI layout codec. Separate record kinds prevent native canvas records from
+being interpreted as semantic workbench-node documents. They do not introduce
+a second geometry schema or a direct application database implementation.
+
+A save compares the storage revision observed by the caller. It rotates only
+a validated primary into the previous-checkpoint slot, inside one transaction.
+A stale caller must restore explicitly before replacing a newer save. Restore
+validates scope, registered tools, singleton identity, context membership and
+geometry before publishing the model and native view. Failed recovery keeps
+the current layout and preserves the damaged records for diagnosis.
+
+If the primary metadata cannot provide a trustworthy revision, Save remains
+blocked until an explicit repair can be performed. A content hash detects
+corruption but does not authenticate the author. Reconciliation must not delete
+apparently orphaned chunks after an incomplete or invalid manifest scan.
+
+This source update does not claim a complete named-layout library, document
+recovery, monitor migration, authenticated backups or native test success.
+Offline constructors open no personal canvas database; tests can explicitly
+borrow an isolated Data Server. The normal GTK storage helper opens SQLite in
+the operating-system user's application configuration area, without a silent
+memory fallback.
+
+The OS work remains user-space preparation: session recovery, panel rendering,
+resource discovery and authorised platform adapters can be reused. Kernel and
+privileged-service development do not acquire the full Framework GUI dependency
+graph. The OS research plan does not itself select a new kernel implementation.
