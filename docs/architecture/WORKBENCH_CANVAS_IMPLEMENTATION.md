@@ -143,7 +143,12 @@ The pinned Framework resource catalogue identifies:
 | `umicom.brand.icon.on-dark` | `brand/umicom-icon-on-dark.svg` |
 | `umicom.brand.icon.windows` | `brand/umicom.ico` |
 
-The approved asset, not a text substitute, must be bound into the native host identity. No icon files are copied, invented or modified by this core delivery. Icon-loading code, staging and visible placement remain unmodified and untested here.
+The approved asset, not a text substitute, is the native identity source. The
+original portable-core change did not alter icon loading. Subsequent shared
+GTK4 work has integrated executable-relative resource lookup, build staging,
+header loading and native window identity in source. The canonical SVG and ICO
+artwork is unchanged. Visible placement, display scaling and packaged runtime
+behaviour still require native verification.
 
 ## Framework and client ownership
 
@@ -164,17 +169,21 @@ The Framework Master Controller and bounded Slave Controllers retain lifecycle a
 | Multi-panel edit transaction | Implemented; coordinator test covers success and rollback | Bind multi-selection and docking gestures in each graphical adapter |
 | Surface-state snapshot | Implemented; coordinator test covers complete and short outputs | Use the copied records in menus, accessibility and monitor views |
 | Apply/Cancel model reuse | Tested for affected layout/group state | GTK scene restoration and detached-window lifecycle restoration |
-| Official icon | Catalogue located only | Actual resource resolution, staging and native header rendering |
+| Official icon | Shared resource lookup, staging and native identity integrated in source; artwork unchanged | Verify the approved asset in headers, native windows and installed executables at supported scales |
 | Grid and snapping | Portable coordinator operation implemented | Visual previews, pointer/keyboard tests and adapter binding |
 | Drag and resize | Portable move/resize operations implemented | Gesture-to-command binding, eight resize directions and boundary tests |
 | Dock, split and tab integration | Not changed | Reuse/audit existing contracts; no competing dock model |
-| Native detach/reattach | Existing mechanism not changed or retested | Same-instance state preservation and monitor/host journeys |
+| Native detach/reattach | The shared GTK4 layout host creates detached native windows; runtime acceptance pending | Same-instance state preservation, reattachment and monitor/host journeys |
 | Multiple canvas hosts and application sessions | Not implemented here | Session ownership and acknowledged cross-host transfer |
-| Layout persistence | Not implemented here | Data Server integration and compatible schema/recovery tests |
+| Layout persistence | Data Server-backed stores exist; shared suite Save/Restore currently retains an in-memory checkpoint | Connect durable storage and prove compatible schema/recovery across restart |
 | Semantic clipboard | Not implemented here | Typed payloads, capability policy and cross-application journeys |
-| Complete client adoption | Pending for every client | Product startup and visible acceptance, not just catalogue presence |
+| Complete client adoption | Six dedicated frontends and eighteen shared native layout-preview entry points exist in source | Product startup, real service bindings and visible acceptance, not just catalogue presence |
 
 The immediate graphical acceptance gate is: product default -> Create Blank Layout -> add a real panel -> move and resize it inside the canvas -> Apply and Lock -> re-enter edit -> change it -> Cancel restores the prior arrangement. Preserve the official icon and host controls throughout. This sequence has **not** been executed in a graphical application by this delivery.
+
+Historical portable test results in this document do not certify later native
+changes. The [Workbench Feature Roadmap](WORKBENCH_FEATURE_ROADMAP.md) records
+the current priority order and separates source integration from runtime proof.
 
 ## Testing and integration
 

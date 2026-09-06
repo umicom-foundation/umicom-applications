@@ -18,18 +18,28 @@ MIT
 
 ## How to read the status
 
-- **Available** means reusable logic and a usable application path exist.
-- **Foundation** means working contracts or models exist, but the complete
-  native screen, adapter or end-to-end workflow is unfinished.
+- **Contract** means the public C interface describes ownership and behaviour.
+- **Core implementation** means reusable logic exists behind that interface.
+- **Native integration** means a graphical client consumes the implementation.
+- **Runtime verified** requires recorded execution of the full user journey,
+  including its failure and recovery paths.
+- **Foundation** refers to the first stages without claiming the complete
+  native workflow has been verified.
 - **Planned** means the capability is still missing and must not be advertised
   as complete.
 
 The names of other products are intentionally not used here. The goal is to
 describe familiar professional behaviour in Umicom’s own language.
 
+The source-foundation tables below identify existing ownership, not a blanket
+runtime pass. The complete Studio development loop and Trader reconciliation
+journeys still need their recorded acceptance evidence. Use the
+[Workbench Feature Roadmap](../architecture/WORKBENCH_FEATURE_ROADMAP.md) as the
+single priority order.
+
 ## Umicom Studio IDE
 
-### Available
+### Existing source foundations
 
 | Capability | Umicom owner |
 |---|---|
@@ -47,7 +57,7 @@ describe familiar professional behaviour in Umicom’s own language.
 
 | Capability | Remaining work |
 |---|---|
-| Docking, floating and multi-monitor layouts | Atomic panel editing, linked context and Studio native floating/redocking are available. Finish visible drag targets, generic-suite detached windows, keyboard docking and monitor recovery verification. |
+| Docking, floating and multi-monitor layouts | Atomic panel editing, linked context and native detached windows exist, including the generic Framework host. Finish free internal-window rendering, visible drag targets, keyboard docking, state preservation and monitor recovery verification. |
 | Remote development | Connect welcome screen, host manager, remote project opening, builds, tests and debugging into one guided workflow. |
 | Performance tools | Connect live capture adapters to call tree, flame graph, CPU, memory, coverage and regression panels. |
 | Database development | Complete production drivers, schema comparison/publish, data editor safety and query-result streaming. |
@@ -70,7 +80,7 @@ describe familiar professional behaviour in Umicom’s own language.
 
 ## Umicom Trader
 
-### Available
+### Existing source foundations
 
 | Capability | Umicom owner |
 |---|---|
@@ -107,16 +117,20 @@ describe familiar professional behaviour in Umicom’s own language.
 | Production live broker connection | Authenticated session, subscriptions, order routing, reconciliation, reconnect and acceptance gates. |
 | Mobile and web companion | Secure session projection, notification and restricted remote action contracts. |
 
-## Delivery order
+## Specialist follow-on work
 
-1. Finish generic detached windows, drag targets, keyboard docking and monitor
-   recovery because every application uses them.
-2. Finish Studio’s Engine Explorer and project templates for the new engines.
-3. Finish Studio remote development, profiler, extension and database workflows.
-4. Add Trader time-and-sales, scanner, alert and options contracts to Framework.
-5. Render those contracts as thin Trader panels with simulation-first tests.
-6. Add external data and execution adapters only after capability, security,
-   reconciliation and failure-recovery tests are complete.
+The canonical priority roadmap places the everyday Studio development loop and
+safe Trader paper workflow before these deeper specialist areas. Their scope
+is retained here without creating another delivery order.
 
-This order keeps application code thin and makes each new building block useful
+- Finish drag targets, keyboard docking and detached-window monitor recovery
+  because every application uses them.
+- Finish Studio's Engine Explorer and project templates for the new engines.
+- Finish Studio remote development, profiler, extension and database workflows.
+- Add Trader time-and-sales, scanner, alert and options contracts to Framework.
+- Render those contracts as thin Trader panels with simulation-first tests.
+- Add external data and execution adapters only after capability, security,
+  reconciliation and failure-recovery tests are complete.
+
+This scope keeps application code thin and makes each new building block useful
 to future Umicom applications.

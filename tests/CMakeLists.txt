@@ -13,6 +13,29 @@
 # LICENCE:
 #   MIT
 #-----------------------------------------------------------------------------
+# These guards inspect source wiring only. They require no GTK display or C
+# compiler and do not claim to validate rendered geometry on real monitors.
+find_package(Python3 QUIET COMPONENTS Interpreter)
+if(Python3_Interpreter_FOUND)
+    add_test(NAME applications.native_window_responsiveness.source
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/test_native_window_responsiveness_source.py"
+            --source-dir "${CMAKE_SOURCE_DIR}")
+    set_tests_properties(applications.native_window_responsiveness.source
+        PROPERTIES LABELS "applications;gtk4;source;regression")
+    add_custom_target(umicom-applications-native-window-source-check
+        COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/test_native_window_responsiveness_source.py"
+            --source-dir "${CMAKE_SOURCE_DIR}"
+        VERBATIM)
+    if(COMMAND umicom_register_validation_target)
+        umicom_register_validation_target(
+            umicom-applications-native-window-source-check)
+    endif()
+else()
+    message(STATUS "Native window source guards skipped: Python3 interpreter unavailable")
+endif()
+
 add_executable(umicom-applications-composition-test
     test_application_composition.c
 )

@@ -33,7 +33,8 @@
       "taskbar_group": "finance",
       "icon_resource_id": "umicom.icon.application.bank",
       "default_layout_id": "banking",
-      "executable": "umicom-bank-console"
+      "executable": "umicom-bank",
+      "console_executable": "umicom-bank-console"
     },
     {
       "id": "org.umicom.cad",
@@ -201,7 +202,8 @@
       "taskbar_group": "media",
       "icon_resource_id": "umicom.icon.application.music.studio",
       "default_layout_id": "compose",
-      "executable": "umicom-music-studio-console"
+      "executable": "umicom-music-studio",
+      "console_executable": "umicom-music-studio-console"
     },
     {
       "id": "org.umicom.operations",
@@ -273,7 +275,8 @@
       "taskbar_group": "finance",
       "icon_resource_id": "umicom.icon.application.tms",
       "default_layout_id": "treasury",
-      "executable": "umicom-tms-console"
+      "executable": "umicom-tms",
+      "console_executable": "umicom-tms-console"
     },
     {
       "id": "org.umicom.trader",
@@ -285,7 +288,8 @@
       "taskbar_group": "finance",
       "icon_resource_id": "umicom.icon.application.trader",
       "default_layout_id": "trading",
-      "executable": "umicom-trader-console"
+      "executable": "umicom-trader",
+      "console_executable": "umicom-trader-console"
     },
     {
       "id": "org.umicom.web-studio",

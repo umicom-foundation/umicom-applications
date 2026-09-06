@@ -327,6 +327,12 @@
 **Status:** Approved  
 **Decision:** Framework core and public module boundaries use C23 and a stable C ABI. Ownership, lifetime, threading, errors, cancellation, capacity and failure rollback are explicit.
 
+This also governs reusable developer tools, repository publication, automated
+builds, test orchestration and application launching. New functionality is
+implemented as C Framework APIs first, then exposed through native command-line
+and graphical clients. Every application requires a GUI entry point; a console
+program may supplement it but must not silently replace it.
+
 **Rationale:** Predictable boundaries are necessary for reusable modules, adapters, plugins and multiple frontends.
 
 **Constraints**
@@ -334,11 +340,25 @@
 - Exceptions, private toolkit objects and language-specific containers do not cross the public C ABI.
 - Every source file directly includes the declarations it uses.
 - Text operations are bounded and GUI objects remain inside frontend adapters.
+- New Python or PowerShell scripts do not implement product or developer-tool
+  behaviour. Documented shell commands may invoke the native tools; build-system
+  configuration remains configuration rather than a second runtime.
+- Reuse existing Framework services before introducing another engine. Existing
+  scripts are retained until a tested native replacement preserves their useful
+  behaviour; this decision does not authorise deleting them without review.
+- Assembly is used only for a justified platform-specific operation behind a
+  documented C boundary, with a portable path where practical.
+- All clients present Framework state through a GUI with truthful unavailable
+  reasons. Native entry-point source is not evidence that product journeys pass.
 
 **Acceptance evidence**
 
 - Strict-warning builds contain no implicit declarations or unsafe conversions.
 - Public headers compile in isolation and partial-failure tests prove cleanup.
+- Native CLI and GUI paths exercise the same Framework implementation, with
+  failure, cancellation and recovery coverage where those operations apply.
+- Every registered application has a graphical build target and an independently
+  recorded startup and user-journey result.
 
 ### CODE-003 — Public Framework contracts govern adapter extensions
 

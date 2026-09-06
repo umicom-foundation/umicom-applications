@@ -2,7 +2,7 @@
 
 **Status:** Canonical living coverage record  
 **Owner:** Umicom Foundation  
-**Last reviewed:** 4 September 2026  
+**Last reviewed:** 6 September 2026  
 **Revision control:** Git history; do not create numbered copies.
 
 ## Purpose
@@ -27,7 +27,11 @@ Coverage never requires meaningless source edits. A clean application repository
 
 ## Current registered applications
 
-| Repository path | Application ID | Product | Current Framework adoption | Product workspace focus |
+The registration table records source composition, not graphical acceptance.
+The native interface classification below distinguishes dedicated products
+from shared layout previews.
+
+| Repository path | Application ID | Product | Registration and composition | Product workspace focus |
 |---|---|---|---|---|
 | `applications/desktop` | `org.umicom.desktop` | Umicom Desk | Framework portfolio registered; application host and catalogue are the primary product responsibility. | Universal host, application catalogue, sessions, recent work, notifications and system status. |
 | `applications/studio` | `org.umicom.studio` | Umicom Studio IDE | Framework portfolio and experience registered; Framework workbench enabled; local startup and legacy compatibility paths require controlled migration. | Projects, editors, visual design, build, test, debug, terminal, source control, documentation and AI assistance. |
@@ -54,15 +58,36 @@ Coverage never requires meaningless source edits. A clean application repository
 | `applications/marketplace` | `org.umicom.marketplace` | Umicom Marketplace | Framework portfolio and experience registered; thin runtime enabled; product journey and specialised panel maturity remain under coverage. | Catalogue, installed components, updates, publishing, licences and reviews. |
 | `applications/education` | `org.umicom.education` | Umicom Education Studio | Framework portfolio and experience registered; thin runtime enabled; product journey and specialised panel maturity remain under coverage. | Courses, lessons, learner preview, assessment, progress and teaching assistance. |
 
+## Native interface classification
+
+All twenty-four registered applications have graphical build entry points in
+the all-application GTK4 configuration. Six use dedicated frontends; eighteen
+use the shared Framework product runner in layout-preview mode. Headless
+configurations intentionally do not build these interfaces.
+
+| Classification | Count | Applications | Meaning |
+|---|---|---|---|
+| Dedicated native frontend | 6 | Studio IDE, Trader, Bank, TMS, Music Studio, Desk | Product-specific native composition exists. Business journeys and native acceptance still require individual evidence. |
+| Shared native layout preview | 18 | Accountant, CAD, AI Creator, Database Studio, Education Studio, Commodity Exchange, Games, Integration Studio, Kitchen Designer, LLM, Marketplace, Media Studio, Mobile Studio, Operations, OS Control Centre, RAG, Security Centre, Web Studio | The Framework runner supplies startup, identity and layout presentation. Unconnected domain commands remain unavailable; a preview is not a completed product. |
+
+The complete executable list and testing steps are in
+[Desktop interface testing](../guides/desktop-interface-testing.md). Native
+compilation and visible startup/interaction verification for this update remain
+pending. No all-application runtime pass is claimed by the source inventory.
+
 ## Shared workstation contract alignment
 
-The Framework GTK4 workstation correction is inherited by every registered application. It preserves compact normal-mode panel chrome, explicit Edit Layout controls, managed tab close, detached windows, linked-context presentation, truthful product view-model rendering and existing chart behaviour while aligning every adapter with the public Framework contracts.
+The Framework GTK4 workstation source is consumed by the registered graphical
+compositions. It provides compact normal-mode panel chrome, explicit Edit Layout
+controls, managed tab close, detached windows, linked-context presentation and
+product view-model rendering through public Framework contracts. Source adoption
+does not prove that every command, chart, monitor or layout journey has passed.
 
 | Coverage item | Result |
 |---|---|
 | Implementation owner | Umicom Framework only |
 | Application-local duplicate | None permitted or required |
-| Direct application source impact | None for this shared repair |
+| Direct application source impact | Required only for genuine identity, composition or domain bindings; source coverage does not require artificial client edits |
 | Inherited consumers | Every application listed above when it renders a Framework workstation or surface |
 | Contract evidence | Existing public panel-frame, workspace-host, tab-stack, automation, view-model, property, command and chart contracts |
 | Build evidence required | Framework UI target, normal suite build and all-application build |
@@ -108,14 +133,25 @@ tab, searchable application catalogue, plus action, new-window action and
 window-close action. The catalogue is populated from the canonical Framework
 portfolio; no application repository owns another product list.
 
+The current C-first update adds checkboxes, Open selected, per-application
+request results and Refresh to that catalogue. The Framework dispatch contract
+removes accepted requests from the selection and keeps failed requests selected
+for retry. Graphical discovery uses canonical GUI executables and never silently
+launches a console substitute. An accepted request means the adapter accepted
+the operation; application readiness must be reported and verified separately.
+
+These changes are source-integrated. C regression tests and graphical acceptance
+must still be built and run in the supported environment before they are marked
+verified.
+
 ### Coverage classification
 
 | Consumer | Coverage | Evidence required on Windows |
 |---|---|---|
 | Umicom Desk | Inherited through the managed Framework shell header used by the Desk GTK entry point. | Header shows the active Desk tab, catalogue search, plus action, new-window action and close action. |
 | Umicom Studio IDE | Inherited through the managed Framework shell header in the existing Studio application bar. | Header shows the Framework-owned packaged SVG mark, the application catalogue opens, and closing follows the Studio close guard. |
-| Umicom Trader and Umicom Bank | Inherited through the Framework product workstation and suite workstation. | Each product shows its own identity and can discover the canonical application portfolio. |
-| TMS, LLM, Exchange, Music, Media, Accountant, RAG, Games, Creator, Kitchen, CAD, Web Studio, Mobile Studio, Database Studio, Integration Studio, Operations, Security Centre, Marketplace, Education and OS Control Centre | Inherited when their graphical surface uses the Framework product or managed shell-header composition. | Each configured graphical executable or surface must show the same controls; an unavailable executable reports a reason rather than a false success. |
+| Umicom Trader, Umicom Bank, Umicom TMS and Umicom Music Studio | Dedicated compositions consume the Framework product or suite workstation header. | Each product shows its own identity, supports catalogue multi-selection and explains unavailable targets. |
+| Accountant, CAD, AI Creator, Database Studio, Education Studio, Commodity Exchange, Games, Integration Studio, Kitchen Designer, LLM, Marketplace, Media Studio, Mobile Studio, Operations, OS Control Centre, RAG, Security Centre and Web Studio | Eighteen shared native layout-preview entry points consume the same Framework runner and header. | Each configured graphical executable shows the common controls; unconnected domain services remain visibly unavailable. |
 
 ### Source-of-truth evidence
 
@@ -125,6 +161,10 @@ portfolio; no application repository owns another product list.
   `umi_application_portfolio_at()`;
 - selection resolves again through `umi_application_portfolio_find()` before
   launch;
+- bounded multi-selection dispatch and copied result reports use Framework C
+  contracts rather than an application-local or scripted launcher;
+- accepted and failed requests are distinguished so retry does not repeat
+  requests already accepted in the preceding selection;
 - a future universal host supplies one callback and does not replace the
   catalogue or copy its rows;
 - no application-local source file is changed merely to reproduce shared
@@ -136,3 +176,9 @@ The implementation opens an independently runnable process unless a host
 installs the new application-open callback. Several application surfaces in one
 native host, drag transfer between host windows and state rehydration remain
 roadmap capabilities. They are not represented as complete by this update.
+
+The shared suite Save/Restore action currently maintains an in-memory
+checkpoint. Durable layout restoration across process restart remains a
+separate Data Server integration requirement. The
+[Workbench Feature Roadmap](../architecture/WORKBENCH_FEATURE_ROADMAP.md) is the
+single priority order for closing these shared and product-specific gaps.

@@ -94,6 +94,18 @@ option(UMICOM_STUDIO_GUI
 option(UMICOM_TRADER_BUILD_GTK4
        "Build the Framework-rendered GTK4 Umicom Trader workstation"
        ON)
+option(UMICOM_BANK_BUILD_GTK4
+       "Build the Framework-rendered GTK4 Umicom Bank workstation"
+       ON)
+option(UMICOM_TMS_BUILD_GTK4
+       "Build the Framework-rendered GTK4 Umicom TMS workstation"
+       ON)
+option(UMICOM_MUSIC_STUDIO_BUILD_GTK4
+       "Build the Framework-rendered GTK4 Umicom Music Studio workstation"
+       ON)
+option(UMICOM_APPLICATIONS_BUILD_SHARED_GTK4
+       "Build shared GTK4 workstations for enabled thin application modules"
+       ON)
 option(UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES
        "Stage Framework-owned shared resources for compatibility with the current Studio module"
        ON)
@@ -225,6 +237,11 @@ function(umicom_add_optional_application option_name relative_path display_name)
         set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME
             "${_umicom_application_component}")
         add_subdirectory("${relative_path}")
+        set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_APPLICATION_DIRECTORIES
+            "${relative_path}")
+        set_property(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${relative_path}"
+            PROPERTY UMICOM_APPLICATION_INSTALL_COMPONENT
+            "${_umicom_application_component}")
         set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_IDS
             "${_umicom_application_component}")
         set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_NAMES
@@ -298,12 +315,13 @@ endif()
 # Native suite products share one Framework GTK4 adapter. Enabling any product
 # with a native workstation therefore makes the adapter available before its
 # thin application subdirectory is evaluated.
-if((UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK) OR
+if(UMICOM_APPLICATIONS_BUILD_SHARED_GTK4 OR
+   (UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK) OR
    (UMICOM_APPLICATIONS_BUILD_DESKTOP AND UMICOM_DESKTOP_BUILD_GTK) OR
    (UMICOM_APPLICATIONS_BUILD_TRADER AND UMICOM_TRADER_BUILD_GTK4) OR
-   UMICOM_APPLICATIONS_BUILD_BANK OR
-   UMICOM_APPLICATIONS_BUILD_TMS OR
-   UMICOM_APPLICATIONS_BUILD_MUSIC_STUDIO)
+   (UMICOM_APPLICATIONS_BUILD_BANK AND UMICOM_BANK_BUILD_GTK4) OR
+   (UMICOM_APPLICATIONS_BUILD_TMS AND UMICOM_TMS_BUILD_GTK4) OR
+   (UMICOM_APPLICATIONS_BUILD_MUSIC_STUDIO AND UMICOM_MUSIC_STUDIO_BUILD_GTK4))
     set(UMICOM_BUILD_GTK4_ADAPTER ON CACHE BOOL
         "Build the Framework GTK4 adapter required by enabled applications" FORCE)
 # Use this fallback path when the earlier condition does not apply.
@@ -380,10 +398,21 @@ if(UMICOM_APPLICATIONS_BUILD_DESKTOP)
         set(UMICOM_DESKTOP_TRADER_EXECUTABLE "umicom-trader-console" CACHE STRING
             "Trader executable registered with Umicom Desk" FORCE)
     endif()
-    set(UMICOM_DESKTOP_BANK_EXECUTABLE "umicom-bank" CACHE STRING
-        "Bank executable registered with Umicom Desk" FORCE)
-    set(UMICOM_DESKTOP_TMS_EXECUTABLE "umicom-tms" CACHE STRING
-        "TMS executable registered with Umicom Desk" FORCE)
+    # Keep Desk's launch catalogue consistent with each configured frontend.
+    if(UMICOM_BANK_BUILD_GTK4)
+        set(UMICOM_DESKTOP_BANK_EXECUTABLE "umicom-bank" CACHE STRING
+            "Bank executable registered with Umicom Desk" FORCE)
+    else()
+        set(UMICOM_DESKTOP_BANK_EXECUTABLE "umicom-bank-console" CACHE STRING
+            "Bank executable registered with Umicom Desk" FORCE)
+    endif()
+    if(UMICOM_TMS_BUILD_GTK4)
+        set(UMICOM_DESKTOP_TMS_EXECUTABLE "umicom-tms" CACHE STRING
+            "TMS executable registered with Umicom Desk" FORCE)
+    else()
+        set(UMICOM_DESKTOP_TMS_EXECUTABLE "umicom-tms-console" CACHE STRING
+            "TMS executable registered with Umicom Desk" FORCE)
+    endif()
     set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Desktop")
     add_subdirectory(applications/desktop)
     set_property(GLOBAL APPEND PROPERTY UMICOM_SUITE_COMPONENT_IDS "Desktop")
@@ -476,6 +505,11 @@ umicom_add_optional_application(
 
 # Add the extended thin application modules after the established core products.
 umicom_add_extended_application_modules()
+
+# Framework supplies a reusable native host for products without a dedicated
+# frontend. Build it only for enabled modules and keep their installer ownership.
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/UmicomSharedNativeApplications.cmake")
+umicom_add_shared_native_applications()
 
 # Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING AND
@@ -595,10 +629,17 @@ foreach(_umicom_automation_manifest
             _umicom_automation_manifest_executable)
     endif()
 
-    # Prefer the normal graphical name, then the manifest entry and finally
-    # console fallbacks. Only an executable target can become the product root.
+    # A product whose slug differs from its executable (such as Music Studio)
+    # still prefers its native frontend when that target has been configured.
+    string(REGEX REPLACE "-console$" ""
+        _umicom_automation_graphical_candidate
+        "${_umicom_automation_manifest_executable}")
+    # Prefer graphical names, then the manifest entry and console fallbacks.
+    # Only an existing executable target can become the product root.
     set(_umicom_automation_primary_candidates
+        "${_umicom_automation_manifest_executable}-gtk"
         "umicom-${_umicom_automation_slug}"
+        "${_umicom_automation_graphical_candidate}"
         "${_umicom_automation_manifest_executable}"
         "${_umicom_automation_manifest_executable}-console"
         "umicom-${_umicom_automation_slug}-console")

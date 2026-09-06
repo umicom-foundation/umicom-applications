@@ -167,6 +167,13 @@ git submodule foreach --recursive `
 
 ## Windows UCRT64 GTK4 build
 
+For all 24 desktop entry points, use the all-modules preset and the
+`umicom-desktop-products` target. Six products retain their dedicated frontends;
+eighteen use the shared Framework layout-preview host. Preview panels describe
+unconnected services and do not execute domain operations. See
+[Desktop interface testing](docs/guides/desktop-interface-testing.md) for exact
+executable names, build steps and the per-application acceptance checklist.
+
 After the four common brand files exist under `framework/resources/brand`:
 
 ```powershell

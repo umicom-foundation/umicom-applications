@@ -38,7 +38,7 @@ typedef struct UmiExpectedThinRuntime {
 
 static const UmiExpectedApplication APPLICATIONS[] = {
     {"accountant", "org.umicom.accountant", "umicom-accountant-module", "umicom-accountant-console"},
-    {"bank", "org.umicom.bank", "umicom-bank-module", "umicom-bank-console"},
+    {"bank", "org.umicom.bank", "umicom-bank-module", "umicom-bank"},
     {"cad", "org.umicom.cad", "umicom-cad-module", "umicom-cad-console"},
     {"creator", "org.umicom.creator", "umicom-ai-creator-module", "umicom-ai-creator-console"},
     {"database-studio", "org.umicom.database-studio", "umicom-database-studio-module", "umicom-database-studio-console"},
@@ -52,14 +52,14 @@ static const UmiExpectedApplication APPLICATIONS[] = {
     {"marketplace", "org.umicom.marketplace", "umicom-marketplace-module", "umicom-marketplace-console"},
     {"media", "org.umicom.media-studio", "umicom-media-studio-module", "umicom-media-studio-console"},
     {"mobile-studio", "org.umicom.mobile-studio", "umicom-mobile-studio-module", "umicom-mobile-studio-console"},
-    {"music", "org.umicom.music-studio", "umicom-music-studio-module", "umicom-music-studio-console"},
+    {"music", "org.umicom.music-studio", "umicom-music-studio-module", "umicom-music-studio"},
     {"operations", "org.umicom.operations", "umicom-operations-module", "umicom-operations-console"},
     {"os", "org.umicom.os", "umicom-os-module", "umicom-os-control-centre"},
     {"rag", "org.umicom.rag", "umicom-rag-module", "umicom-rag-console"},
     {"security-centre", "org.umicom.security-centre", "umicom-security-centre-module", "umicom-security-centre-console"},
     {"studio", "org.umicom.studio", "umicom-studio-ide-module", "umicom-studio-ide"},
-    {"tms", "org.umicom.tms", "umicom-tms-module", "umicom-tms-console"},
-    {"trader", "org.umicom.trader", "umicom-trader-module", "umicom-trader-console"},
+    {"tms", "org.umicom.tms", "umicom-tms-module", "umicom-tms"},
+    {"trader", "org.umicom.trader", "umicom-trader-module", "umicom-trader"},
     {"web-studio", "org.umicom.web-studio", "umicom-web-studio-module", "umicom-web-studio-console"},
 };
 

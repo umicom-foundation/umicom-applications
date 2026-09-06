@@ -8,10 +8,17 @@ visible panel does not by itself make a finished product. A working product
 must let a person complete a useful task, save the result, close the program,
 open it again and continue safely.
 
-This roadmap separates what exists from what still needs implementation. It is
-also the order in which large updates should be delivered. Shared behavior is
+This roadmap separates what exists from what still needs implementation. The
+[Workbench Feature Roadmap](architecture/WORKBENCH_FEATURE_ROADMAP.md) is the
+single priority order for major updates; this document retains product detail.
+Shared behavior is
 implemented in Umicom Framework first. Application repositories then provide
 only their product identity, business rules and specialist integrations.
+
+New reusable functionality and developer tooling are implemented in C in
+Framework first. Every application has a GUI entry-point requirement; console
+tools are additional clients of the same contracts. Existing scripts are not
+expanded into parallel product implementations.
 
 ## What “fully working” means
 
@@ -37,8 +44,9 @@ Every product must pass the same six completion gates:
 ### Implemented foundations
 
 - Canonical application identities, panels, layouts and feature roadmaps.
-- Reusable workspace windows with docking, floating, grouping, locking,
-  context linking, layout editing, import, export and recovery checkpoints.
+- Reusable workspace models for docking, floating, grouping, locking,
+  context linking, layout editing, import, export and recovery checkpoints,
+  with native integration at different maturity levels.
 - Shared appearance profiles and product branding.
 - Toolkit-neutral view models and a reusable GTK4 renderer.
 - Product presentation recipes, lifecycle state, safe controller dispatch,
@@ -59,6 +67,27 @@ Every product must pass the same six completion gates:
   layouts, panel rendering, commands, appearance and customisation.
 - Bank, TMS and Music Studio now have thin native workstation executables in
   addition to their console verification programs.
+
+### Current interface and launcher status
+
+Studio IDE, Trader, Bank, TMS, Music Studio and Desk have dedicated native
+frontends in source. Eighteen other registered applications now have shared
+native layout-preview entry points. Their layouts can be inspected, but domain
+commands without a registered service remain unavailable. This is not a claim
+that all twenty-four products are complete or that their interfaces have been
+visually verified.
+
+The shared C launch-selection dispatch and GUI catalogue now support selected
+application requests, per-item results, partial failures, retained retry
+selection and refreshed executable discovery. Accepted requests are removed
+from the selection; acceptance does not prove application readiness. GUI
+discovery uses canonical graphical executables without a console fallback.
+Compilation and native interaction verification for this update remain pending.
+
+The suite layout Save/Restore checkpoint currently lives in memory. Durable
+restart restoration must connect the existing Data Server layout stores. Canvas
+placement currently reaches the centre region; free internal-window movement
+and resize handles still need native implementation and acceptance.
 
 ### Framework work still required
 
@@ -251,14 +280,21 @@ scanning, source findings, severity and suppression policy, remediation state,
 evidence export and continuous monitoring. Mutating or destructive remediation
 must always be separately authorised and recoverable.
 
-## Delivery order
+## Product delivery areas
+
+Use the priority table in the
+[Workbench Feature Roadmap](architecture/WORKBENCH_FEATURE_ROADMAP.md) when
+choosing the next implementation. The areas below are supporting scope notes,
+not a second ordering or a claim that earlier areas are already complete.
 
 ### Product Workstation Adoption
 
-Adopt the new Framework product workstation in the remaining thin desktop
-applications. Add panel bindings only when a friendly layout name cannot be
-resolved automatically. A product must keep honest unavailable states until a
-real engine or adapter exists.
+The remaining thin desktop applications now have a common native preview host.
+Replace their offline preview controllers with real Framework-backed product
+journeys as the corresponding engines and adapters become ready. Add panel
+bindings only when a friendly layout name cannot be resolved automatically. A
+product must keep honest unavailable states until a real engine or adapter
+exists, then prove the GUI journey rather than only its catalogue entry.
 
 ### Durable Application State
 
