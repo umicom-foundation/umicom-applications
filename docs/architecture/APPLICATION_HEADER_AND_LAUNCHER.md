@@ -30,7 +30,7 @@ No application repository maintains a second application array, launcher menu, i
 
 The active application tab contains:
 
-- the packaged Umicom vector mark or visible `<>` fallback;
+- the Framework-owned packaged Umicom SVG mark;
 - full product name;
 - active workspace or document subtitle;
 - operating-mode badge;
@@ -103,7 +103,7 @@ This implementation opens a separate process unless a host callback is installed
 
 ## Acceptance requirements
 
-- the product mark or `<>` is always visible;
+- the Framework-owned packaged Umicom SVG mark is visible;
 - the product name is always visible;
 - the plus action lists the canonical portfolio;
 - catalogue search filters without mutating portfolio data;

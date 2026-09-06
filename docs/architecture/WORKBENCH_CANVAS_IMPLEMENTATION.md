@@ -1,6 +1,6 @@
 # Workbench Canvas Core Implementation
 
-**Status:** Portable core implemented; validation pending in the copied worktree; graphical integration pending.  
+**Status:** Portable core and explicit GTK4 centre projection implemented; validation pending in the copied worktree; full gesture and monitor integration pending.  
 **Recorded:** 5 September 2026  
 **Owner:** Umicom Framework  
 **Approved requirements:** `UMICOM_WORKBENCH_CANVAS_AND_INTEROPERABILITY.md`
@@ -27,6 +27,15 @@ This prevents a multi-application session from routing commands to a window
 that no longer exists. The shared GTK4 suite workstation stores its generated
 host key and invokes this operation before releasing the native layout host, so
 failed startup and normal window shutdown follow the same ownership rule.
+
+Cross-host application-tab movement uses the separate
+`UmiApplicationSurfaceTransferToken` contract. A token carries only stable
+session/checkpoint references and capability fingerprints. The destination
+acknowledges rehydration before the source commits ownership release, so a
+failed transfer leaves the source tab usable and a retried acknowledgement is
+safe. Token creation, expiry and cancellation are implemented in the
+Framework application runtime; checkpoint storage and secure token generation
+remain service-owned.
 
 Canvas command commits also synchronise surface metadata while the edit
 baseline is still available. If validation or commit rejects an edit, the
@@ -78,7 +87,34 @@ It requires an active edit and an unlocked active layout. It rejects a pinned in
 
 The placement token is `UMI_UI_WORKSPACE_CANVAS_PLACEMENT`, whose value is `canvas`. The existing `floating` flag is set to false because its established meaning is a **detached native window**, not a movable window contained by a canvas. The instance receives its own stack identity rather than remaining accidentally grouped with a previous dock stack.
 
-**The current GTK layout host does not implement this new placement mode. Its previous unknown-placement fallback is not a valid canvas renderer. Do not expose this operation in a product UI until the layout projection and renderer explicitly recognise it.** Existing placement parsers, render plans, serialization/migration and frontend conformance still require review for this token. It is an additive core representation, not a claim of completed end-to-end support.
+The GTK layout host now explicitly recognises this token and projects canvas-managed
+panels into the centre workspace. Pointer gesture dispatch, internal-window chrome,
+serialization/migration, and monitor transfer still require frontend conformance
+work; the additive core and this projection are not a claim of completed
+end-to-end desktop editing.
+
+## Apply several panel changes together
+
+`umi_ui_workbench_canvas_apply_panel_batch(canvas, host_id, settings,
+setting_count)` is the shared entry point for one gesture that changes more than
+one panel. It accepts the existing `UmiUiWorkspacePanelSettings` records and
+applies them inside one edit transaction.
+
+The request list is bounded and copied before the edit starts. Each panel is
+checked by the same placement, size, lock and context rules used by a single
+panel edit. If one item fails, the Framework cancels the transaction and
+restores every panel and context link from the original baseline. A successful
+list is committed once, which gives renderers one coherent revision to draw.
+
+This keeps layout editors small: they describe the requested result and let
+the Framework own validation, rollback and revision tracking. The request
+array and its strings remain caller-owned and are not stored after the call.
+
+`umi_ui_workbench_canvas_surface_snapshot(host, out_surfaces, capacity,
+out_count)` provides the matching read path. It copies every surface record,
+including its monitor, visibility, detached flag and revision. A destination
+that is too small is rejected, so menus and renderers never display an
+incomplete view of the canvas.
 
 ## What the portable sequence now supports
 
@@ -111,7 +147,10 @@ The approved asset, not a text substitute, must be bound into the native host id
 
 ## Framework and client ownership
 
-All three operations are Framework-owned. No source is copied into Studio, Bank, Trader or any other client. Availability of these functions is **not** proof that a client has adopted them. The application inventory and unverified integration state are recorded in `../validation/WORKBENCH_CANVAS_VALIDATION.md`.
+All canvas operations are Framework-owned. No source is copied into an
+application client. Availability of these functions is **not** proof that a
+client has adopted them. The application inventory and unverified integration
+state are recorded in `../validation/WORKBENCH_CANVAS_VALIDATION.md`.
 
 The Framework Master Controller and bounded Slave Controllers retain lifecycle and domain authority. Frontend adapters must dispatch typed requests and render accepted state rather than directly mutating private state or introducing an application-local canvas implementation.
 
@@ -122,6 +161,8 @@ The Framework Master Controller and bounded Slave Controllers retain lifecycle a
 | Blank-layout model operation | Implemented; portable tests pass | Framework command binding and visible layout selection |
 | Clear removable instances | Implemented; portable tests pass | Unsaved-work/permission checks, confirmation and rendered removal |
 | Free in-canvas rectangle | Implemented; portable tests pass | Compatible render plan, placement serialization and actual internal-window renderer |
+| Multi-panel edit transaction | Implemented; coordinator test covers success and rollback | Bind multi-selection and docking gestures in each graphical adapter |
+| Surface-state snapshot | Implemented; coordinator test covers complete and short outputs | Use the copied records in menus, accessibility and monitor views |
 | Apply/Cancel model reuse | Tested for affected layout/group state | GTK scene restoration and detached-window lifecycle restoration |
 | Official icon | Catalogue located only | Actual resource resolution, staging and native header rendering |
 | Grid and snapping | Portable coordinator operation implemented | Visual previews, pointer/keyboard tests and adapter binding |

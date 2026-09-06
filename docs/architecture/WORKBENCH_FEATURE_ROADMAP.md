@@ -124,7 +124,8 @@ Implemented foundation:
 
 - centre-dominant default semantic geometry shared by all workstations;
 - accessible names for application catalogue, search, new-window and close controls;
-- packaged Umicom mark with `<>` fallback.
+- packaged Framework-owned SVG Umicom mark with a diagnostics-visible missing
+  resource state; no textual branding fallback.
 
 Remaining work:
 

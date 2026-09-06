@@ -26,6 +26,12 @@ The Master Controller serialises mutation. Platform adapters execute validated
 plans. Application modules and frontend widgets never construct shell commands
 or scan arbitrary folders for executables.
 
+Before a runtime record is marked eligible, the launcher asks the canonical
+Framework experience catalogue for a launch-readiness report. The report checks
+that the product has panels, layouts and a resolvable default layout. A blocked
+record stays visible to diagnostics with a bounded reason, but it cannot be
+selected for execution.
+
 `umicom-desktop-module` remains a thin product composition and executable entry
 point. It binds the Framework launcher to the Framework process supervisor and
 supplies default product registrations.
@@ -35,3 +41,5 @@ supplies default product registrations.
 The launcher can later move out of process without changing application
 contracts. Windows, Linux and Umicom OS can provide different platform adapters.
 A failed application produces typed state and remains visible for diagnosis.
+Incomplete product recipes are rejected before process start, so every client
+application receives the same safe launch rule and explanation.

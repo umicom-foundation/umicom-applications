@@ -2,7 +2,7 @@
 
 **Status:** Canonical living register  
 **Owner:** Umicom Foundation  
-**Last reviewed:** 4 September 2026  
+**Last reviewed:** 6 September 2026  
 **Revision control:** Git history; do not create numbered copies.
 
 > A chat statement is not a durable project decision until it appears here or in an approved linked decision record.
@@ -34,6 +34,7 @@
 | UX-017 | Approved | The application header exposes one Framework-owned application catalogue |
 | UX-018 | Approved | The active application is presented as a stable application-surface tab |
 | HOST-001 | Approved | Application opening delegates to host policy with a process fallback |
+| UX-019 | Approved | Framework-owned SVG is the only native application identity mark |
 
 ## Approved decisions
 
@@ -398,9 +399,27 @@
 
 **Status:** Approved
 
-The shared Framework header shows the packaged Umicom vector mark when
-available and the native `<>` fallback otherwise. The readable product name is
-always present.
+The shared Framework header shows the Framework-owned packaged Umicom SVG mark.
+The readable product name is always present. A missing packaged asset is a
+release-quality defect: the UI does not draw a textual substitute, and the
+packaging/conformance checks must report the missing resource.
+
+## UX-019 — Framework-owned SVG is the only native application identity mark
+
+**Status:** Approved  
+**Decision:** Native headers and startup surfaces consume the contrast-aware SVG
+mark from the Framework resource catalogue. The Windows `.ico` is retained for
+shell integration, and optional PNG files are compatibility outputs only. No
+application may copy the mark or render a textual `<>` substitute when the
+packaged asset is missing.
+
+**Rationale:** A single vector source stays sharp across platforms and display
+scales, avoids raster colour/white-hole defects and lets one accessibility or
+brand correction reach every application.
+
+**Acceptance evidence:** ADR-0013, the shared GTK4 shell implementation,
+configure-time resource checks and application-header validation all enforce
+the same rule.
 
 ## UX-015 — Normal mode uses compact panel controls
 
@@ -488,7 +507,8 @@ document and layout tabs.
 
 **Constraints**
 
-- The packaged Umicom mark or `<>` fallback remains visible.
+- The Framework-owned packaged Umicom SVG mark remains visible and is checked
+  by packaging conformance before release.
 - Application close routes through the native window close request, preserving
   product close guards and unsaved-work policy.
 - The active application tab is not a document tab or a named layout tab.

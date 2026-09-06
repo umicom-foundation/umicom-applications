@@ -113,7 +113,7 @@ portfolio; no application repository owns another product list.
 | Consumer | Coverage | Evidence required on Windows |
 |---|---|---|
 | Umicom Desk | Inherited through the managed Framework shell header used by the Desk GTK entry point. | Header shows the active Desk tab, catalogue search, plus action, new-window action and close action. |
-| Umicom Studio IDE | Inherited through the managed Framework shell header in the existing Studio application bar. | Header shows `<>` or the packaged mark, the application catalogue opens, and closing follows the Studio close guard. |
+| Umicom Studio IDE | Inherited through the managed Framework shell header in the existing Studio application bar. | Header shows the Framework-owned packaged SVG mark, the application catalogue opens, and closing follows the Studio close guard. |
 | Umicom Trader and Umicom Bank | Inherited through the Framework product workstation and suite workstation. | Each product shows its own identity and can discover the canonical application portfolio. |
 | TMS, LLM, Exchange, Music, Media, Accountant, RAG, Games, Creator, Kitchen, CAD, Web Studio, Mobile Studio, Database Studio, Integration Studio, Operations, Security Centre, Marketplace, Education and OS Control Centre | Inherited when their graphical surface uses the Framework product or managed shell-header composition. | Each configured graphical executable or surface must show the same controls; an unavailable executable reports a reason rather than a false success. |
 

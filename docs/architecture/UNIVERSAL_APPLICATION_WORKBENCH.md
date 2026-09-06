@@ -32,7 +32,7 @@ The host, tabs, panel lifecycle and layout mechanisms are Framework-owned. Appli
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
-│ <>  Application name │ Active context │ Mode │ Health │ Search      │
+│ [Umicom SVG] Application name │ Active context │ Mode │ Health │ Search │
 ├──────────────────────────────────────────────────────────────────────┤
 │ Application tabs                                              +     │
 ├──────────────────────────────────────────────────────────────────────┤

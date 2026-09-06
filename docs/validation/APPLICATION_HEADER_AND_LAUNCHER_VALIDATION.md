@@ -109,7 +109,8 @@ A clean build directory is not required. CMake and Ninja should rebuild only aff
 
 Open Studio, Desk, Bank and Trader after a successful build and verify:
 
-1. the Umicom mark or `<>` fallback and full application name remain visible;
+1. the Framework-owned packaged Umicom SVG mark and full application name
+   remain visible;
 2. the application identity reads as one active application tab;
 3. the plus action opens the same searchable application catalogue in each product;
 4. catalogue search matches application name, purpose and stable identifier;

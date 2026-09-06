@@ -16,11 +16,11 @@ not recreate the shared shell.
 
 ## Application identity
 
-Every native application header presents an Umicom mark and a readable product
-name. The preferred mark is the packaged contrast-aware vector resource. When
-that resource cannot be resolved, the Framework-owned `<>` mark remains
-visible beside the product name. A resource packaging fault must never remove
-the complete application identity.
+Every native application header presents the Framework-owned packaged
+contrast-aware SVG mark and a readable product name. When that resource cannot
+be resolved, the image remains hidden while the product name stays visible and
+packaging diagnostics report the fault. A textual `<>` substitute is never
+rendered as branding.
 
 ## Normal workspace mode
 

@@ -252,13 +252,11 @@ if(UMICOM_APPLICATIONS_BUILD_STUDIO AND UMICOM_STUDIO_BUILD_GTK)
     umicom_require_framework_resource(
         "brand/umicom-icon-on-dark.svg" "umicom.brand.icon.on-dark")
     umicom_require_framework_resource(
-        "brand/umicom-icon.png" "umicom.brand.icon.raster")
-    umicom_require_framework_resource(
         "brand/umicom-logo.svg" "umicom.brand.logo.primary")
     umicom_require_framework_resource(
         "brand/umicom-logo-on-dark.svg" "umicom.brand.logo.on-dark")
-    umicom_require_framework_resource(
-        "brand/umicom-logo.png" "umicom.brand.logo.raster")
+    # PNG files remain optional compatibility resources. SVG is the required
+    # source artwork for every modern desktop, web and mobile frontend.
     umicom_require_framework_resource(
         "brand/umicom.ico" "umicom.brand.icon.windows")
     umicom_require_framework_resource(
@@ -529,6 +527,19 @@ if(WIN32 AND EXISTS
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
             COMMENT "Auditing Umicom source explanations"
             VERBATIM)
+    endif()
+endif()
+
+# Expose one read-only audit entry point for maintainers. Each component keeps
+# its own validation rules, while this aggregate lets a developer review product
+# governance and source explanations without remembering separate target names.
+if(NOT TARGET umicom-source-audit)
+    add_custom_target(umicom-source-audit)
+    if(TARGET umicom-product-governance)
+        add_dependencies(umicom-source-audit umicom-product-governance)
+    endif()
+    if(TARGET umicom-source-documentation-audit)
+        add_dependencies(umicom-source-audit umicom-source-documentation-audit)
     endif()
 endif()
 

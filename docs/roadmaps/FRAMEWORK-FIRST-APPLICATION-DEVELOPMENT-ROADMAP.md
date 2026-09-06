@@ -22,6 +22,9 @@ this architecture into named major updates with integration dependencies and
 completion evidence. Read this document for application responsibilities and
 the delivery roadmap for implementation order.
 
+The [next major updates roadmap](NEXT_MAJOR_UPDATES_ROADMAP.md) is the shorter
+delivery checklist for the remaining batches and their finish evidence.
+
 ## The simple idea
 
 Umicom applications should be assembled like a Lego model. A Lego brick has a
@@ -86,6 +89,15 @@ Complete one reusable shell with:
 - loading, empty, stale, disconnected, permission-denied, error and recovery
   states;
 - session checkpoint, crash recovery and versioned layout migration.
+- portfolio launch-readiness summary for one consistent startup health view.
+- multi-application launch-selection checkpoints that can be handed to the
+  session persistence service and restored atomically.
+- capability-aware command-palette queries that keep discovery separate from
+  governed command execution.
+- governed command invocation that resolves palette IDs, checks availability,
+  requests approval and then calls a product-owned executor.
+- bounded command invocation journaling for activity views, diagnostics and
+  session evidence without replaying or bypassing command policy.
 
 ### Universal interaction components
 

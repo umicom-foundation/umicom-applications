@@ -56,6 +56,9 @@ core.*
 /.umicom/
 # research notes remain local
 /tmp/
+/analysis/
+/research/
+/notes/
 *.log
 *.tmp
 *.temp
@@ -83,12 +86,18 @@ Thumbs.db
 **/secrets.json
 **/secrets.yaml
 **/secrets.yml
+**/*.secret
+**/*.token
+**/*.credentials
 *.key
 *.keystore
 *.jks
 *.p12
 *.pfx
 *.pem
+*.crt
+*.csr
+*.der
 id_rsa*
 id_dsa*
 id_ecdsa*

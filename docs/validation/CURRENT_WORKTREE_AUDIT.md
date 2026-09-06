@@ -1,4 +1,14 @@
-**Audit date:** 5 September 2026
+**Audit date:** 6 September 2026
+
+The broader inventory, safety checks and remaining-risk register are recorded
+in [`FULL_SOURCE_AUDIT.md`](FULL_SOURCE_AUDIT.md). This file keeps the focused
+Workbench and build-lifecycle notes for the same copied worktree.
+
+Safe configure, incremental build, test and multi-repository commit commands are
+collected in [`BUILD_AND_REPOSITORY_HANDOFF.md`](BUILD_AND_REPOSITORY_HANDOFF.md).
+
+The cross-portfolio implementation plan for this update is recorded in
+[`../major-batches/PORTFOLIO_IMPLEMENTATION_UPDATE.md`](../major-batches/PORTFOLIO_IMPLEMENTATION_UPDATE.md).
 
 ## Architecture understood
 
@@ -34,6 +44,9 @@ silently replace that model.
 - Made Canvas edit publication validate surface state before committing; a
   rejected commit now cancels and re-synchronises instead of leaving an edit
   session or detached record half-applied.
+- Added a bounded multi-panel Canvas edit operation. Related placement requests
+  now share one rollback baseline and publish one revision only after all
+  requests succeed.
 - Extended `framework/tests/test_workbench_canvas.c` with an oversized-monitor
   regression case and application-experience host coverage.
 - Corrected Studio build-system discovery so it examines the selected project
@@ -53,14 +66,24 @@ silently replace that model.
   pipeline finishes, preventing one callback context from leaking per run.
 - Added an allocation-failure unwind in that pipeline so a failed sink
   allocation cannot leave a stale “process running” context behind.
+- Replaced the GTK4 header and startup text-logo fallback with the
+  Framework-owned SVG-only identity rule. A missing resource leaves the mark
+  hidden and keeps the product title visible, allowing packaging diagnostics to
+  report the defect without presenting a misleading logo.
 
 ## Known remaining work
 
 - No compiler, CMake configure, test runner or GUI executable was launched in
   this batch because the requested worktree does not have the required runtime
   libraries available and the active worktree is reserved for comparison.
-- Canvas gesture dispatch, internal-window rendering, native monitor transfer
-  and graphical Studio registration still need adapter work.
+- The GTK layout host now explicitly projects the portable `canvas` placement
+  token into the centre workspace. Canvas gesture dispatch, internal-window
+  chrome, native monitor transfer and graphical Studio registration still need
+  adapter work.
+- Added the Framework-owned `UmiApplicationSurfaceTransferToken` protocol and
+  regression test. It requires destination acknowledgement before source
+  release, rejects competing destinations, expires deterministically and keeps
+  checkpoint data as an opaque reference rather than serialising secrets.
 - Studio still contains clearly marked placeholder surfaces and provider stubs
   (LLM providers, search/demo panels and some legacy editor actions). They were
   catalogued during the audit but not replaced speculatively without their
@@ -71,3 +94,6 @@ silently replace that model.
   it is presented as the full automated build front end.
 - The copied root contains pre-existing uncommitted documentation and build
   graph changes. They were preserved; no reset, cleanup or deletion was done.
+- The portfolio implementation plan records the remaining work for all
+  current applications, including Studio, Trader, Bank, TMS, LLM, RAG, Author,
+  Desk, OS, creative products, financial products and future engine consumers.

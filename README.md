@@ -26,6 +26,15 @@ policy, taskbar state and semantic layout behaviour belong in Framework.
 Application-module repositories contain thin product composition, identity,
 default layouts and genuinely product-specific behaviour.
 
+The current static source review is recorded in
+[`docs/validation/FULL_SOURCE_AUDIT.md`](docs/validation/FULL_SOURCE_AUDIT.md).
+The current cross-portfolio completion contract and application feature queue
+are recorded in
+[`PORTFOLIO_IMPLEMENTATION_UPDATE.md`](docs/major-batches/PORTFOLIO_IMPLEMENTATION_UPDATE.md).
+After merging this worktree, use the companion
+[`BUILD_AND_REPOSITORY_HANDOFF.md`](docs/validation/BUILD_AND_REPOSITORY_HANDOFF.md)
+for incremental build, test and per-repository commit/push commands.
+
 ## Repository structure
 
 ```text

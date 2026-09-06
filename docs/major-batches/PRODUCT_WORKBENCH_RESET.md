@@ -1,10 +1,10 @@
-# Major Batch UX-01 — Umicom Product Workbench Reset
+# Umicom Product Workbench Reset
 
 ## Status
 
 Executable foundation slice ready for integration testing.
 
-This batch begins the approved Umicom product-workbench redesign without
+This update begins the approved Umicom product-workbench redesign without
 removing existing layout, docking, floating, context-linking, appearance,
 command, controller or persistence capabilities. Reusable behaviour remains in
 Umicom Framework. Product repositories supply only their identity, startup
@@ -57,7 +57,7 @@ No product module contains copied docking, tab, panel or splash implementation.
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │                                                              │
-│                         <>  Umicom Bank                       │
+│                    [Umicom SVG]  Umicom Bank                 │
 │             Accounts, payments and financial operations      │
 │                                                              │
 │                  ─────────────────────────                   │
@@ -82,7 +82,7 @@ policies.
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ <> Umicom Application     Workspace     Search        Mode   │
+│ [Umicom SVG] Umicom Application  Workspace  Search  Mode   │
 ├──────────────────────────────────────────────────────────────┤
 │ Panel A                         Panel B                     ⋮ │
 │ ┌──────────────────────┐       ┌──────────────────────────┐ │

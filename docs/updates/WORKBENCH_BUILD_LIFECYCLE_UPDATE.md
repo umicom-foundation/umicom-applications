@@ -31,6 +31,20 @@ The coordinator test now covers two hosts, active-host repair and unknown-host
 no-op behaviour in addition to the existing blank-layout, move, resize, snap,
 detach, attach and clear journeys.
 
+## Acknowledged surface transfer
+
+The new `UmiApplicationSurfaceTransferToken` implements the specification's
+source-to-destination handoff boundary. It stores stable application/session,
+source-host, checkpoint-reference and capability-fingerprint values, plus an
+expiry deadline. It never stores widget pointers, passwords or service objects.
+
+The state flow is `pending -> accepted -> committed`. A destination must
+acknowledge the token before the source can commit ownership release. Repeated
+acknowledgements and commits from the same destination are idempotent; a second
+destination, expired token or cancelled transfer is rejected with a truthful
+status. The caller supplies the token ID and clock, leaving secure token
+generation and session checkpoint storage to the owning service.
+
 ## Studio build discovery
 
 Studio's build detector now uses the selected project root for every marker
@@ -67,8 +81,8 @@ is absent, instead of allowing the Canvas bridge to become a late linker error.
 No compiler, CMake configure, test runner or GUI executable was launched while
 preparing this copied worktree because its native dependencies are not
 available here and the user's active checkout is reserved for comparison.
-The graphical Canvas renderer still needs explicit support for the `canvas`
-placement token, pointer gesture dispatch, monitor enumeration and persistence
-integration. The generated workspace template still has a fixed configure and
-install wrapper and should later consume the same Framework build-profile
-provider.
+The GTK layout host now explicitly maps the `canvas` placement token into the
+centre workspace. Pointer gesture dispatch, internal-window chrome, monitor
+enumeration and persistence integration still need completion. The generated
+workspace template still has a fixed configure and install wrapper and should
+later consume the same Framework build-profile provider.
