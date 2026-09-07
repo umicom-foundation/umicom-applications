@@ -73,6 +73,24 @@ if(COMMAND umicom_register_validation_target)
         umicom-applications-portfolio-integrity-test)
 endif()
 
+# Read every source declaration through Framework's production manifest parser.
+# No native executable, GTK display, build tree or user database is opened.
+add_executable(umicom-applications-native-manifest-test
+    test_application_native_manifest.c)
+target_link_libraries(umicom-applications-native-manifest-test PRIVATE
+    Umicom::application Umicom::runtime Umicom::platform)
+target_compile_definitions(umicom-applications-native-manifest-test PRIVATE
+    UMICOM_APPLICATIONS_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+umicom_apply_warnings(umicom-applications-native-manifest-test)
+umicom_apply_sanitizers(umicom-applications-native-manifest-test)
+add_test(NAME applications.native_manifest
+    COMMAND umicom-applications-native-manifest-test)
+set_tests_properties(applications.native_manifest PROPERTIES
+    LABELS "applications;manifest;frontend;contract;regression")
+if(COMMAND umicom_register_validation_target)
+    umicom_register_validation_target(umicom-applications-native-manifest-test)
+endif()
+
 add_executable(umicom-applications-cmake-graph-closure-test
     test_cmake_graph_closure.c)
 target_compile_definitions(umicom-applications-cmake-graph-closure-test PRIVATE

@@ -611,38 +611,24 @@ foreach(_umicom_automation_manifest
     set(_umicom_automation_scope_target
         "umicom-product-${_umicom_automation_slug}")
 
-    # Read only the primary executable field from the small stable manifest
-    # subset. The runtime parser remains authoritative for full validation.
-    file(STRINGS
-        "${CMAKE_CURRENT_SOURCE_DIR}/${_umicom_automation_manifest}"
-        _umicom_automation_executable_lines
-        REGEX "^[ \\t]+executable:[ \\t]*"
-        LIMIT_COUNT 1)
-    set(_umicom_automation_manifest_executable "")
-    if(_umicom_automation_executable_lines)
-        list(GET _umicom_automation_executable_lines 0
-            _umicom_automation_manifest_executable)
-        string(REGEX REPLACE "^[ \\t]*executable:[ \\t]*" ""
-            _umicom_automation_manifest_executable
-            "${_umicom_automation_manifest_executable}")
-        string(STRIP "${_umicom_automation_manifest_executable}"
-            _umicom_automation_manifest_executable)
-    endif()
+    # The manifest names each frontend explicitly. Legacy/external manifests
+    # may omit the companion declarations; never invent a graphical suffix.
+    set(_umicom_automation_manifest_path
+        "${CMAKE_CURRENT_SOURCE_DIR}/${_umicom_automation_manifest}")
+    umicom_native_manifest_field("${_umicom_automation_manifest_path}"
+        executable _umicom_automation_manifest_executable)
+    umicom_native_manifest_field("${_umicom_automation_manifest_path}"
+        native_executable _umicom_automation_native_executable OPTIONAL)
+    umicom_native_manifest_field("${_umicom_automation_manifest_path}"
+        console_executable _umicom_automation_console_executable OPTIONAL)
 
-    # A product whose slug differs from its executable (such as Music Studio)
-    # still prefers its native frontend when that target has been configured.
-    string(REGEX REPLACE "-console$" ""
-        _umicom_automation_graphical_candidate
-        "${_umicom_automation_manifest_executable}")
-    # Prefer graphical names, then the manifest entry and console fallbacks.
-    # Only an existing executable target can become the product root.
+    # Prefer the declared native target only when this configuration built it.
+    # Headless builds choose their declared console, then the legacy executable.
+    # No declaration alone creates a runnable target or proves installation.
     set(_umicom_automation_primary_candidates
-        "${_umicom_automation_manifest_executable}-gtk"
-        "umicom-${_umicom_automation_slug}"
-        "${_umicom_automation_graphical_candidate}"
-        "${_umicom_automation_manifest_executable}"
-        "${_umicom_automation_manifest_executable}-console"
-        "umicom-${_umicom_automation_slug}-console")
+        "${_umicom_automation_native_executable}"
+        "${_umicom_automation_console_executable}"
+        "${_umicom_automation_manifest_executable}")
     set(_umicom_automation_primary_target "")
     foreach(_umicom_automation_candidate
             IN LISTS _umicom_automation_primary_candidates)

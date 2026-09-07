@@ -2,7 +2,7 @@
 
 **Status:** Canonical living register  
 **Owner:** Umicom Foundation  
-**Last reviewed:** 6 September 2026  
+**Last reviewed:** 7 September 2026  
 **Revision control:** Git history; do not create numbered copies.
 
 > A chat statement is not a durable project decision until it appears here or in an approved linked decision record.
@@ -36,8 +36,88 @@
 | UX-018 | Approved | The active application is presented as a stable application-surface tab |
 | HOST-001 | Approved | Application opening delegates to host policy with a process fallback |
 | UX-019 | Approved | Framework-owned SVG is the only native application identity mark |
+| UX-020 | Approved requirement; graphical launchers source integrated | Product identity belongs in the topmost window titlebar |
+| UX-021 | Approved requirement; source integrated | Named tool tabs use recoverable temporary flyouts |
 
 ## Approved decisions
+
+### Navigation and transient presentation clarification
+
+Normal Open/Focus must not require unlocking panel movement. It selects an
+existing visible panel, reveals a saved auto-hide tool or reopens an ordinary
+hidden dock tool through the existing workspace owner. It does not create an
+instance or move it. Creating and repositioning panels remain Edit Layout
+operations. Unavailable entries explain the missing instance or protection.
+
+Internal maximisation is a temporary presentation of the same panel body,
+using the existing Framework maximise-mode contract. It never overwrites saved
+geometry or starts another edit. Restore, focus on a different tool and accepted
+structural changes return the body to its original frame. Native detached-window
+maximisation remains distinct. This clarifies UX-005, UX-006 and UX-009; it does
+not claim docking, session recovery or product workflows are complete.
+
+### Explicit graphical and console launch declarations
+
+Application manifests declare native and console basenames separately while
+retaining the legacy executable field. An additive Framework launch-spec API
+keeps the original manifest structure unchanged. Known native names are checked
+against the canonical portfolio. Builds use configured targets, so a headless
+configuration is not forced to build a graphical target.
+
+Legacy/external manifests without a native declaration do not acquire a guessed
+graphical target. Malformed explicit declarations are rejected. GUI availability,
+installed executable discovery and domain readiness remain separate evidence.
+All registered applications must carry declarations checked by the C contract
+regression. New implementation and substantive regression coverage remain C.
+
+### UX-020 — Product identity belongs in the topmost window titlebar
+
+The official SVG and fixed application name belong at the left of the actual
+topmost window titlebar. Document and project context occupy the middle; window
+controls stay at the right. Menus, toolbars and the workspace are separate rows
+below. Do not repeat the same application identity in an inner command strip.
+
+This clarifies the placement described by UX-018; it does not remove application
+sessions or lifecycle guards. Studio, shared suite launchers and Desk adopt the
+shared GTK titlebar in source. Existing suite and Desk identities transfer into
+the titlebar without constructing another catalogue or losing its selections.
+All native hosts still need visual acceptance. The artwork and
+user font choices remain unchanged. New unpresented-widget tests check the
+titlebar slot and ancestry, but native visual acceptance remains pending.
+
+The final main window must receive its titlebar before realization. Deferred
+product startup uses a temporary splash surface rather than realizing that
+main window too early. Startup cancellation removes pending callbacks; it must
+not cause a later main window to appear. Desk disconnects its view callbacks and
+cancels its poll source before releasing the state they borrow.
+
+### UX-021 — Named tool tabs use recoverable temporary flyouts
+
+Framework renders explicit auto-hide members as named edge tabs. Selecting a
+tab opens that tool over the workspace; another tab switches it. X collapses
+the flyout while keeping its tab and contents. This temporary state does not
+change a saved layout revision. Docking and ordinary tool hiding go through the
+existing model owner. Protected-panel pinning is a separate permission.
+
+Only capable action owners opt into normal-mode Dock, Auto Hide and recoverable
+Close. Read-only hosts must not display enabled actions they cannot perform.
+Old saved layouts are kept. A new named product-default copy resets presentation
+without replacing older arrangements, shared context routing or checkpoints.
+Native switching, draft retention and teardown have source tests; execution is
+still required before release.
+
+### Canvas input extension to LAYOUT-003
+
+The existing Framework geometry projector supports all four edges and four
+corners. Old move and southeast-resize enum values remain unchanged. Resizing
+anchors the opposite edge; an untouched axis and zero motion remain exact
+no-ops. Grid snapping and minimum dimensions apply only to an axis being changed.
+
+Keyboard movement is a temporary view preview on a focused panel title. Arrows
+move, Shift plus arrows resize the bottom/right edges, Enter queues acceptance,
+and Escape or focus departure cancels. Mouse and keyboard use the same deferred
+revision-checked request and existing workspace edit owner. Lock, protection and
+resize permissions are not bypassed. No second layout transaction is introduced.
 
 ### GOV-001 — Durable documentation is mandatory
 

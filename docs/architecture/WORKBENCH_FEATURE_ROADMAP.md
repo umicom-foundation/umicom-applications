@@ -35,7 +35,7 @@ documents and selected source paths; it is not an exhaustive source audit.
   typed context groups and transactional layout model have source implementations.
   Native rendering, keyboard use and monitor restoration still need acceptance.
 - Free canvas placement now has separate native rectangles, title dragging,
-  lower-right resizing, an edit grid and numeric geometry controls in source.
+  eight-direction resizing, keyboard previews, an edit grid and numeric geometry controls in source.
   It does not consume dock-stack slots. Native verification is pending.
 - Trader, Bank, TMS, Music and shared product previews use the suite path.
   Studio's main shell now has source integration with the same Framework host,
@@ -44,6 +44,60 @@ documents and selected source paths; it is not an exhaustive source audit.
 - Explicit native canvas checkpoints now connect to the existing Data Server
   chunk store and UI layout codec in source. Restart, corruption recovery and
   concurrent-save acceptance still need native execution.
+- Studio, the shared suite launchers and Desk now install their official SVG
+  identity in the actual topmost GTK titlebar. Suite and Desk transfer their
+  existing identity controller, preserving catalogue selection and appearance.
+  The shared renderer has named edge tabs and temporary tool panels,
+  with separate dock, collapse and protected-panel behaviour. Source regression
+  coverage exists; native appearance and interaction acceptance are pending.
+
+### Current workspace navigation and application launch update
+
+Every registered application declares its graphical and console executable
+explicitly. The build and discovery paths use those declarations and compare
+known graphical names with the existing Framework portfolio. They no longer
+guess a native name by removing a console suffix. A declaration is not proof
+that an executable is installed or its product services are ready.
+
+Suite clients can search current panel instances and named layouts. Normal
+Open/Focus selects visible panels, reveals auto-hide tools and reopens ordinary
+hidden dock tools without moving them. Adding or moving a panel still requires
+Edit Layout. Studio uses its existing workspace owner for the same operations.
+Desk's search opens its application chooser or selects a real desktop layout;
+it does not claim to host other products' panels.
+
+Eligible internal panels can temporarily fill the shared workspace. Restore
+returns the same widget to its original frame and keeps the other tools alive.
+This presentation uses the existing Framework maximise-mode contract, not a
+second saved rectangle or layout transaction. Protected, fixed-size, detached
+and auto-hide panels are excluded. Active geometry gestures must finish first.
+
+The new C regressions cover manifest declarations, navigation, transient
+maximisation and search-controller teardown. Existing Studio and Desk native
+tests cover their new paths. These sources have not been compiled or executed
+in this update; native acceptance remains a release gate.
+
+### Current native window and canvas controls update
+
+The shared titlebar binding now reaches Trader, Bank, TMS, Music and the eighteen
+shared product previews, as well as Studio and Desk. The main window receives
+its titlebar before it is presented. Products with deferred startup retain a
+temporary startup surface while preparing that final window. Closing startup
+must cancel pending work; a later unexpected application window is not valid.
+Desk retains its dedicated desktop renderer; titlebar adoption is not canvas
+host migration or a completed multi-application session service.
+
+Canvas panels expose four edges and four corners during layout editing.
+Resizing keeps the opposite edge in place. An untouched axis does not jump to
+the grid, including imported off-grid rectangles. On a focused panel title,
+arrow keys preview movement and Shift plus arrows preview bottom/right resizing.
+Enter submits the preview; Escape or leaving the title cancels it. Existing
+lock, protected-panel and non-resizable policies remain authoritative. No
+provider text field intercepts these geometry keys.
+
+Source regressions cover the geometry directions, native handles, keyboard
+preview lifecycle, retained callbacks, titlebar transfer and Desk teardown.
+They have not been compiled or executed during this update.
 
 ### Current native launcher update
 
@@ -92,7 +146,8 @@ The new checkpoint bridge saves the last explicitly applied active layout,
 retains a previous valid copy and validates a restore before native publication.
 Storage revisions prevent stale windows from silently overwriting newer saves.
 SQLite-backed disk storage and memory-only test backends are reported separately.
-The UI layout codec stays unchanged; dedicated record namespaces separate these
+The UI layout schema number stays unchanged; stricter parsing and round-trip
+geometry precision are implemented. Dedicated record namespaces separate these
 payloads from semantic workbench documents in the existing chunk store.
 
 This is not a complete named-layout library or a document/session checkpoint.
@@ -108,7 +163,7 @@ warnings are requirements throughout, not a final cleanup task.
 
 | Priority | Major feature area | Work remaining | Required finish evidence |
 |---|---|---|---|
-| 1 | Universal native canvas | Validate Studio's new source integration and shared free canvas; migrate Desk; complete eight-direction resizing, internal maximisation, docking previews, menu/toolbar placement, keyboard dragging and draft/focus recovery. | Create a blank layout, add a real panel, move/resize/dock it, apply and cancel later edits without state drift in Studio and Trader; assess the same mechanism in every client. |
+| 1 | Universal native canvas | Validate shared titlebars, normal tool navigation, transient internal maximisation, eight-direction resizing and keyboard previews; migrate Desk's content host; complete docking previews, menu/toolbar placement and draft/focus recovery. | Create a blank layout, add a real panel, focus/maximise/restore/move/resize/dock it, apply and cancel later edits without state drift in Studio and Trader; assess the same mechanism in every client. |
 | 2 | Durable workspaces and recovery | Validate the new explicit canvas checkpoint across restart and concurrent saves; complete the named-layout library, damaged-metadata repair, appearance/document/monitor records and migrations through existing Data Server stores. | Close and reopen a saved workspace; survive corrupt records, interrupted writes and a missing monitor without losing the usable layout. |
 | 3 | Native developer operations and GUI acceptance tools | Expose existing C build, repository, change discovery, scheduling and UI automation services through native tools and Framework panels. | One reviewed request plans changed targets, reports failures and supports cancellation; GUI tests record button/menu actions and observable results without script-owned business logic. |
 | 4 | Studio daily development loop | Project navigation, multi-document editing, completion, diagnostics, build/test/run/debug, diff and repository operations, searchable C/GTK4 lessons and documentation. | Open a C project, edit/save, inspect completion and diagnostics, build/test/debug, review changes and resume the project after restart. |

@@ -289,6 +289,11 @@ class NativeWindowSourceWiring(unittest.TestCase):
         root = compact(source("CMakeLists.txt"))
         self.assertIn("umicom_add_shared_native_applications()", root)
         self.assertIn("UMICOM_SUITE_APPLICATION_DIRECTORIES", cmake)
+        # Known manifest edits must regenerate both GUI and headless graphs.
+        dependency = 'set_property(DIRECTORYAPPENDPROPERTYCMAKE_CONFIGURE_DEPENDS"${manifest}")'
+        self.assertIn(dependency, text)
+        self.assertLess(text.index(dependency),
+                        text.index('file(STRINGS"${manifest}"'))
         self.assertIn("if(NOTUMICOM_APPLICATIONS_BUILD_SHARED_GTK4)return()endif()", text)
         skip = re.search(r'MATCHES\s+"\^\(([^)]+)\)\$"', cmake)
         self.assertIsNotNone(skip)
@@ -305,8 +310,12 @@ class NativeWindowSourceWiring(unittest.TestCase):
             "UMICOM_APPLICATION_INSTALL_COMPONENT",
         ):
             self.assertIn(expected, text)
-        self.assertIn('string(REGEXREPLACE"-console$"""_umicom_native_target', text)
-        self.assertIn('set(_umicom_native_target"umicom-os-control-centre-gtk")', text)
+        # Native targets come from explicit per-product declarations, never
+        # guessed console suffixes or an application-specific naming branch.
+        self.assertIn('umicom_native_manifest_field("${_umicom_manifest}"native_executable'
+                      '_umicom_native_targetOPTIONAL)', text)
+        self.assertNotIn('string(REGEXREPLACE"-console$"', text)
+        self.assertNotIn('set(_umicom_native_target"umicom-os-control-centre-gtk")', text)
 
     def test_all_24_products_have_catalogued_experiences_and_standard_recipes(self):
         catalogue = source("framework/src/application/experience_catalogue.c")

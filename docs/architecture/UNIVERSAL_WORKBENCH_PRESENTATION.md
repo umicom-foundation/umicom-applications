@@ -22,6 +22,11 @@ be resolved, the image remains hidden while the product name stays visible and
 packaging diagnostics report the fault. A textual `<>` substitute is never
 rendered as branding.
 
+The intended native position is the topmost window titlebar, not an inner
+workspace strip. Studio now installs the shared GTK titlebar there in source;
+the other native hosts still need explicit adoption and visual acceptance.
+The fixed product name remains separate from changing document/project text.
+
 ## Normal workspace mode
 
 Normal mode prioritises product work. Panel headers remain compact and expose
@@ -33,6 +38,12 @@ An eligible unpinned panel may be closed during normal use. Framework performs
 the close through the authoritative workspace model, validates the result and
 rebuilds the visible layout. The panel definition remains in the shared window
 catalogue so it can be restored.
+
+Explicit auto-hide tools appear as named edge tabs. A click opens a temporary
+flyout; another tab switches tools. X or Escape collapses it without removing
+the tab or provider contents. The flyout dock control and a docked tool's
+auto-hide control are normal presentation actions, separate from geometry
+locks and protected-panel pinning. Only registered action owners enable them.
 
 ## Edit Layout mode
 
