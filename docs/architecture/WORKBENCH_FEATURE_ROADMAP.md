@@ -13,7 +13,11 @@ not file versions or delivery names. Framework ownership, application coverage
 and acceptance requirements remain fixed.
 
 Reusable behaviour is implemented in C in Umicom Framework first. Thin graphical
-clients select product identity, compose services and present their results.
+clients select product identity and compose Framework services and views.
+Framework owns the implementation, layouts and windowing, including the desktop
+environment used by Umicom Desk. Desk is not a second framework or window manager
+inside an application repository. Product engines also belong in Framework;
+applications select and connect them through public contracts.
 Native command-line tools use those same contracts. New Python or PowerShell
 scripts must not become a second implementation of product or developer tooling.
 Platform-specific assembly is reserved for a justified low-level requirement
@@ -150,10 +154,45 @@ The UI layout schema number stays unchanged; stricter parsing and round-trip
 geometry precision are implemented. Dedicated record namespaces separate these
 payloads from semantic workbench documents in the existing chunk store.
 
-This is not a complete named-layout library or a document/session checkpoint.
-Full-library storage, explicit damaged-metadata repair, layout migrations,
-monitor recovery and native execution remain outstanding. The old shell-session
+This active-layout checkpoint is separate from the named library described
+below. Explicit damaged-metadata repair, document/session recovery, layout
+migrations, monitor recovery and native execution remain outstanding. The old shell-session
 format must not overwrite the canvas during routine status synchronization.
+
+### Current named-layout library update
+
+Framework now has revision-checked operations to open, duplicate, rename and
+remove a named layout. Studio and shared suite workstations expose the same
+Layout Library view. The view lists and searches copied records; the existing
+workspace model remains the only owner. Open layout edits must be applied or
+cancelled first. Removal needs confirmation and cannot remove the last layout.
+Renaming keeps panel content; selecting a different layout follows each host's
+existing panel-lifecycle rules.
+
+The library now has explicit **Save library** and confirmed **Restore library**
+controls. Framework stores the complete ordered list, including names and the
+active selection, through the existing Data Server. It uses a separate record
+namespace, so **Save layout** continues to store only the active arrangement.
+Restore replaces the named list exactly; layouts removed before a library save
+do not reappear as an accidental merge with product defaults.
+
+All layouts must be committed and locked before saving. Storage revisions
+reject stale saves, and a previous valid archive can be recovered if the newest
+payload is damaged. Restore validates every layout against the current product,
+tool and context definitions before the native host accepts the new state.
+It does not install missing tools or archive documents, appearance settings or
+context-group definitions. The archive is bounded to 450 KiB; oversized input
+fails without dropping layouts or replacing the stored copy.
+
+Library restoration is explicit, including after restart. It does not silently
+replace the session on startup. The controls distinguish disk storage from a
+memory-only connection. Desk's dedicated desktop renderer does not yet use
+this library view. Compilation and native acceptance remain pending. See the
+[layout library validation guide](../validation/LAYOUT_LIBRARY_VALIDATION.md).
+
+The focused native workbench test target builds regression executables without
+depending on application executables. A running product must still be closed
+before rebuilding that product. A missing test executable is not a test result.
 
 ## Priority order and finish lines
 
@@ -164,24 +203,148 @@ warnings are requirements throughout, not a final cleanup task.
 | Priority | Major feature area | Work remaining | Required finish evidence |
 |---|---|---|---|
 | 1 | Universal native canvas | Validate shared titlebars, normal tool navigation, transient internal maximisation, eight-direction resizing and keyboard previews; migrate Desk's content host; complete docking previews, menu/toolbar placement and draft/focus recovery. | Create a blank layout, add a real panel, focus/maximise/restore/move/resize/dock it, apply and cancel later edits without state drift in Studio and Trader; assess the same mechanism in every client. |
-| 2 | Durable workspaces and recovery | Validate the new explicit canvas checkpoint across restart and concurrent saves; complete the named-layout library, damaged-metadata repair, appearance/document/monitor records and migrations through existing Data Server stores. | Close and reopen a saved workspace; survive corrupt records, interrupted writes and a missing monitor without losing the usable layout. |
-| 3 | Native developer operations and GUI acceptance tools | Expose existing C build, repository, change discovery, scheduling and UI automation services through native tools and Framework panels. | One reviewed request plans changed targets, reports failures and supports cancellation; GUI tests record button/menu actions and observable results without script-owned business logic. |
+| 2 | Durable workspaces and recovery | Validate explicit active-layout and full-library checkpoints across restart and concurrent saves; complete damaged-metadata repair, appearance/document/context-definition/monitor records and migrations through existing Data Server stores. | Close and reopen a saved workspace; survive corrupt records, interrupted writes and a missing monitor without losing the usable layout. |
+| 3 | Native developer operations and GUI acceptance tools | Connect existing C change discovery, incremental build, scheduling, quality and UI automation services; add recursive repository publication and one-command graphical delivery through the same native plans. | One reviewed request discovers affected targets, verifies, builds, tests and stages approved graphical products; recursive publication checks every child before its parent; failures and cancellation remain visible. |
 | 4 | Studio daily development loop | Project navigation, multi-document editing, completion, diagnostics, build/test/run/debug, diff and repository operations, searchable C/GTK4 lessons and documentation. | Open a C project, edit/save, inspect completion and diagnostics, build/test/debug, review changes and resume the project after restart. |
 | 5 | Trader paper-trading workstation | Linked watchlist/chart/depth/order views, indicators, guarded amend/cancel, cash/fees/P&L, reconciliation, replay and connection health. | Deterministic paper orders reconcile through fills and balances; stale data, limits, disconnects and emergency stops are tested before live routing is considered. |
 | 6 | Reusable product UI and service infrastructure | Virtual grids, trees, validated forms, provider setup, jobs, progress, cancellation, notifications, approvals and protected secret references. | Two different product journeys use the same Framework components; disconnected and denied actions explain their state before invocation. |
 | 7 | Bank and TMS operational journeys | Accounts, beneficiaries, payments, approval and ledger evidence; trade capture, pricing, risk, settlement and reconciliation. | Simulated payment and trade lifecycles reach reconciled records with approval, audit and recovery; real-money adapters remain separately gated. |
-| 8 | Desk host and cross-application work | Multiple application tabs, independent hosts, acknowledged transfer, unsaved-work protection, typed clipboard and multi-monitor restoration. | Open two product sessions, transfer one safely, reject incompatible transfers and restore both after restart; no foreign-process widget reparenting. |
+| 8 | Framework desktop environment and cross-application work | Live installed-application registry, taskbar/session state, multiple application tabs, independent hosts, acknowledged transfer, unsaved-work protection, typed clipboard and multi-monitor restoration; Desk remains a thin client. | Install or remove a product and refresh open launchers without restarting Desk; open two product sessions, transfer one safely and restore both; no foreign-process widget reparenting. |
 | 9 | Visual design and extensions | Code/design/split/preview modes, properties, undo, source round-trip, extension discovery, permissions, compatibility and rollback. | Edit a form, preview it, regenerate/reopen its source, then install and reject incompatible test extensions without damaging the workspace. |
 | 10 | Local intelligence and retrieval | Model installation/supervision, streaming, cancellation, ingestion, citations, deletion, approvals and generated-artifact provenance. | A local or remote model answers from authorised sources with usable citations; cancellation, source deletion and recovery leave consistent state. |
 | 11 | Creative, engineering and business engines | Shared scene/geometry, game/input, timelines, audio/image/animation, chart/graph, document/export and domain workflow services. | Each adopting product completes its first persisted task with deterministic engine tests and a usable GUI; no generic preview is presented as completion. |
 | 12 | Specialist studio and operations workflows | Web/mobile preview and delivery, database connections/querying, integration flows, service monitoring and security findings. | Each specialist GUI completes one real project, connection or incident journey with permissions, diagnostics and a recoverable result. |
-| 13 | Suite delivery and OS preparation | Component installer, dependency bundling, repair/update/rollback, launch health, uninstall, desktop sessions and read-only system adapters. | Clean-machine install, multi-application launch, repair and uninstall preserve user data; privileged operations require separate approval and recovery evidence. |
+| 13 | Suite delivery and OS preparation | Selectable product installer, shared dependency bundling, customer package updates, tiered safe activation, repair/rollback, launch health, uninstall and authorised user-space system adapters. | Install selected products on a clean machine without a compiler; update, defer or restart safely, roll back a failed activation and uninstall without losing user data; privileged operations need approval and recovery evidence. |
 
 The requested design is a user-composed canvas, including a black or other chosen
 background, readable Umicom identity, movable menus and panels, colour-presented
 typed groups and independent windows across monitors. These are target
 requirements. Source integration of a launcher or layout model does not establish
 that the complete visual design has been delivered.
+
+## Agreed desktop and delivery requirements
+
+These requirements extend priorities 3, 8 and 13; they are not a second delivery
+order. Approval records the intended behaviour, not a completed implementation.
+The current source foundations include application manifests and launch models,
+installer selection, change planning and a configurable native build controller.
+The complete journeys below still require integration and acceptance evidence.
+
+### Live desktop and installed-application registry
+
+Framework supplies the desktop environment, shared layouts, window management,
+taskbar, application catalogue and session services. Desk selects those services
+as a product; other applications can use the same catalogue and windowing.
+One Framework registry must distinguish a registered product from an installed,
+compatible, permitted and healthy application. Folder presence alone is not
+permission to launch it.
+
+Installation, removal and update events should refresh open launchers without
+restarting their hosts. Keep selections, running sessions and failure reasons
+stable during refresh. A periodic or explicit rescan must repair missed events.
+The current source update adds a Framework-owned Desktop Home with searchable
+tiles, shared application selection and governed launch requests. An explicitly
+configured monitor checks the canonical GUI names of already-registered built-in
+products in Desk's executable directory. It updates installation evidence without
+restarting Desk or starting an application. Unchanged refreshes retain controls;
+removing an executable does not erase its still-running process record.
+The topmost Desk application picker delegates launch requests to that same
+runtime instead of starting a separate process through its default lookup.
+
+This is source integration, not completed package installation or a new external
+application registry. It does not establish signature, ABI or startup readiness.
+Native regressions have been added but not run. The current Desk process adapter
+reports cross-process window activation as unsupported instead of claiming it
+brought a window forward. Full package discovery, acknowledged window activation,
+embedded product sessions and native acceptance remain outstanding. Follow
+[Desktop Home validation](../validation/DESKTOP_HOME_VALIDATION.md) to check the
+implemented path after building it.
+
+### Developer builds and customer updates are separate
+
+In a developer workspace, Framework discovers changed files and dependencies,
+then requests only affected build and test targets from the configured native
+build tools. Header, resource and configuration changes must include dependent
+targets; this is not simply a list of changed C files. Existing configurable
+quiet-time verification and build scheduling remain the starting point. A manual
+trigger skips the wait, not the quality or test gates.
+
+Customers receive verified prebuilt packages. They must not need source code,
+Git or a compiler to update an installed product. An available update, a staged
+package and an active running version are separate states. Acceptance includes
+repeated no-change builds, a shared-header dependency change, a failed check and
+a package update on a machine without a development toolchain.
+
+### Safe activation with restart fallbacks
+
+Use the least disruptive supported activation method, not unconditional live
+replacement. Validated declarative resources can refresh through their owner.
+An isolated service can restart after work is paused and its state is saved.
+Native code reload requires an explicit compatibility and lifetime contract;
+modules without that contract use an application restart. A shared runtime or
+system change may need a coordinated session or system restart.
+
+Unsaved work, active orders, payments and other critical operations can defer
+activation. Never overwrite a loaded binary or unload code while callbacks or
+workers still use it. Keep the previous usable package and test failed health
+checks, interrupted activation and rollback. Ordinary incremental compilation
+does not prove that live code replacement is safe.
+
+### Recursive repository publication
+
+One C Framework operation should discover the root and all configured nested
+repositories, review the complete eligible change set, and publish children
+before recording their revisions in parents. It uses `git add -A` semantics
+inside each repository, honours exclusions, checks for private material and
+generates a message from staged changes when requested. Ignoring a file does not
+protect it if it is already tracked; that case must stop publication for review.
+
+Existing single-repository publication is a foundation, not proof of recursive
+success. Failed commits, rejected pushes, detached branches, conflicts and
+unpublished child commits need a per-repository result and a safe retry. A parent
+must not be reported synchronized while a required child publication failed.
+
+### One-command graphical delivery
+
+A native Umicom request should discover the configured graphical products and
+their dependencies, prepare a reviewable plan, configure when necessary, build,
+test, stage and verify a runnable installation. Developers should not have to
+list every module. Installation, application launch and repository publication
+remain separate explicit permissions; an ordinary build does not imply them.
+
+Studio and the other GUI clients display the same Framework plan, progress,
+cancellation and diagnostic results. A graphical delivery cannot silently fall
+back to a console executable. Clean-machine startup, resources and runtime
+library availability must be tested before the delivery is called ready. No new
+command spelling or all-in-one success is claimed until that path is implemented.
+
+### Selectable installer
+
+The installer should offer one, several or all eligible products and explain
+required shared dependencies and disk use before making changes. Reuse the
+Framework selection model and package services. Support repair, update,
+uninstall and rollback without deleting user projects or saved preferences.
+Validate package identity, integrity, origin and compatibility before staging.
+
+Acceptance covers partial selections, dependency sharing, interrupted installs,
+insufficient space and removal of one product while another still needs the
+same runtime. Installation success must not bypass each product's startup and
+domain-readiness checks.
+
+### Umicom OS reuse boundary
+
+Portable Framework user-space services can support future OS desktop sessions,
+application discovery, packages, settings, process supervision and recovery
+interfaces through authorised platform adapters. This follows the accepted
+[kernel boundary](ADR-0002-linux-kernel-boundary.md) and
+[Control Centre boundary](ADR-0008-os-control-centre-boundary.md).
+
+A kernel-safe subset, if needed, must be explicitly selected, dependency-audited
+and built separately with bounded C interfaces. It must not pull GTK, hosted C
+library requirements, user-space allocation, files, threads or service startup
+into a kernel. Boot and minimal recovery remain independently usable when
+Framework user space fails. This records a reuse boundary, not a new kernel
+choice or a claim that Umicom OS is implemented.
 
 ## Product coverage and next useful journey
 
@@ -301,6 +464,13 @@ GTK suite now supports explicit storage binding; native launchers request a
 file-backed checkpoint. Unbound constructors and memory-only connections still
 cannot provide restart recovery. Source integration must be followed by native
 acceptance before durability is reported as verified.
+
+The ordered library archive reuses the existing layout codec inside a bounded,
+versioned envelope. Its primary and previous-valid records are written in one
+owned Data Server transaction. Failed reads keep the current session unchanged;
+failed saves do not adopt another writer's revision. A confirmed Restore reads
+fresh evidence, so a missing archive or recoverable error can be retried without
+restarting the host. This is layout recovery, not complete session recovery.
 
 ## Typed context linking
 

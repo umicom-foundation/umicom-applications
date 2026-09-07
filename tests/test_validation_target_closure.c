@@ -69,6 +69,50 @@ static int require_text(const char *text, const char *expected)
     return text != NULL && expected != NULL && strstr(text, expected) != NULL;
 }
 
+/* Keep the focused recovery build explicit and independent of product links. */
+static int require_native_workbench_closure(const char *root)
+{
+    static const char *const expected_targets[] = {
+        "umicom-application-manifest-tests",
+        "umicom-applications-native-manifest-test",
+        "umicom-ui-workstation-maximize-mode-test",
+        "umicom-application-native-discovery-test",
+        "umicom-platform-executable-path-test",
+        "umicom-workspace-library-test",
+        "umicom-ui-workspace-checkpoint-test",
+        "umicom-ui-workspace-library-checkpoint-test",
+        "umicom-applications-validation-target-closure-test",
+        "umicom-gtk4-workspace-maximise-test",
+        "umicom-gtk4-suite-navigation-test",
+        "umicom-gtk4-command-bar-lifetime-test",
+        "umicom-gtk4-desk-home-test",
+        "umicom-gtk4-layout-library-test",
+        "umicom-gtk4-workspace-canvas-test",
+        "umicom-gtk4-workspace-checkpoint-test",
+        "umicom-gtk4-workspace-content-test",
+        "umicom-desktop-window-titlebar-test",
+        "umicom-studio-workspace-canvas-test"
+    };
+    char *focused = read_file("cmake/UmicomNativeWorkbenchValidation.cmake");
+    size_t index;
+    int valid = focused != NULL && require_text(root,
+        "include(\"${CMAKE_CURRENT_SOURCE_DIR}/cmake/UmicomNativeWorkbenchValidation.cmake\")");
+    for (index = 0U; valid && index < sizeof(expected_targets) / sizeof(expected_targets[0]); ++index)
+        valid = require_text(focused, expected_targets[index]);
+    valid = valid && require_text(focused,
+        "add_custom_target(umicom-native-workbench-regression-tests") &&
+        !require_text(focused, "add_custom_target(umicom-native-workbench-regression-tests ALL") &&
+        require_text(focused, "umicom_assert_native_workbench_test_closure(${_umicom_native_workbench_targets})") &&
+        require_text(focused, "MANUALLY_ADDED_DEPENDENCIES") &&
+        require_text(focused, "LINK_LIBRARIES INTERFACE_LINK_LIBRARIES") &&
+        require_text(focused, "Native coverage is incomplete in this configuration.") &&
+        require_text(focused, "CTest has not run.") &&
+        require_text(focused, "if(NOT BUILD_TESTING)") &&
+        require_text(focused, "message(FATAL_ERROR");
+    free(focused);
+    return valid;
+}
+
 /*
  * Start this command or application, report setup failures, and return a process exit code
  * to the operating system.
@@ -97,6 +141,7 @@ int main(void)
     UMI_TEST_REQUIRE(require_text(studio, "umicom-studio-vcs-workbench-contribution-test)"));
     UMI_TEST_REQUIRE(require_text(studio, "umicom-studio-data-workbench-contribution-test)"));
     UMI_TEST_REQUIRE(require_text(studio, "umicom-studio-web-api-workbench-contribution-test)"));
+    UMI_TEST_REQUIRE(require_native_workbench_closure(root));
     free(studio);
     free(experience);
     free(workstation);

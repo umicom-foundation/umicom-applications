@@ -763,6 +763,10 @@ if(BUILD_TESTING AND UMICOM_BUILD_REGISTERED_VALIDATION_TARGETS)
     endif()
 endif()
 
+# Keep native regression recovery independent of product relinking. This is
+# declared after all application and test targets so its closure is complete.
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/UmicomNativeWorkbenchValidation.cmake")
+
 # Shared resources are installed once beside the modular Framework runtime.
 # Application-specific resources continue to be installed by their owner.
 install(DIRECTORY "${UMICOM_FRAMEWORK_RESOURCE_ROOT}/"

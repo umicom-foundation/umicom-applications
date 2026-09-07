@@ -7,9 +7,9 @@ Licence: MIT
 
 # Windows Installer and Application Launcher
 
-Umicom Applications can be packaged as one Windows installer. The installer
-shows a list of applications with checkboxes, so each person can choose the
-products they need.
+The source includes packaging rules for one Windows installer with selectable
+applications. These rules still need clean-machine installation, repair, update
+and removal testing before the installer can be called ready for distribution.
 
 The shared Framework and the Umicom Applications launcher are required. They
 are installed once and reused by every selected application. Umicom Studio IDE,
@@ -27,21 +27,22 @@ During installation:
 5. Select **Install**.
 6. Start **Umicom Applications** from the Start menu or desktop shortcut.
 
-When Umicom Applications opens, it displays the installed products as another
-simple checkbox list. Choose one or several products and select **Launch
-selected**. Each product runs as its own process. For example, Umicom Studio IDE
-and Umicom Trader can remain open at the same time.
+The current Umicom Desk source opens on **Desktop Home**, a searchable tile view
+of registered applications. Use **Launch** for an available product, or select
+several products and open **Applications** to review and launch the selection.
+Each product runs as its own process; its window is not embedded inside Desk.
 
-Choosing an application that is already running brings that application
-forward instead of opening a duplicate process. A failure in one product does
-not prevent the other selected products from being attempted, and the launcher
-reports how many products started, were activated, or failed.
+Choosing an application that is already running requests activation instead of
+starting a duplicate. The current Desk process adapter cannot yet bring another
+window forward, so it reports that operation as unsupported. The launcher keeps
+the process record and reports failed requests. A failure in one selected product
+does not prevent the other selected products from being attempted.
 
 Before **Launch selected** is confirmed, the launcher can show a plain-language
 preview. The preview explains:
 
 - which selected applications will start as new processes;
-- which running applications will be brought forward;
+- which running applications will receive an activation request;
 - the recommended starting layout for each application;
 - whether product acceptance evidence still needs attention;
 - why an unavailable application cannot be selected; and
@@ -52,10 +53,10 @@ existing Framework launcher performs execution only after the user confirms.
 
 ## Why the design is reusable
 
-The application checkbox state, launch results, process supervision and
-installer selection rules live in Umicom Framework. Product repositories only
-declare their identity, executable and installer component. This keeps every
-application thin and prevents each product from inventing its own launcher.
+The Home layout, application selection, installation monitoring, launch plans
+and installer selection rules are supplied by Umicom Framework. The native Desk
+entry point supplies its actual executable directory and poll clock, then uses
+those public contracts. It does not keep a second installation catalogue.
 
 The generated Windows installer uses these components:
 
@@ -96,6 +97,14 @@ A new application must provide:
 
 Do not put process-starting code in the new application. Register the product
 with Umicom Desk and let Framework create and execute the launch plan.
+
+For already-registered built-in products, the new Desk monitor checks their
+canonical graphical executable names in the same directory as Desk. An added or
+removed executable updates Home on a later poll. This does not admit an unknown
+download, install a package or replace running code. Compatibility admission is
+an explicit native composition policy; file presence alone does not prove that
+a binary is trusted or healthy. See [Desktop Home validation](../validation/DESKTOP_HOME_VALIDATION.md)
+for the current limits and test steps.
 
 ## Safety rules
 

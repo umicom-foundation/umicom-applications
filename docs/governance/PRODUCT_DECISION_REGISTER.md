@@ -38,6 +38,13 @@
 | UX-019 | Approved | Framework-owned SVG is the only native application identity mark |
 | UX-020 | Approved requirement; graphical launchers source integrated | Product identity belongs in the topmost window titlebar |
 | UX-021 | Approved requirement; source integrated | Named tool tabs use recoverable temporary flyouts |
+| ARCH-005 | Approved boundary; acceptance pending | OS reuse separates portable user space from kernel-safe code |
+| HOST-002 | Approved requirement; integration pending | Framework owns the desktop and live installed-application registry |
+| BUILD-001 | Approved requirement; integration pending | Developer builds and customer package updates are separate |
+| UPDATE-001 | Approved requirement; integration pending | Activation uses safe tiers with restart fallbacks |
+| DELIVERY-002 | Approved requirement; integration pending | Repository publication is recursive and child-first |
+| DELIVERY-003 | Approved requirement; integration pending | One native request plans graphical delivery |
+| DELIVERY-004 | Approved requirement; integration pending | Installation supports selected products and shared dependencies |
 
 ## Approved decisions
 
@@ -147,8 +154,9 @@ resize permissions are not bypassed. No second layout transaction is introduced.
 **Constraints**
 
 - Reusable implementation belongs in Framework libraries, controllers, models, services, commands, events, view contracts, adapters and tests.
-- Application repositories contain identity, configuration, product composition and genuinely product-specific behaviour only.
+- Application repositories contain identity, configuration and product composition. Product engines and reusable behaviour are implemented in Framework modules, not in a second application-owned service layer.
 - A capability used, or reasonably reusable, by more than one application belongs in Framework.
+- This ownership includes Umicom Desk: desktop layouts, windowing, taskbar state, discovery and updates are Framework implementations. Desk selects and connects them; it does not own another desktop engine.
 
 **Acceptance evidence**
 
@@ -185,6 +193,7 @@ resize permissions are not bypassed. No second layout transaction is introduced.
 - Applications never call another application's private API.
 - Cross-application communication uses Framework commands, queries, events, streams or application-surface sessions.
 - A product selects capabilities without owning a parallel framework.
+- Product-default layouts and window behaviour are Framework definitions selected by a thin client, not a separate application layout implementation.
 
 **Acceptance evidence**
 
@@ -318,6 +327,22 @@ resize permissions are not bypassed. No second layout transaction is introduced.
 
 **Status:** Approved  
 **Decision:** Users own named arrangements and workspace preferences. Framework owns the schema, validation, editing, migration, persistence, recovery and rendering.
+
+The current library implementation applies changes to the existing workspace
+owner, using an expected revision to reject stale requests. Default arrangements
+are user-owned copies: they can be renamed or removed, but the last arrangement
+cannot be removed. Removal requires explicit confirmation. Product templates
+remain separately available for creating a fresh default. Library controls do
+not silently start an edit session or save to disk. The existing Save layout
+command stores the active arrangement. A separate explicit Save library command
+stores the complete ordered named list and its active selection through the
+existing Data Server. Confirmed Restore library validates the complete archive
+before replacing that list; it does not merge back deleted layouts or run
+automatically on startup. Stale saves are rejected and a previous valid copy is
+kept for recovery. Current tool and context definitions remain authoritative;
+the archive does not contain application documents, appearance settings or
+context-group definitions. Memory-only storage is labelled as such. Compilation
+and native acceptance of this source integration are still required.
 
 **Rationale:** Users require customisation without fragmenting the implementation.
 
@@ -745,3 +770,180 @@ The OS work remains user-space preparation: session recovery, panel rendering,
 resource discovery and authorised platform adapters can be reused. Kernel and
 privileged-service development do not acquire the full Framework GUI dependency
 graph. The OS research plan does not itself select a new kernel implementation.
+
+## Desktop, development and delivery direction
+
+The following requirements extend the existing contracts. Approval does not
+mean that an installer, live update or recursive publication journey has passed.
+The canonical priority order remains in the
+[Workbench feature roadmap](../architecture/WORKBENCH_FEATURE_ROADMAP.md).
+
+### ARCH-005 — OS reuse separates portable user space from kernel-safe code
+
+**Status:** Approved boundary; implementation and acceptance remain scoped work.
+
+**Decision:** Umicom OS reuses portable Framework user-space services through
+platform adapters. A kernel may use only an explicitly reviewed, separately
+built kernel-safe subset with a small C boundary. This clarifies the accepted
+kernel and Control Centre decisions; it does not move a kernel into Framework
+or choose a replacement kernel.
+
+**Rationale:** User applications, boot and privileged code have different
+dependencies and failure requirements.
+
+**Constraints**
+
+- The full GUI, GTK and hosted C library dependency graph never enters a kernel.
+- Kernel-safe code has explicit memory, concurrency and error contracts, with
+  no assumed user-space allocator, filesystem, thread or service runtime.
+- Boot and minimal recovery remain usable without Framework user space.
+- Framework owns portable services and authorised platform adapters; OS
+  engineering retains kernel, boot, image and privileged recovery authority.
+
+**Acceptance evidence required:** Dependency checks prove the boundary; isolated
+tests cover the selected subset; OS recovery is tested without the normal GUI.
+
+### HOST-002 — Framework owns the desktop and live installed-application registry
+
+**Status:** Approved requirement; live installation integration is pending.
+
+**Decision:** One Framework registry combines canonical product identity with
+installation, version, compatibility, permission and health evidence. Framework
+owns desktop layouts, windowing, taskbar and sessions. Desk and the other clients
+compose and render those contracts without local registry or windowing engines.
+
+**Rationale:** Installing an application should update all open catalogues, not
+require rebuilding or restarting each product's launcher.
+
+**Constraints**
+
+- Registered, installed, available, launch-request accepted and ready are
+  separate states. A directory or manifest alone does not authorise execution.
+- Changes refresh open catalogues while preserving selections and running work.
+  A bounded rescan repairs missed events; refresh never launches a product.
+- Unavailable products keep a readable reason. Removal or failed refresh does
+  not silently end a running session or discard the last usable registry.
+- Persisted installation records use the existing Data Server authority.
+
+**Acceptance evidence required:** Install, update, remove and invalidate a test
+product while two launchers are open; both reflect the same validated state.
+
+### BUILD-001 — Developer builds and customer package updates are separate
+
+**Status:** Approved requirement; native planning and scheduling foundations
+exist, complete delivery acceptance remains pending.
+
+**Decision:** Developer workspaces discover changed files and dependency-affected
+targets, then verify, incrementally build and test them. Customer installations
+consume verified prebuilt packages and do not require source, Git or a compiler.
+
+**Rationale:** Source development and safe product updates serve different users.
+
+**Constraints**
+
+- Reuse the configured compiler and incremental dependency graph. Shared headers,
+  resources and build configuration can affect otherwise unchanged consumers.
+- Existing configurable quiet-time verification and post-check delays remain
+  the starting policy. A manual trigger removes waits, not quality/test gates.
+- Failure preserves evidence and prevents deployment. A scan is not proof that
+  source is free of vulnerabilities or memory defects.
+- Customer update policy checks package identity, origin, compatibility and
+  permissions before staging. Availability does not mean activation succeeded.
+
+**Acceptance evidence required:** No-change, dependent-header, failed-check and
+manual-trigger journeys pass; customer updates work without a development kit.
+
+### UPDATE-001 — Activation uses safe tiers with restart fallbacks
+
+**Status:** Approved requirement; tiered activation is not yet a verified service.
+
+**Decision:** Choose a supported resource refresh, isolated-service restart,
+application restart or coordinated session/system restart according to the
+changed component's contract. Native code reload is opt-in, never assumed.
+
+**Rationale:** Updating files is not enough to replace code that is still in use.
+
+**Constraints**
+
+- Live native replacement needs explicit compatibility, state transfer,
+  ownership and shutdown rules. Active callbacks and workers must finish safely.
+- Unsaved work and critical operations can defer activation. Do not overwrite
+  loaded binaries or bypass an application's close and transaction guards.
+- Stage separately, retain a previous usable version, verify health and report
+  rollback or restart requirements. Never label an unavailable reload as live.
+
+**Acceptance evidence required:** Failed health checks, interrupted activation,
+busy transactions and unsupported reloads retain recoverable user state.
+
+### DELIVERY-002 — Repository publication is recursive and child-first
+
+**Status:** Approved requirement; single-repository commands are a foundation,
+not evidence of complete recursive publication.
+
+**Decision:** A C Framework operation discovers the configured repository tree,
+stages all eligible changes with `git add -A` semantics, commits when needed and
+pushes children before recording and publishing their revisions in parents.
+The native command and GUI use the same plan and per-repository results.
+
+**Rationale:** A successful parent push cannot compensate for unpublished child
+commits or a failed child commit.
+
+**Constraints**
+
+- Honour exclusions and inspect tracked files as well as new files for private
+  material. Ignoring an already tracked secret does not make it safe to publish.
+- Generate a local message from the complete staged change list when requested;
+  preserve reviewed messages and existing repository hooks.
+- Conflicts, detached branches, authentication errors and rejected pushes stop
+  dependent publication. Do not force-push, reset or invent branch choices.
+- Retry from observed repository state; report partial success without claiming
+  an atomic transaction across independent remotes.
+
+**Acceptance evidence required:** Nested repositories, no-change children, failed
+commits and rejected pushes produce accurate outcomes and safe resumable plans.
+
+### DELIVERY-003 — One native request plans graphical delivery
+
+**Status:** Approved requirement; end-to-end command and GUI acceptance pending.
+
+**Decision:** One Umicom request discovers configured GUI products and their
+dependencies, plans configuration, builds, tests and stages runnable artifacts.
+The developer does not supply an affected-module list. GUI clients expose the
+same C Framework plan, status, cancellation and recovery information.
+
+**Rationale:** Simpler operation must preserve the existing safety gates.
+
+**Constraints**
+
+- Configuration runs when needed; dependency and test scope remain explicit.
+- Install, launch and repository publication require their own permission.
+  An ordinary build is not permission to perform those actions.
+- Graphical delivery includes runtime libraries and official resources; missing
+  GUI executables do not silently become console launches.
+- Do not document a new working command until its native implementation exists.
+
+**Acceptance evidence required:** A clean-machine GUI delivery reaches a usable
+startup, while missing dependencies, failed tests and cancellation report truthfully.
+
+### DELIVERY-004 — Installation supports selected products and shared dependencies
+
+**Status:** Approved requirement; selection model exists, complete installer
+and package lifecycle acceptance remains pending.
+
+**Decision:** Users can select one, several or all eligible products. The shared
+Framework installer explains required components, disk use, permissions and
+dependency sharing before installation. Clients do not implement local installers.
+
+**Rationale:** Users should install only the products they need without breaking
+another product that shares a runtime.
+
+**Constraints**
+
+- Verify package identity, integrity, origin and compatibility before staging.
+- Support repair, update, rollback and uninstall with readable partial results.
+- Removal preserves user projects and preferences unless deletion is separately
+  requested, and retains dependencies still used by another installed product.
+- Installation evidence remains separate from startup and domain readiness.
+
+**Acceptance evidence required:** Partial selection, insufficient space,
+interruption, shared-dependency removal and rollback preserve a usable system.
