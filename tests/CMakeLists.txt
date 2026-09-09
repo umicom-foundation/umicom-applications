@@ -107,8 +107,16 @@ if(COMMAND umicom_register_validation_target)
         umicom-applications-cmake-graph-closure-test)
 endif()
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/../framework/cmake/UmicomTestBuildContract.cmake")
+
 add_executable(umicom-applications-validation-target-closure-test
     test_validation_target_closure.c)
+# The diagnostic check is header-only; inherit the public SDK include path
+# from the base target without linking the complete Framework runtime.
+target_link_libraries(umicom-applications-validation-target-closure-test PRIVATE
+    Umicom::base)
+umicom_assert_test_build_contract(
+    umicom-applications-validation-target-closure-test)
 target_compile_definitions(umicom-applications-validation-target-closure-test
     PRIVATE UMICOM_APPLICATIONS_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 umicom_apply_warnings(umicom-applications-validation-target-closure-test)
@@ -247,3 +255,23 @@ if(UMICOM_APPLICATIONS_BUILD_ALL_MODULES)
             umicom-applications-productisation-portfolio-test)
     endif()
 endif()
+
+# Reuse Framework regressions rather than copying a test runtime into clients.
+add_subdirectory(
+    "${CMAKE_CURRENT_SOURCE_DIR}/../framework/tests/cmake/test_build_contract"
+    "framework-build-contract")
+add_test(NAME applications.build_presets
+    COMMAND "${CMAKE_COMMAND}"
+        "-DPRESET_FILE=${CMAKE_CURRENT_SOURCE_DIR}/../CMakePresets.json"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/test_cross_platform_presets.cmake")
+set_tests_properties(applications.build_presets PROPERTIES
+    LABELS "applications;build-contract;presets;regression")
+
+# Compile the small regression closure before a long product build. Running
+# this target builds executables only; CTest remains a separate operation.
+add_custom_target(umicom-build-contract-tests)
+add_dependencies(umicom-build-contract-tests
+    umicom-applications-validation-target-closure-test
+    umicom-applications-cmake-graph-closure-test
+    umicom-test-header-contract-test
+    umicom-test-header-release-contract-test)

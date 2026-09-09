@@ -126,6 +126,47 @@
       "cacheVariables": {
         "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "ON"
       }
+    },
+    {
+      "name": "linux-all-headless-debug",
+      "displayName": "Linux Clang all modules headless Debug",
+      "description": "Native Linux all-module qualification without GTK4; retains the portable headless baseline.",
+      "inherits": "headless-debug",
+      "binaryDir": "${sourceDir}/build/linux-all-headless-debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "ON"
+      }
+    },
+    {
+      "name": "linux-gcc-all-headless-debug",
+      "displayName": "Linux GCC all modules headless Debug",
+      "description": "Independent GCC build tree for the same Linux headless application portfolio.",
+      "inherits": "linux-all-headless-debug",
+      "binaryDir": "${sourceDir}/build/linux-gcc-all-headless-debug",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc"
+      }
+    },
+    {
+      "name": "windows-ucrt64-all-headless-debug",
+      "displayName": "Windows UCRT64 GCC all modules headless Debug",
+      "description": "All-module headless Windows qualification separate from GTK4 presentation.",
+      "inherits": "windows-ucrt64-headless-debug",
+      "binaryDir": "${sourceDir}/build/windows-ucrt64-all-headless-debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -144,6 +185,21 @@
     {
       "name": "windows-ucrt64-all-debug",
       "configurePreset": "windows-ucrt64-all-debug"
+    },
+    {
+      "name": "linux-all-headless-debug",
+      "configurePreset": "linux-all-headless-debug",
+      "jobs": 2
+    },
+    {
+      "name": "linux-gcc-all-headless-debug",
+      "configurePreset": "linux-gcc-all-headless-debug",
+      "jobs": 2
+    },
+    {
+      "name": "windows-ucrt64-all-headless-debug",
+      "configurePreset": "windows-ucrt64-all-headless-debug",
+      "jobs": 2
     }
   ],
   "testPresets": [
@@ -173,6 +229,39 @@
       "configurePreset": "windows-ucrt64-all-debug",
       "output": {
         "outputOnFailure": true
+      }
+    },
+    {
+      "name": "linux-all-headless-debug",
+      "configurePreset": "linux-all-headless-debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 2,
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "linux-gcc-all-headless-debug",
+      "configurePreset": "linux-gcc-all-headless-debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 2,
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "windows-ucrt64-all-headless-debug",
+      "configurePreset": "windows-ucrt64-all-headless-debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 2,
+        "noTestsAction": "error"
       }
     }
   ]
