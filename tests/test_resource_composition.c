@@ -135,7 +135,7 @@ int main(void)
     trader = umi_application_presentation_find("org.umicom.trader");
     success &= require_condition(
         studio != NULL && studio->pinned_by_default &&
-        strcmp(studio->default_layout_id, "develop") == 0,
+        strcmp(studio->default_layout_id, "development") == 0,
         "Studio contributes a pinned taskbar presentation");
     success &= require_condition(
         trader != NULL && !trader->pinned_by_default &&
