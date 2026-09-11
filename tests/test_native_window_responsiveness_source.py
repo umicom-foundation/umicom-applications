@@ -57,6 +57,62 @@ def function_body(text, name):
     raise AssertionError(f"Unclosed C function: {name}")
 
 
+def resolve_cache_variables(presets, name):
+    """Resolve literal cache values across in-file configure-preset inheritance.
+
+    Earlier parents take precedence; the child overrides all parents. Retain
+    null entries during merging so an explicit unset cannot accidentally expose
+    a later parent's value. This is not a general CMake macro/include evaluator.
+    """
+    index = {}
+    for preset in presets:
+        if not isinstance(preset, dict) or not isinstance(preset.get("name"), str):
+            raise AssertionError("Every configure preset needs a string name")
+        if preset["name"] in index:
+            raise AssertionError(f"Duplicate configure preset: {preset['name']}")
+        index[preset["name"]] = preset
+    active = set()
+    resolved = {}
+
+    def visit(current):
+        if current in active:
+            raise AssertionError(f"Cyclic configure-preset inheritance: {current}")
+        if current not in index:
+            raise AssertionError(f"Unknown inherited configure preset: {current}")
+        if current in resolved:
+            return resolved[current]
+        active.add(current)
+        preset = index[current]
+        parents = preset.get("inherits", [])
+        if isinstance(parents, str):
+            parents = [parents]
+        if not isinstance(parents, list) or not all(isinstance(parent, str) for parent in parents):
+            raise AssertionError(f"Invalid inherits value in preset: {current}")
+        values = {}
+        for parent in reversed(parents):
+            values.update(visit(parent))
+        own = preset.get("cacheVariables", {})
+        if not isinstance(own, dict):
+            raise AssertionError(f"Invalid cacheVariables in preset: {current}")
+        values.update(own)
+        active.remove(current)
+        resolved[current] = values
+        return values
+
+    values = {}
+    for key, value in visit(name).items():
+        if isinstance(value, dict):
+            if "value" not in value:
+                raise AssertionError(f"Typed cache variable has no value: {name}/{key}")
+            value = value["value"]
+        if isinstance(value, bool):
+            value = "ON" if value else "OFF"
+        if value is not None and not isinstance(value, str):
+            raise AssertionError(f"Unsupported cache value: {name}/{key}")
+        values[key] = value
+    return values
+
+
 class NativeWindowSourceWiring(unittest.TestCase):
     """Check source contracts only; each failure identifies missing wiring."""
 
@@ -121,64 +177,88 @@ class NativeWindowSourceWiring(unittest.TestCase):
         self.assertNotIn("gtk_window_set_default_size(", body)
 
     def test_all_four_studio_stacks_size_only_the_selected_page(self):
+        # Retain this regression's identity while following the shared owner:
+        # Studio owns the editor stack; Framework owns all four tool edges.
         shell = source(STUDIO_RUNTIME + "runtime_shell.inc")
-        helper = compact(function_body(shell, "runtime_configure_stack"))
-        self.assertIn("gtk_stack_set_hhomogeneous(GTK_STACK(stack),FALSE)", helper)
-        self.assertIn("gtk_stack_set_vhomogeneous(GTK_STACK(stack),FALSE)", helper)
         body = compact(function_body(shell, "runtime_build_shell"))
-        for region in ("primary", "secondary", "bottom", "centre"):
-            with self.subTest(region=region):
-                self.assertIn(f"runtime_configure_stack(runtime->{region}_stack)", body)
+        self.assertIn("runtime_workspace_create(runtime)", body)
+        for axis in ("h", "v"):
+            self.assertIn(f"gtk_stack_set_{axis}homogeneous("
+                          "GTK_STACK(runtime->centre_stack),FALSE)", body)
+        host = source("framework/adapters/gtk4/workstation/workspace_layout_host_gtk4.c")
+        self.assertIn('#include "workspace_tool_windows_gtk4.inc"', host)
+        edges = compact(function_body(host, "tool_window_edge_index"))
+        for edge in ("left", "right", "top", "bottom"):
+            self.assertIn(f'"auto-hide:{edge}"', edges)
+        tools = source("framework/adapters/gtk4/workstation/workspace_tool_windows_gtk4.inc")
+        helper = compact(function_body(tools, "build_tool_edge"))
+        for axis in ("h", "v"):
+            self.assertIn(f"gtk_stack_set_{axis}homogeneous(GTK_STACK(edge->stack),FALSE)", helper)
+        self.assertIn("build_tool_edge(host,edge_index)",
+                      compact(function_body(tools, "build_tool_windows")))
+        panel = compact(function_body(host, "create_panel"))
+        for axis in ("width", "height"):
+            self.assertIn(f"gtk_scrolled_window_set_propagate_natural_{axis}("
+                          "GTK_SCROLLED_WINDOW(viewport),FALSE)", panel)
 
     def test_all_four_studio_switchers_have_horizontal_scrollers(self):
-        shell = source(STUDIO_RUNTIME + "runtime_shell.inc")
-        helper = compact(function_body(shell, "runtime_scroll_tab_strip"))
-        self.assertIn("GTK_POLICY_AUTOMATIC,GTK_POLICY_NEVER", helper)
-        self.assertIn("gtk_scrolled_window_set_propagate_natural_width("
-                      "GTK_SCROLLED_WINDOW(scroll),FALSE)", helper)
-        self.assertIn("gtk_scrolled_window_set_child("
-                      "GTK_SCROLLED_WINDOW(scroll),tabs)", helper)
-        body = compact(function_body(shell, "runtime_build_shell"))
-        for region in ("primary", "secondary", "bottom", "centre"):
-            with self.subTest(region=region):
-                self.assertIn(f"gtk_box_append(GTK_BOX({region}_group),"
-                              f"runtime_scroll_tab_strip({region}_switcher))", body)
+        # Dock stacks use the shared scrollable notebook, not four local
+        # Studio switchers. Edge rails scroll along their own orientation.
+        host = source("framework/adapters/gtk4/workstation/workspace_layout_host_gtk4.c")
+        stack = compact(function_body(host, "build_stack"))
+        self.assertIn("umi_gtk4_ws_tab_host_create(NULL)", stack)
+        tabs = source("framework/adapters/gtk4/workstation/tab_host_gtk4.c")
+        helper = compact(function_body(tabs, "umi_gtk4_ws_tab_host_create"))
+        self.assertIn("gtk_notebook_set_scrollable(GTK_NOTEBOOK(notebook),TRUE)", helper)
+        tools = source("framework/adapters/gtk4/workstation/workspace_tool_windows_gtk4.inc")
+        edge = compact(function_body(tools, "build_tool_edge"))
+        self.assertIn("vertical?GTK_POLICY_NEVER:GTK_POLICY_AUTOMATIC,"
+                      "vertical?GTK_POLICY_AUTOMATIC:GTK_POLICY_NEVER", edge)
+        self.assertIn("gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(edge->rail),rail_box)", edge)
 
     def test_studio_splitters_allow_both_children_to_shrink(self):
         shell = source(STUDIO_RUNTIME + "runtime_shell.inc")
-        helper = compact(function_body(shell, "runtime_configure_splitter"))
-        for side in ("start", "end"):
-            self.assertIn(f"gtk_paned_set_shrink_{side}_child("
-                          "GTK_PANED(paned),TRUE)", helper)
         body = compact(function_body(shell, "runtime_build_shell"))
-        for region in ("primary", "secondary", "workspace"):
-            self.assertIn(f"runtime_configure_splitter(runtime->{region}_paned)", body)
+        self.assertIn("umi_gtk4_workspace_layout_host_widget(runtime->workspace_host)", body)
+        self.assertNotIn("gtk_paned_new(", body)
+        host = source("framework/adapters/gtk4/workstation/workspace_layout_host_gtk4.c")
+        helper = compact(function_body(host, "join_regions"))
+        for side in ("start", "end"):
+            self.assertIn(f"gtk_paned_set_shrink_{side}_child(GTK_PANED(paned),TRUE)", helper)
+        create = helper.index("gtk_paned_new(")
+        self.assertLess(helper.index("if(start==NULL)returnend;"), create)
+        self.assertLess(helper.index("if(end==NULL)returnstart;"), create)
 
     def test_geometry_restoration_waits_for_nonzero_allocations(self):
-        geometry = source(STUDIO_RUNTIME + "runtime_workspace_geometry.inc")
-        body = compact(function_body(geometry, "runtime_workspace_apply_geometry"))
-        read_end = body.index("height=gtk_widget_get_height(runtime->workspace_paned);")
-        calculation = body.index("side_maximum=", read_end)
-        before_calculation = body[read_end:calculation]
-        guard = re.search(r"if\(([^{};]+)\)\{?return;", before_calculation)
-        self.assertIsNotNone(guard, "Geometry needs an early return before using zero allocations")
-        for dimension in ("total_width", "secondary_width", "height"):
-            self.assertRegex(guard[1], rf"\b{dimension}(?:<=0|<1|==0)")
-        self.assertGreater(body.index("gtk_paned_set_position("), calculation)
+        # Normalised canvas rectangles are allocated by Framework. Pointer
+        # projection must reject zero dimensions before recording a gesture.
+        canvas = source("framework/adapters/gtk4/workstation/workspace_canvas_gtk4.inc")
+        begin = compact(function_body(canvas, "on_canvas_drag_begin"))
+        guard = "if(entry->viewport_width<=0.0||entry->viewport_height<=0.0)return;"
+        self.assertIn(guard, begin)
+        self.assertLess(begin.index(guard), begin.index("entry->start_rect="))
+        self.assertLess(begin.index(guard), begin.index("entry->active=1"))
+        allocate = compact(function_body(canvas, "canvas_layer_allocate"))
+        for dimension in ("width", "height"):
+            self.assertIn(f"MAX(1,(int)(rect->{dimension}*{dimension}+0.5))", allocate)
+        host = source("framework/adapters/gtk4/workstation/workspace_layout_host_gtk4.c")
+        self.assertIn('#include "workspace_canvas_gtk4.inc"', host)
 
     def test_identity_and_menu_are_separate_scrollable_rows(self):
+        # Identity now lives in the native Framework titlebar. The ordinary
+        # command strip must keep its menu scrollable without duplicating it.
         bar = source(STUDIO_RUNTIME + "runtime_application_bar.inc")
         body = compact(function_body(bar, "runtime_build_application_bar"))
-        self.assertIn("header=gtk_box_new(GTK_ORIENTATION_VERTICAL,0)", body)
-        self.assertIn("gtk_scrolled_window_set_child("
-                      "GTK_SCROLLED_WINDOW(identity_scroll),bar)", body)
         self.assertIn("gtk_scrolled_window_set_child("
                       "GTK_SCROLLED_WINDOW(menu_scroll),runtime->menu_bar)", body)
-        identity = body.index("gtk_box_append(GTK_BOX(header),identity_scroll)")
-        menu = body.index("gtk_box_append(GTK_BOX(header),menu_scroll)")
-        self.assertLess(identity, menu)
-        self.assertNotIn("gtk_box_append(GTK_BOX(bar),menu_scroll)", body)
-        self.assertIn("returnheader;", body)
+        self.assertIn("GTK_POLICY_AUTOMATIC,GTK_POLICY_NEVER", body)
+        self.assertIn("gtk_scrolled_window_set_propagate_natural_width("
+                      "GTK_SCROLLED_WINDOW(menu_scroll),FALSE)", body)
+        self.assertIn("gtk_box_append(GTK_BOX(bar),menu_scroll)", body)
+        self.assertIn("returnbar;", body)
+        self.assertNotIn("umi_gtk4_ws_shell_header_create(", body)
+        window = compact(source("applications/studio/src/gui/workbench/workbench_window.c"))
+        self.assertIn("umi_gtk4_ws_window_titlebar_create(workbench->window,", window)
 
     def test_shared_runner_is_built_and_has_portable_gui_entry_points(self):
         main = source("framework/examples/product_workstation_main.c")
@@ -202,16 +282,27 @@ class NativeWindowSourceWiring(unittest.TestCase):
         for path in paths:
             with self.subTest(path=path):
                 text = source(path)
-                self.assertEqual(len(re.findall(
-                    r"\bumi_gtk4_ws_apply_window_identity\s*\(", text)), 1)
-                if not path.endswith("runtime_shell.inc"):
-                    self.assertIn('#include "umicom/ui/gtk4/workstation/shell_header.h"', text)
+                identities = {compact(argument) for argument in re.findall(
+                    r"\bumi_gtk4_ws_apply_window_identity\s*\(\s*([^()]+)\s*\)", text)}
+                self.assertTrue(identities, "No shared window identity request")
+                if path.endswith("runtime_shell.inc"):
+                    self.assertIn("runtime->owner->window", identities)
+                    continue
+                self.assertIn('#include "umicom/ui/gtk4/workstation/shell_header.h"', text)
+                # Main and splash are independent windows. Check each actual
+                # creation target instead of rejecting a second identity call.
+                windows = {compact(target) for target in re.findall(
+                    r"([A-Za-z_]\w*(?:(?:->|\.)[A-Za-z_]\w*)*)\s*=\s*"
+                    r"(?:GTK_WINDOW\s*\(\s*)?gtk_(?:application_)?window_new\s*\(", text)}
+                self.assertTrue(windows, "Native window construction was not found")
+                self.assertTrue(windows.issubset(identities),
+                                f"Windows missing identity: {sorted(windows - identities)}")
 
     def test_window_identity_uses_packaged_svg_and_preserves_missing_icon_fallback(self):
         header = source("framework/include/umicom/ui/gtk4/workstation/shell_header.h")
         self.assertIn("UmiStatus umi_gtk4_ws_apply_window_identity(GtkWindow *window)", header)
         implementation = source("framework/adapters/gtk4/workstation/shell_header_gtk4.c")
-        body = compact(function_body(implementation, "umi_gtk4_ws_apply_window_identity"))
+        body = compact(function_body(implementation, "apply_themed_window_identity"))
         self.assertIn('resolve_resource_from_root(NULL,"branding/umicom-icon.svg")', body)
         missing = body.index("if(resolved==NULL)returnUMI_STATUS_NOT_FOUND;")
         register = body.index("gtk_icon_theme_add_search_path(theme,directory)")
@@ -223,6 +314,12 @@ class NativeWindowSourceWiring(unittest.TestCase):
         self.assertIn("g_strfreev(search_paths)", body)
         self.assertNotIn("g_object_unref(theme)", body)
         self.assertNotIn("gtk_window_set_default_icon_name(", body)
+        identity = compact(function_body(implementation, "umi_gtk4_ws_apply_window_identity"))
+        self.assertIn("apply_themed_window_identity(window)", identity)
+        self.assertIn("prepare_native_window_identity(window)", identity)
+        self.assertIn("if(native_status==UMI_STATUS_OK)returnUMI_STATUS_OK;", identity)
+        self.assertIn("if(themed_status!=UMI_STATUS_OK)returnnative_status;", identity)
+        self.assertIn("returnthemed_status;", identity)
 
     def test_windows_resource_lookup_uses_actual_executable_directory(self):
         implementation = source("framework/adapters/gtk4/workstation/shell_header_gtk4.c")
@@ -241,31 +338,52 @@ class NativeWindowSourceWiring(unittest.TestCase):
         body = compact(function_body(runner, "umi_application_product_gtk4_run"))
         cleanup = body[body.index("result=g_application_run("):]
         cancel = cleanup.index("g_source_remove(state.startup_source)")
-        weak = cleanup.index("g_object_weak_unref(")
-        destroy = cleanup.index("gtk_window_destroy(state.window)")
+        startup = cleanup.index("product_release_window(&state,&state.startup_window)")
+        window = cleanup.index("product_release_window(&state,&state.window)")
         dispose = cleanup.index("product_content_dispose(&state)")
         release = cleanup.index("g_object_unref(application)")
-        self.assertLess(cancel, weak)
-        self.assertLess(weak, destroy)
-        self.assertLess(destroy, dispose)
+        self.assertLess(cancel, startup)
+        self.assertLess(startup, window)
+        self.assertLess(window, dispose)
         self.assertLess(dispose, release)
-        finalizer = compact(function_body(runner, "product_window_finalized"))
-        self.assertIn("state->window=NULL", finalizer)
-        self.assertIn("g_source_remove(state->startup_source)", finalizer)
-        self.assertIn("state->startup_source=0U", finalizer)
+        release_window = compact(function_body(runner, "product_release_window"))
+        destroy = release_window.index("gtk_window_destroy(window)")
+        self.assertLess(release_window.index("*slot=NULL"), destroy)
+        self.assertLess(release_window.index("g_signal_handlers_disconnect_by_data("), destroy)
+        self.assertLess(release_window.index("g_object_weak_unref("), destroy)
+        # Destruction can precede GObject finalisation when a caller retains a
+        # window. Both lifetime paths must invalidate pending startup work.
+        for callback in ("product_window_finalized", "product_window_destroyed"):
+            finalizer = compact(function_body(runner, callback))
+            self.assertIn("state->window=NULL", finalizer)
+            self.assertIn("state->startup_window=NULL", finalizer)
+            self.assertIn("g_source_remove(state->startup_source)", finalizer)
+            self.assertIn("state->startup_source=0U", finalizer)
 
     def test_runner_replaces_splash_before_releasing_its_controller(self):
         runner = source(PRODUCT_RUNNER)
         startup = compact(function_body(runner, "product_complete_startup"))
-        self.assertLess(startup.index("state->startup_source=0U"),
-                        startup.index("if(state->window==NULL)"))
-        self.assertLess(startup.index("gtk_window_set_child(state->window,content)"),
-                        startup.index("umi_gtk4_ws_startup_splash_destroy(state->splash)"))
+        guard = "if(state->window==NULL||state->startup_window==NULL)returnG_SOURCE_REMOVE;"
+        self.assertIn(guard, startup)
+        self.assertLess(startup.index("state->startup_source=0U"), startup.index(guard))
+        content = startup.index("gtk_window_set_child(state->window,content)")
+        finish = startup.index("product_finish_startup_window(state,0)")
+        dispose = startup.index("umi_gtk4_ws_startup_splash_destroy(state->splash)")
+        self.assertLess(content, finish)
+        self.assertLess(finish, dispose)
         self.assertIn("state->startup_failed=1", startup)
+        finished = compact(function_body(runner, "product_finish_startup_window"))
+        self.assertLess(finished.index("product_release_window(state,&state->startup_window)"),
+                        finished.index("gtk_window_present(state->window)"))
+        self.assertLess(finished.index("gtk_window_set_child(state->startup_window,NULL)"),
+                        finished.index("gtk_window_set_child(state->window,"))
         activate = compact(function_body(runner, "product_activate"))
-        self.assertIn("if(state->window!=NULL){gtk_window_present(state->window);return;}", activate)
-        self.assertIn("umi_gtk4_ws_window_fit(state->window,", activate)
+        self.assertIn("gtk_window_present(state->startup_window!=NULL?"
+                      "state->startup_window:state->window)", activate)
+        for window in ("window", "startup_window"):
+            self.assertIn(f"umi_gtk4_ws_window_fit(state->{window},", activate)
         self.assertIn("g_idle_add(product_complete_startup,state)", activate)
+        self.assertIn("product_cancel_startup(state->startup_window,state)", activate)
 
     def test_preview_controller_is_explicitly_offline_and_rejects_commands(self):
         runner = source(PRODUCT_RUNNER)
@@ -384,6 +502,8 @@ class NativeWindowSourceWiring(unittest.TestCase):
 
     def test_headless_presets_explicitly_disable_all_gui_switches(self):
         presets = json.loads((SOURCE_ROOT / "CMakePresets.json").read_text(encoding="utf-8-sig"))
+        self.assertFalse(presets.get("include"),
+                         "Extend the audit to load included presets before using preset includes")
         headless = [preset for preset in presets["configurePresets"] if "headless" in preset["name"]]
         self.assertTrue(headless)
         switches = ("UMICOM_DESKTOP_BUILD_GTK", "UMICOM_STUDIO_BUILD_GTK",
@@ -393,7 +513,66 @@ class NativeWindowSourceWiring(unittest.TestCase):
         for preset in headless:
             for switch in switches:
                 with self.subTest(preset=preset["name"], switch=switch):
-                    self.assertEqual(preset.get("cacheVariables", {}).get(switch), "OFF")
+                    values = resolve_cache_variables(presets["configurePresets"], preset["name"])
+                    self.assertEqual(values.get(switch), "OFF")
+
+
+class PresetInheritanceRegression(unittest.TestCase):
+    """Exercise the audit's merge logic without configuring a product build."""
+
+    def test_nested_inheritance_and_child_override(self):
+        presets = [
+            {"name": "base", "cacheVariables": {"GUI": "OFF", "CC": "clang"}},
+            {"name": "middle", "inherits": "base"},
+            {"name": "leaf", "inherits": "middle", "cacheVariables": {"CC": "gcc"}},
+        ]
+        self.assertEqual(resolve_cache_variables(presets, "leaf"), {"GUI": "OFF", "CC": "gcc"})
+        self.assertEqual(presets[0]["cacheVariables"]["CC"], "clang")
+
+    def test_first_parent_precedes_later_parent(self):
+        presets = [
+            {"name": "first", "cacheVariables": {"GUI": "OFF"}},
+            {"name": "second", "cacheVariables": {"GUI": "ON", "EXTRA": "ON"}},
+            {"name": "leaf", "inherits": ["first", "second"]},
+        ]
+        self.assertEqual(resolve_cache_variables(presets, "leaf"), {"GUI": "OFF", "EXTRA": "ON"})
+
+    def test_null_does_not_resurrect_later_parent(self):
+        presets = [
+            {"name": "first", "cacheVariables": {"GUI": None}},
+            {"name": "second", "cacheVariables": {"GUI": "OFF"}},
+            {"name": "leaf", "inherits": ["first", "second"]},
+        ]
+        self.assertIsNone(resolve_cache_variables(presets, "leaf")["GUI"])
+
+    def test_typed_and_boolean_cache_values(self):
+        presets = [{"name": "base", "cacheVariables": {
+            "GUI": {"type": "BOOL", "value": "OFF"}, "OTHER": False, "TEST": True}}]
+        self.assertEqual(resolve_cache_variables(presets, "base"),
+                         {"GUI": "OFF", "OTHER": "OFF", "TEST": "ON"})
+
+    def test_cycles_and_missing_parents_are_rejected(self):
+        for presets in (
+            [{"name": "a", "inherits": "b"}, {"name": "b", "inherits": "a"}],
+            [{"name": "a", "inherits": "missing"}],
+        ):
+            with self.subTest(presets=presets), self.assertRaises(AssertionError):
+                resolve_cache_variables(presets, "a")
+
+    def test_duplicate_names_and_malformed_fields_are_rejected(self):
+        for presets in (
+            [{"name": "a"}, {"name": "a"}],
+            [{"name": "a", "inherits": 1}],
+            [{"name": "a", "cacheVariables": []}],
+            [{"name": "a", "cacheVariables": {"GUI": {"type": "BOOL"}}}],
+        ):
+            with self.subTest(presets=presets), self.assertRaises(AssertionError):
+                resolve_cache_variables(presets, "a")
+
+    def test_child_can_reenable_gui_and_audit_must_notice(self):
+        presets = [{"name": "base", "cacheVariables": {"GUI": "OFF"}},
+                   {"name": "leaf", "inherits": "base", "cacheVariables": {"GUI": "ON"}}]
+        self.assertNotEqual(resolve_cache_variables(presets, "leaf")["GUI"], "OFF")
 
 
 if __name__ == "__main__":
