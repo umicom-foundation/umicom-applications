@@ -167,6 +167,33 @@
       "cacheVariables": {
         "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "ON"
       }
+    },
+    {
+      "name": "linux-all-gtk4-debug",
+      "displayName": "Linux Clang all modules GTK4 Debug",
+      "description": "Build all application workstations using the shared Framework GTK4 implementation in a separate native Linux tree.",
+      "inherits": "headless-debug",
+      "binaryDir": "${sourceDir}/build/linux-all-gtk4-debug",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "UMICOM_BUILD_NATIVE_TOOL": "ON",
+        "UMICOM_APPLICATIONS_BUILD_ALL_MODULES": "ON",
+        "UMICOM_DESKTOP_BUILD_GTK": "ON",
+        "UMICOM_DESKTOP_GUI": "ON",
+        "UMICOM_STUDIO_BUILD_GTK": "ON",
+        "UMICOM_STUDIO_GUI": "ON",
+        "UMICOM_TRADER_BUILD_GTK4": "ON",
+        "UMICOM_BANK_BUILD_GTK4": "ON",
+        "UMICOM_TMS_BUILD_GTK4": "ON",
+        "UMICOM_MUSIC_STUDIO_BUILD_GTK4": "ON",
+        "UMICOM_APPLICATIONS_BUILD_SHARED_GTK4": "ON",
+        "UMICOM_APPLICATIONS_STAGE_FRAMEWORK_RESOURCES": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -199,6 +226,11 @@
     {
       "name": "windows-ucrt64-all-headless-debug",
       "configurePreset": "windows-ucrt64-all-headless-debug",
+      "jobs": 2
+    },
+    {
+      "name": "linux-all-gtk4-debug",
+      "configurePreset": "linux-all-gtk4-debug",
       "jobs": 2
     }
   ],
@@ -256,6 +288,17 @@
     {
       "name": "windows-ucrt64-all-headless-debug",
       "configurePreset": "windows-ucrt64-all-headless-debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 2,
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "linux-all-gtk4-debug",
+      "configurePreset": "linux-all-gtk4-debug",
       "output": {
         "outputOnFailure": true
       },

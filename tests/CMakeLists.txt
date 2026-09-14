@@ -13,27 +13,22 @@
 # LICENCE:
 #   MIT
 #-----------------------------------------------------------------------------
-# These guards inspect source wiring only. They require no GTK display or C
-# compiler and do not claim to validate rendered geometry on real monitors.
-find_package(Python3 QUIET COMPONENTS Interpreter)
-if(Python3_Interpreter_FOUND)
-    add_test(NAME applications.native_window_responsiveness.source
-        COMMAND "${Python3_EXECUTABLE}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/test_native_window_responsiveness_source.py"
-            --source-dir "${CMAKE_SOURCE_DIR}")
-    set_tests_properties(applications.native_window_responsiveness.source
-        PROPERTIES LABELS "applications;gtk4;source;regression")
-    add_custom_target(umicom-applications-native-window-source-check
-        COMMAND "${Python3_EXECUTABLE}"
-            "${CMAKE_CURRENT_SOURCE_DIR}/test_native_window_responsiveness_source.py"
-            --source-dir "${CMAKE_SOURCE_DIR}"
-        VERBATIM)
-    if(COMMAND umicom_register_validation_target)
-        umicom_register_validation_target(
-            umicom-applications-native-window-source-check)
-    endif()
-else()
-    message(STATUS "Native window source guards skipped: Python3 interpreter unavailable")
+# These guards inspect source wiring only; they do not claim to validate
+# rendered geometry. Compile the Framework-owned C implementation so an absent
+# scripting interpreter can no longer silently skip this regression suite.
+include("${CMAKE_CURRENT_SOURCE_DIR}/../framework/cmake/UmicomSourceContracts.cmake")
+umicom_enable_source_contracts()
+add_test(NAME applications.native_window_responsiveness.source
+    COMMAND umicom-source-contracts workbench --source-dir "${CMAKE_SOURCE_DIR}")
+set_tests_properties(applications.native_window_responsiveness.source
+    PROPERTIES LABELS "applications;gtk4;source;regression;native")
+add_custom_target(umicom-applications-native-window-source-check
+    COMMAND $<TARGET_FILE:umicom-source-contracts> workbench
+        --source-dir "${CMAKE_SOURCE_DIR}"
+    DEPENDS umicom-source-contracts
+    VERBATIM)
+if(COMMAND umicom_register_validation_target)
+    umicom_register_validation_target(umicom-applications-native-window-source-check)
 endif()
 
 add_executable(umicom-applications-composition-test
@@ -275,3 +270,7 @@ add_dependencies(umicom-build-contract-tests
     umicom-applications-cmake-graph-closure-test
     umicom-test-header-contract-test
     umicom-test-header-release-contract-test)
+
+# Native source regressions form part of the focused executable closure.
+add_dependencies(umicom-build-contract-tests
+    umicom-source-contracts umicom-source-contract-tests)
