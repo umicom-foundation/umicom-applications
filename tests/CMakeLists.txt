@@ -274,3 +274,15 @@ add_dependencies(umicom-build-contract-tests
 # Native source regressions form part of the focused executable closure.
 add_dependencies(umicom-build-contract-tests
     umicom-source-contracts umicom-source-contract-tests)
+
+# Exercise real Framework workspace mutations, not source-text expectations.
+# One shared fixture runs against the established UI target for every product.
+add_subdirectory(
+    "${CMAKE_CURRENT_SOURCE_DIR}/../framework/tests/workspace_layout_mutation"
+    "framework-workspace-layout-mutation")
+
+# Shared input validation is owned by Framework, never by a duplicate Studio or
+# Trader implementation. Link its regressions to the existing library targets.
+add_subdirectory(
+    "${CMAKE_CURRENT_SOURCE_DIR}/../framework/tests/studio_trader_contracts"
+    "framework-studio-trader-contracts")
