@@ -20,6 +20,24 @@ Framework first. Every application has a GUI entry-point requirement; console
 tools are additional clients of the same contracts. Existing scripts are not
 expanded into parallel product implementations.
 
+## September 2026 — Execution evidence and document identity
+
+The shared trading path now uses explicit quote evidence for market and stop
+risk checks, rechecks at submission, rejects older quote replacement and
+protects order/position state from duplicate or invalid executions. Realised
+P&L includes the instrument multiplier. These are reference-model corrections,
+not approval to activate a live broker.
+
+Studio's Save As callback now carries a stable document identity. Framework
+rejects a destination owned by another open document and keeps external-change
+checks when a path is written in an equivalent normalised form. Native chooser
+lifetime changes still require Windows and GTK interaction qualification.
+
+The next priorities remain native Studio acceptance, Data Server-backed
+execution replay and reconciliation, account/currency/day risk boundaries,
+Desk readiness/recovery and approved Bank account/ledger/payment journeys.
+See [the batch guide](getting-started/EXECUTION_AND_DOCUMENT_SAFETY.html).
+
 ## What “fully working” means
 
 Every product must pass the same six completion gates:
