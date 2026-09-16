@@ -1,0 +1,352 @@
+<!doctype html>
+<!-- Umicom Applications | File: docs/getting-started/PROGRAMMING_WORKSHOP.html | Author: Sammy Hegab | Organisation: Umicom Foundation | Licence: MIT -->
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Programming Workshop — Build, install and publish | Umicom</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f1f5f9;color:#162f40;font:17px/1.7 system-ui,Segoe UI,sans-serif}main{max-width:1100px;margin:0 auto;padding:45px 40px 90px;background:#fff}h1{font-size:45px;line-height:1.1;color:#10364e}h2{font-size:29px;line-height:1.25;border-top:2px solid #dce8ef;margin-top:45px;padding-top:25px}h3{color:#0f685f;margin-top:30px}pre{padding:20px;background:#0d2233;color:#edf7fa;border-radius:9px;overflow:auto;font:14px/1.55 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}p code,li code,td code{background:#edf3f6;padding:1px 4px;overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:12px;border:1px solid #d5e2eb;vertical-align:top;text-align:left}th{background:#eaf4f3}a{color:#07688a}li{margin:8px 0}.notice{padding:17px 22px;border-left:5px solid #14776d;background:#eaf6f2}nav{padding:20px;background:#eaf3f7;border-radius:10px}nav a{display:inline-block;margin:4px 14px 4px 0;font-size:14px}footer{text-align:center;padding:30px;color:#4d6677;font-size:13px}@media(max-width:650px){main{padding:25px 17px}h1{font-size:34px}pre{padding:15px;font-size:13px}table{display:block;overflow:auto}}@media print{main{padding:0}pre{white-space:pre-wrap;background:#f1f3f5;color:black}h2{break-after:avoid}a{color:inherit}}</style></head><body><main><nav aria-label="Guide sections"><a href="#start-here">Start</a><a href="#3-merge-the-source-update">Merge</a><a href="#4-build-and-test-the-lessons-first">Focused tests</a><a href="#5-configure-build-and-test-all-windows-applications">Full build</a><a href="#6-see-the-lessons-in-the-applications">Use lessons</a><a href="#7-install-into-a-fresh-development-directory">Install</a><a href="#8-package-and-deploy-to-another-fresh-directory">Deploy</a><a href="#9-commit-and-push-the-changed-repositories">Git</a><a href="#10-clone-or-update-a-different-machine">Second machine</a></nav><h1 id="umicom-programming-workshop-batch-guide">Umicom Programming Workshop — Batch Guide</h1>
+<p><strong>Framework-owned lessons for Studio and Education</strong><br/>
+Sammy Hegab · Umicom Foundation · 16 September 2026</p>
+<h2 id="start-here">Start here</h2>
+<p>This batch adds the complete Git beginners guide and <strong>32 executable programming lessons</strong> to the existing Framework catalogue. There are now <strong>53 catalogue entries: 20 preserved lessons + 33 additions</strong>. The Git lesson contains commands and personal repository exercises; the other 32 additions contain complete C programmes, with native Assembly comparisons in two of them.</p>
+<p><strong>Run one command at a time. Read its output. Stop at the first error.</strong> These instructions contain no all-repository publishing script and no capitalised confirmation prompts. A commit is not evidence that the code was built or tested.</p>
+<p>This is a changed-file source delivery, not a prebuilt release or a promise that every programming concept is covered. Windows and graphical checks below are qualification steps to perform on your machine.</p>
+<h2 id="1-what-changes-and-what-stays-the-same">1. What changes, and what stays the same</h2>
+<table>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Changes in this batch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td>Append the Git and programming lessons; add the runnable labs; extend existing catalogue/resource checks; connect the labs to the existing learning build and installation rules.</td>
+</tr>
+<tr>
+<td>Education</td>
+<td>Add <code>umicom-education-lessons</code>, a thin native console reading the Framework catalogue. No application-local lesson table or execution engine.</td>
+</tr>
+<tr>
+<td>Applications parent</td>
+<td>This delivery guide, followed by the repository lock/gitlink update you create after publishing the children.</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td>No source changes. Its existing Guided Learning surface enumerates the Framework catalogue dynamically. Rebuild it against the updated Framework.</td>
+</tr>
+<tr>
+<td>Trader and other application repositories</td>
+<td>No source changes in this batch. Do not create empty commits for them.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Education access in this delivery is the native lessons console and the shared HTML course. A new Education graphical lesson browser, one-click execution service and durable learner-progress integration are not implemented here.</strong> Studio's existing graphical reader is retained; its visual execution must still be checked on your machine. The catalogue resource paths remain relative to the Applications source root. Installed files are also provided, but relocating the existing Studio reader from arbitrary workspaces is not claimed solved by this batch.</p>
+<p>The previous eight shared input-validation production files are unchanged. The original 20 lesson records retain every public field, identifier and position. Existing assessed scores are not automatically awarded by running these examples. The catalogue remains within the existing 64-entry learning-plan capacity.</p>
+<p>No historical book is replaced, and no historical prototype API is presented as an API that was verified in the current repository. The supplementary teaching content is newly authored. The Git guide is incorporated from the preceding guide with all its command examples retained.</p>
+<h3 id="inspected-source-baselines">Inspected source baselines</h3>
+<table>
+<thead>
+<tr>
+<th>Repository</th>
+<th>Preparation baseline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td><code>01f5bd8174507756f2232eea0d189888d2eef66a</code></td>
+</tr>
+<tr>
+<td>Applications</td>
+<td><code>989653a339f1e7791d5dd058fec4121f4f86c251</code></td>
+</tr>
+<tr>
+<td>Education</td>
+<td><code>7424dc266fd4c124d34fdfa19dd173f4d8ed2205</code></td>
+</tr>
+<tr>
+<td>Studio, read-only integration inspection</td>
+<td><code>94ddcc301ea42a878148cffecb48836c7474386d</code></td>
+</tr>
+</tbody>
+</table>
+<p>These are preparation baselines, not instructions to reset your checkout. Preserve and compare newer local changes.</p>
+<h2 id="2-before-merging-check-the-two-repositories">2. Before merging: check the two repositories</h2>
+<p>Use the commands for your operating system. <strong>Do this before merging</strong>, while your own existing work is preserved.</p>
+<h3 id="windows">Windows</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\framework"
+git status
+</code></pre>
+<p>If this says <code>On branch main</code>, continue. If it is clean but detached, compare:</p>
+<pre><code class="language-powershell">git rev-parse HEAD main
+</code></pre>
+<p>Only when both hashes are identical, attach to the same revision:</p>
+<pre><code class="language-powershell">git switch main
+git status
+</code></pre>
+<p>Repeat the check for Education:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\education"
+git status
+</code></pre>
+<p>If clean and detached, use the same <code>git rev-parse HEAD main</code> comparison before <code>git switch main</code>. If the hashes differ, <code>main</code> is missing, or there is uncommitted work on another branch/detached HEAD, <strong>stop and preserve it</strong>. Do not use a forced switch or reset. See the Git lesson's branch section for the explanation.</p>
+<h3 id="linux">Linux</h3>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/framework"
+git status
+</code></pre>
+<p>For a clean detached checkout, compare <code>git rev-parse HEAD main</code>. When identical:</p>
+<pre><code class="language-bash">git switch main
+git status
+cd "$HOME/umicom/Umicom-Applications/applications/education"
+git status
+</code></pre>
+<p>Apply the same branch condition to Education. Linux paths are case-sensitive; these examples use the exact checkout name <code>Umicom-Applications</code>.</p>
+<h2 id="3-merge-the-source-update">3. Merge the source update</h2>
+<p>Extract the update ZIP to a <strong>separate folder</strong>. Compare its <code>umicom-applications</code> folder with your existing Applications checkout using Beyond Compare or another file comparison tool.</p>
+<p>Merge the supplied complete files into the existing directories. <strong>Do not create another nested Applications folder. Do not mirror-delete files that are absent from a changed-file ZIP.</strong> Keep the previously merged Learning Workshop and naming/input-validation batches.</p>
+<p><strong>No <code>git mv</code> commands or folder removals are required for this delivery.</strong> The canonical test directory remains <code>framework/tests/input_validation</code>. The Git compatibility page <code>git-first-comment.html</code> remains in place, and the complete new workflow guide is a different resource named <code>git-workflow.html</code>.</p>
+<p>After merging, these important paths should exist:</p>
+<pre><code class="language-text">framework/docs/learning/programming-workshop.html
+framework/docs/learning/git-workflow.html
+framework/examples/learning/programming/CMakeLists.txt
+framework/src/teacher/foundations_curriculum.c
+applications/education/src/console/lessons.c
+docs/getting-started/PROGRAMMING_WORKSHOP.html
+</code></pre>
+<p>Open <code>framework/docs/learning/programming-workshop.html</code> in your browser. Reading the page executes no programme and changes no Git repository.</p>
+<h2 id="4-build-and-test-the-lessons-first">4. Build and test the lessons first</h2>
+<p>The standalone programming project needs GCC/Clang with the required C mode, CMake and Ninja. It does <strong>not</strong> need GTK or the full application build. Keep its build directory separate from the main application build.</p>
+<h3 id="windows-32-new-executable-lessons">Windows — 32 new executable lessons</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+&amp; "C:\msys64\ucrt64\bin\cmake.exe" -S ".\framework\examples\learning\programming" -B ".\build\learning-programming" -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER="C:/msys64/ucrt64/bin/gcc.exe" -DCMAKE_MAKE_PROGRAM="C:/msys64/ucrt64/bin/ninja.exe" -DUMICOM_LEARNING_BUILD_ASSEMBLY=ON
+&amp; "C:\msys64\ucrt64\bin\cmake.exe" --build ".\build\learning-programming" --parallel 2
+&amp; "C:\msys64\ucrt64\bin\ctest.exe" --test-dir ".\build\learning-programming" --no-tests=error --output-on-failure
+</code></pre>
+<p>Expect <strong>32 tests</strong>. Read the summary; do not proceed on failures or missing tests.</p>
+<h3 id="windows-catalogue-and-resource-integrity">Windows — catalogue and resource integrity</h3>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\cmake.exe" -S ".\framework\tests\release_qualification" -B ".\build\learning-qualification" -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER="C:/msys64/ucrt64/bin/gcc.exe" -DCMAKE_MAKE_PROGRAM="C:/msys64/ucrt64/bin/ninja.exe"
+&amp; "C:\msys64\ucrt64\bin\cmake.exe" --build ".\build\learning-qualification" --parallel 2
+&amp; "C:\msys64\ucrt64\bin\ctest.exe" --test-dir ".\build\learning-qualification" --no-tests=error --output-on-failure
+</code></pre>
+<p>Expect <strong>6 tests</strong>, including the existing naming checks and the extended catalogue/resource checks. This is not the full application suite.</p>
+<h3 id="linux-equivalent-focused-checks">Linux — equivalent focused checks</h3>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+cmake -S framework/examples/learning/programming -B build/learning-programming -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc -DUMICOM_LEARNING_BUILD_ASSEMBLY=ON
+cmake --build build/learning-programming --parallel 2
+ctest --test-dir build/learning-programming --no-tests=error --output-on-failure
+cmake -S framework/tests/release_qualification -B build/learning-qualification -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc
+cmake --build build/learning-qualification --parallel 2
+ctest --test-dir build/learning-qualification --no-tests=error --output-on-failure
+</code></pre>
+<p>Native Assembly is supplied for x86-64 Windows/ELF and RISC-V LP64 ELF. On another architecture use <code>-DUMICOM_LEARNING_BUILD_ASSEMBLY=OFF</code>; the two comparison programmes explicitly identify their C-only mode. A C-only pass is not an Assembly pass. This delivery executed Linux x86-64 Assembly; Windows and RISC-V object assembly was checked but those objects were not executed.</p>
+<h3 id="run-one-example">Run one example</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">&amp; ".\build\learning-programming\bin\umicom-learning-bounded-strings.exe"
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">./build/learning-programming/bin/umicom-learning-bounded-strings
+</code></pre>
+<p>The example rejects malformed and oversized strings, accepts an exact fit, and prints <code>PASS: bounded_strings</code>. Each lesson names its own file, target, executable and expected checks. A failed process result matters even if some output looks correct.</p>
+<h2 id="5-configure-build-and-test-all-windows-applications">5. Configure, build and test all Windows applications</h2>
+<p>Run from the parent checkout. These are the existing all-module Windows preset and learning switches, not another build system.</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+&amp; "C:\msys64\ucrt64\bin\cmake.exe" --preset windows-ucrt64-all-debug -DBUILD_TESTING=ON -DUMICOM_BUILD_NATIVE_TOOL=ON -DUMICOM_BUILD_LEARNING_EXAMPLES=ON -DUMICOM_LEARNING_BUILD_ASSEMBLY=ON -DUMICOM_LEARNING_BUILD_GUI=ON
+&amp; "C:\msys64\ucrt64\bin\cmake.exe" --build --preset windows-ucrt64-all-debug --parallel 2 -- -k 0
+</code></pre>
+<p>Only after the build succeeds, run the affected selections separately:</p>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 1 --no-tests=error --output-on-failure -R '^framework\.learning\.'
+&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 1 --no-tests=error --output-on-failure -R '^framework\.teacher\.foundations\.'
+&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 1 --no-tests=error --output-on-failure -R '^education\.learning\.'
+&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 2 --no-tests=error --output-on-failure
+</code></pre>
+<p>Do not install or publish a release with failed, missing or required-but-skipped checks. An unrelated existing suite failure is still a qualification item, not something to hide by deleting its test.</p>
+<h3 id="linux-application-qualification">Linux application qualification</h3>
+<p>For the existing all-module headless preset:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+cmake --preset linux-all-headless-debug -DBUILD_TESTING=ON -DUMICOM_BUILD_NATIVE_TOOL=ON -DUMICOM_BUILD_LEARNING_EXAMPLES=ON -DUMICOM_LEARNING_BUILD_ASSEMBLY=ON -DUMICOM_LEARNING_BUILD_GUI=OFF
+cmake --build --preset linux-all-headless-debug --parallel 2 -- -k 0
+ctest --preset linux-all-headless-debug --parallel 2 --no-tests=error --output-on-failure
+</code></pre>
+<p>A headless build does not qualify GTK interaction. Use your established <code>linux-all-gtk4-debug</code> preset and GTK dependencies for the graphical checks; do not reuse a headless build directory as a graphical test result.</p>
+<h2 id="6-see-the-lessons-in-the-applications">6. See the lessons in the applications</h2>
+<h3 id="studio">Studio</h3>
+<p>Start the rebuilt Studio:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-studio-ide.exe"
+</code></pre>
+<p>Open the existing <strong>Guided Learning</strong> surface. Its catalogue should contain 53 lessons. Open <strong>Git from clone to publication</strong>, <strong>Bounded text and null termination</strong>, and <strong>Assembly loops, memory and empty input</strong>. Check the resource opens, text is readable, code can be selected and course links work. Open an original lesson too. This verifies actual interaction; a CTest catalogue pass alone cannot prove it.</p>
+<p>The browser reference is <code>framework/docs/learning/programming-workshop.html</code>. If Studio's existing relative resource resolution fails from a particular workspace or installed launch location, record that exact location and error; this batch does not claim to replace that reader or its location policy.</p>
+<h3 id="education-learning-module">Education / Learning module</h3>
+<p>The new native entry point is separate from the existing verification console:</p>
+<pre><code class="language-powershell">&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-education-lessons.exe" --list
+&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-education-lessons.exe" --lesson foundations.git-workflow
+&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-education-lessons.exe" --lesson foundations.bounded-strings
+</code></pre>
+<p>Linux, following the headless build:</p>
+<pre><code class="language-bash">./build/linux-all-headless-debug/bin/umicom-education-lessons --list
+./build/linux-all-headless-debug/bin/umicom-education-lessons --lesson foundations.git-workflow
+</code></pre>
+<p>The console shows the lesson description, exercise and Framework resource path. It does not execute learner code or Git and does not claim a new graphical lesson browser. Read the HTML and run the documented commands yourself in a practice workspace.</p>
+<p>Also smoke-test Desk, Trader and other release-required applications in disposable workspaces. Use simulation/paper data, not live orders, real payments or production credentials. Close all applications before installing.</p>
+<h2 id="7-install-into-a-fresh-development-directory">7. Install into a fresh development directory</h2>
+<p>Choose an empty directory; do not overwrite a working installation. The example below uses <code>programming-workshop</code>. If it already exists, choose another name in every corresponding command.</p>
+<h3 id="windows">Windows</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+Test-Path "C:\umicom\installed\programming-workshop"
+</code></pre>
+<p>Continue only when this prints <code>False</code>:</p>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\cmake.exe" --install ".\build\windows-ucrt64-all-debug" --config Debug --prefix "C:\umicom\installed\programming-workshop"
+$env:Path = "C:\umicom\installed\programming-workshop\bin;C:\msys64\ucrt64\bin;$env:Path"
+Set-Location $env:TEMP
+&amp; "C:\umicom\installed\programming-workshop\bin\umicom-education-lessons.exe" --list
+&amp; "C:\umicom\installed\programming-workshop\bin\umicom-learning-bounded-strings.exe"
+</code></pre>
+<p>Open <code>C:\umicom\installed\programming-workshop\share\umicom-framework\docs\learning\programming-workshop.html</code> in a browser. The corresponding source exercises are under <code>share\umicom-framework\examples\learning</code>.</p>
+<p>Run an <strong>installed</strong>, rather than build-tree, application:</p>
+<pre><code class="language-powershell">&amp; "C:\umicom\installed\programming-workshop\bin\umicom-studio-ide.exe"
+</code></pre>
+<p>Repeat the lesson/open/save/close checks. Record any installed-reader issue rather than substituting the source-tree copy unnoticed.</p>
+<h3 id="linux">Linux</h3>
+<p>Choose a fresh directory and inspect it before proceeding:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+ls "$HOME/umicom/installed/programming-workshop"
+</code></pre>
+<p>A missing directory is expected for a new installation. After confirming you are not replacing an existing installation:</p>
+<pre><code class="language-bash">cmake --install build/linux-all-headless-debug --config Debug --prefix "$HOME/umicom/installed/programming-workshop"
+cd /tmp
+"$HOME/umicom/installed/programming-workshop/bin/umicom-education-lessons" --list
+"$HOME/umicom/installed/programming-workshop/bin/umicom-learning-bounded-strings"
+</code></pre>
+<p>These are development installations using available runtime dependencies. No standalone clean-machine installer qualification is claimed. Installed lesson files and source examples were tested separately in the focused Linux installation fixture; the complete application installer was not run here.</p>
+<h2 id="8-package-and-deploy-to-another-fresh-directory">8. Package and deploy to another fresh directory</h2>
+<p>The parent project already supplies CPack rules. A Windows development ZIP can be created with:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+&amp; "C:\msys64\ucrt64\bin\cpack.exe" --config ".\build\windows-ucrt64-all-debug\CPackConfig.cmake" -G ZIP -C Debug -D CPACK_ARCHIVE_COMPONENT_INSTALL=OFF -B "C:\umicom\packages\programming-workshop"
+Get-ChildItem "C:\umicom\packages\programming-workshop" -Filter *.zip
+</code></pre>
+<p>Use a fresh package directory. Extract the resulting ZIP with File Explorer into a <strong>new</strong> deployment directory. Run the executable inside that extracted archive and open the lessons there. Do not accidentally launch your original build-tree executable. Test all required products and dependencies on a clean machine before calling the ZIP self-contained.</p>
+<p>Linux equivalent, using the verified project preset name but still requiring local packaging qualification:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+cpack --config build/linux-all-headless-debug/CPackConfig.cmake -G ZIP -C Debug -D CPACK_ARCHIVE_COMPONENT_INSTALL=OFF -B "$HOME/umicom/packages/programming-workshop"
+</code></pre>
+<p>A package does not publish itself to GitHub. This batch makes no release tag and no remote commit.</p>
+<h2 id="9-commit-and-push-the-changed-repositories">9. Commit and push the changed repositories</h2>
+<p>Review changes and qualification evidence first. <code>git add -A</code> stages all changes in the current repository, including deletions. Exclude secrets, temporary programmes, unrelated changes and build output. These steps intentionally name <strong>only the three changed repositories</strong>.</p>
+<p>The pre-merge checks in section 2 should already have put the two child repositories on <code>main</code>. If the status below unexpectedly reports another branch or detached HEAD with changes, <strong>stop before switching</strong> and preserve the work. Do not run a forced switch.</p>
+<h3 id="framework-first">Framework — first</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\framework"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "feat(learning): expand shared programming curriculum and runnable labs"
+git push origin main
+</code></pre>
+<p>No output from <code>git diff --cached --check</code> is normal. If it reports a problem, stop before the commit. If Git says <code>nothing to commit, working tree clean</code>, skip another commit and proceed to the push. <code>Everything up-to-date</code> is a normal push result for an unchanged branch. Other errors require attention.</p>
+<h3 id="education-second">Education — second</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\education"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "feat(education): expose the shared Framework lesson catalogue"
+git push origin main
+</code></pre>
+<h3 id="parent-applications-last">Parent Applications — last</h3>
+<p>After both child pushes succeed:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+git status
+git switch main
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+&amp; ".\build\windows-ucrt64-all-debug\bin\umicom.exe" repo lock .
+</code></pre>
+<p>Only after the native lock succeeds:</p>
+<pre><code class="language-powershell">git add -A
+git diff --cached --check
+git diff --cached --submodule=log
+git commit -m "docs(applications): integrate programming workshop and record child revisions"
+git push --recurse-submodules=check origin main
+git status
+</code></pre>
+<p>The expected final parent state is clean and up to date. A dirty child is not repaired by committing the parent. The parent stores child revision IDs, not the files staged inside a child.</p>
+<h3 id="linux-publication">Linux publication</h3>
+<p>Use the same branch conditions and one-command-at-a-time checks:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/framework"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "feat(learning): expand shared programming curriculum and runnable labs"
+git push origin main
+</code></pre>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/education"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "feat(education): expose the shared Framework lesson catalogue"
+git push origin main
+</code></pre>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+git status
+git switch main
+./build/linux-all-headless-debug/bin/umicom repo lock .
+</code></pre>
+<p>After the lock succeeds:</p>
+<pre><code class="language-bash">git add -A
+git diff --cached --check
+git diff --cached --submodule=log
+git commit -m "docs(applications): integrate programming workshop and record child revisions"
+git push --recurse-submodules=check origin main
+git status
+</code></pre>
+<p>For every other submodule's individual directory and default commit message, open <code>framework/docs/learning/git-workflow.html</code>, Lesson 8. All 25 repository recipes remain there. An unchanged Studio or Trader needs a rebuild when its Framework dependency changes, not an empty source commit.</p>
+<h2 id="10-clone-or-update-a-different-machine">10. Clone or update a different machine</h2>
+<h3 id="new-windows-checkout">New Windows checkout</h3>
+<p>From an existing writable <code>C:\umicom</code> directory, with GitHub access configured:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom"
+git clone --recurse-submodules https://github.com/umicom-foundation/umicom-applications.git Umicom-Applications
+Set-Location "C:\umicom\Umicom-Applications"
+git status
+</code></pre>
+<p>Do not clone over an existing checkout. Use the update instructions instead.</p>
+<h3 id="new-linux-checkout">New Linux checkout</h3>
+<pre><code class="language-bash">mkdir -p "$HOME/umicom"
+cd "$HOME/umicom"
+git clone --recurse-submodules https://github.com/umicom-foundation/umicom-applications.git Umicom-Applications
+cd Umicom-Applications
+git status
+</code></pre>
+<h3 id="update-an-existing-receiving-checkout">Update an existing receiving checkout</h3>
+<p>First review and preserve local changes in the parent and its children. This inspection runs no writes:</p>
+<pre><code class="language-text">git status
+git submodule foreach --recursive 'git status --short --branch'
+</code></pre>
+<p>Only with a clean receiving checkout, run from the parent:</p>
+<pre><code class="language-text">git switch main
+git pull --ff-only origin main
+git submodule sync --recursive
+git submodule update --init --recursive
+git status
+</code></pre>
+<p>These Git commands work in PowerShell and a Linux terminal. The update restores the <strong>recorded</strong> child commits; it does not ask for each child's newest independent branch tip. Detached submodules are normal for this receiving/build-only state. Do not add <code>--remote</code> merely to remove a detached-HEAD message. For development, follow the individual safe branch checks before editing.</p>
+<p>Build again on the receiving machine. Do not copy Windows build output into a Linux build directory.</p>
+<h2 id="11-coverage-and-remaining-work">11. Coverage and remaining work</h2>
+<p>The executable lessons cover representation, basic CPU execution, values, control flow, contracts, arrays, strings, parsing, structures, enumerations, ownership, allocation, arithmetic, floating point, files, modules, callbacks, controllers, state machines, bounded queues, search/sort, testing, naming, macros, binary encoding, recursion, atomic API basics and two Assembly comparisons.</p>
+<p>Further tracks remain: fuller operating-system architecture and processes, memory mapping, real thread synchronisation and race testing, network programming, Unicode, richer data structures, debugger sessions, more CPU architectures, deeper Framework API projects, and application-integrated exercise execution with permissions, cancellation and durable evidence. They are not silently marked completed by this delivery.</p>
+<h2 id="12-evidence-and-sources">12. Evidence and sources</h2>
+<p>The accompanying validation report distinguishes actual Linux runs, the limited Education build fixture, installed-content checks, foreign object assembly and unperformed full application/Windows/GUI qualification. The complete command logs are in the evidence ZIP. The source manifest lists full file hashes and preparation baselines.</p>
+<p>Primary references for the newly authored teaching material:</p>
+<ul>
+<li><a href="https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html">GCC C dialect options</a>.</li>
+<li><a href="https://clang.llvm.org/docs/AddressSanitizer.html">Clang AddressSanitizer</a>.</li>
+<li><a href="https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention?view=msvc-170">Microsoft x64 calling convention</a>.</li>
+<li><a href="https://riscv-non-isa.github.io/riscv-elf-psabi-doc/">RISC-V psABI</a>.</li>
+<li><a href="https://git-scm.com/docs/git-submodule">Git submodules</a> and <a href="https://git-scm.com/docs/git-push">Git push</a>.</li>
+<li><a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/fopen-wfopen?view=msvc-170">Microsoft fopen modes</a>: exclusive file creation used by the resource-cleanup lab. The lab avoids depending on <code>tmpfile</code> creating a file in the Windows drive root.</li>
+</ul>
+<p>Repository integration was inspected through the connected repositories at the recorded baselines. Old manuals remain background and are not evidence that their historical APIs, UI screens or claimed test counts exist in this batch.</p>
+</main><footer>Sammy Hegab · Umicom Foundation · No commands execute from this guide.</footer></body></html>
