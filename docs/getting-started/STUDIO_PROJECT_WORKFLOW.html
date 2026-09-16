@@ -150,7 +150,7 @@ $env:Path = "C:\msys64\ucrt64\bin;$env:Path"
 </tbody>
 </table>
 <p>For an explicit Ninja build, a typical Windows executable path is <code>build/umicom-development/bin/your_target.exe</code>; on Linux omit <code>.exe</code>. The project may use another output layout, so check its CMake rules.</p>
-<p>Settings currently last for this Studio session. Reopening a generated project through Open Folder requires selecting its preset and Run program again. Automatic persistent project-profile restoration is an outstanding task, not something this update pretends to provide.</p>
+<p>With the Operational State update, Studio saves reviewed project settings through its existing per-user Data Server and restores them when the same workspace is opened again. The native host uses its workspace SQLite storage; memory-only hosts retain settings only while that Data Server exists. Workspace trust is still an explicit choice and is not restored from a build profile. Settings are local to the user and platform; cloning the source on another machine does not copy them. See <a href="OPERATIONAL_STATE_UPDATE.html">the update guide</a> for the reopen and conflict checks.</p>
 <h2 id="section-10">10. Use the lessons and the Notes window</h2>
 <p>In Studio, choose <strong>Help → AI Teacher</strong> to open Guided Learning. Framework's catalogue supplies the new lesson cards to Studio and the Education catalogue frontend. Select a lesson by its title. The browser entry point is:</p>
 <p><code>framework/docs/learning/application-development.html</code></p>

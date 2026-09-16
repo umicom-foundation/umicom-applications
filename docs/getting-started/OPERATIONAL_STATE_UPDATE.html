@@ -1,0 +1,760 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Operational State update — build, test and publish</title><style>
+:root{--ink:#182c3c;--muted:#536779;--line:#d6e1e8;--nav:#edf3f5;--accent:#086b70;--code:#122434;--paper:#fff;--background:#f5f8fa}*{box-sizing:border-box}body{margin:0;background:var(--background);color:var(--ink);font:17px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--accent)}header{background:#123548;color:white;padding:3rem max(4vw,1.25rem)}header>div{max-width:1130px;margin:auto}header p{color:#d9e8ee;max-width:850px}header h1{font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.15;max-width:1050px;margin:.5rem 0}header .eyebrow{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}.layout{display:grid;grid-template-columns:280px minmax(0,1fr);max-width:1430px;margin:auto}nav{padding:1.5rem;position:sticky;top:0;align-self:start;height:100vh;overflow:auto;background:var(--nav);border-right:1px solid var(--line)}nav p{font-weight:700}nav a{display:block;font-size:.88rem;line-height:1.35;padding:.45rem 0;text-decoration:none}main{padding:2rem clamp(1.2rem,4vw,4rem) 4rem;min-width:0;background:white}main>h1{display:none}h2{font-size:1.65rem;line-height:1.3;margin:2.4rem 0 1rem;scroll-margin-top:1rem;border-bottom:1px solid var(--line);padding-bottom:.5rem}h3{font-size:1.18rem;margin:1.8rem 0 .5rem}p{margin:.9rem 0}pre{background:var(--code);color:#e6f2f6;overflow:auto;border-radius:9px;padding:1.25rem 1.1rem;margin:1rem 0;line-height:1.55;font-size:14px;position:relative}pre code{font:inherit;white-space:pre;background:none;color:inherit;padding:0}code{font-family:Consolas,"Liberation Mono",monospace;background:#edf3f6;padding:.1rem .3rem;border-radius:3px;overflow-wrap:anywhere}pre .copy{position:absolute;right:.4rem;top:.3rem;font-size:11px;padding:.15rem .4rem;background:#284b5a;border:1px solid #70919d;color:white;border-radius:4px;cursor:pointer}blockquote{margin:1.2rem 0;padding:.1rem 1.2rem;border-left:4px solid var(--accent);background:#eef8f6}table{width:100%;border-collapse:collapse;font-size:.91rem;margin:1.2rem 0}th,td{border:1px solid var(--line);padding:.7rem;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eff5f7}ul,ol{padding-left:1.6rem}li{margin:.35rem 0}details{border:1px solid var(--line);border-radius:8px;margin:1rem 0;padding:1rem}summary{font-weight:700;cursor:pointer}.footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);margin-top:3rem;padding-top:1rem}@media(max-width:980px){.layout{display:block}nav{position:relative;height:auto;border:0}nav a{display:inline-block;margin-right:1rem}main{padding:1.25rem}header{padding:2rem 1.25rem}}@media print{body{background:white;color:black;font-size:11pt}.layout{display:block}nav,.copy{display:none!important}header{background:white;color:black;padding:0}header p{color:black}main{padding:0}h2{break-after:avoid}pre{white-space:pre-wrap;background:#f1f3f5;color:black;border:1px solid #bbc}pre code{white-space:pre-wrap}tr{break-inside:avoid}}
+</style></head><body><header><div><div class="eyebrow">Umicom Foundation · Development update · 16 September 2026</div><h1>Operational State update — build, test and publish</h1><p>Framework, Studio, Desk, Trader and Bank</p></div></header><div class="layout"><nav aria-label="Contents"><p>Contents</p><a href="#1-before-copying-the-files">1. Before copying the files</a><a href="#2-merge-the-source-update">2. Merge the source update</a><a href="#3-configure-and-build-everything-on-windows">3. Configure and build everything on Windows</a><a href="#4-test-the-windows-build">4. Test the Windows build</a><a href="#5-check-studio-by-using-a-notes-project">5. Check Studio by using a Notes project</a><a href="#6-check-desk-trader-and-bank">6. Check Desk, Trader and Bank</a><a href="#7-install-into-a-separate-windows-directory">7. Install into a separate Windows directory</a><a href="#8-make-a-windows-deployment-zip">8. Make a Windows deployment ZIP</a><a href="#9-linux-build-test-install-and-package">9. Linux build, test, install and package</a><a href="#10-commit-framework-studio-and-desk">10. Commit Framework, Studio and Desk</a><a href="#11-lock-and-publish-the-parent-last">11. Lock and publish the parent last</a><a href="#12-confirm-and-update-another-machine">12. Confirm and update another machine</a><a href="#13-what-remains-before-the-five-products-are-complete">13. What remains before the five products are complete</a><a href="#14-all-submodule-command-reference">14. All submodule command reference</a><a href="#15-reference-material">15. Reference material</a></nav><main><h1>Project settings, repeatable launches and safer financial records</h1>
+<p>This update helps Studio remember a project's build settings, lets Desk keep launching applications after earlier ones have closed, and tightens the shared financial records used by Trader and Bank. It also fixes a fault found when the shared directory walker visits an empty folder.</p>
+<p>The source changes are in Framework, Studio and the Desktop/Desk module. Trader and Bank benefit through Framework; this package does not add a new broker connection, payment service or banking screen.</p>
+<h2 id="1-before-copying-the-files">1. Before copying the files</h2>
+<p>Close the applications. Keep the previous Project Workflow update and its three-file Build Review correction in your checkout. This is the next changed-file update, not a replacement for the whole repository.</p>
+<p>Review these repositories before merging. Run one line at a time and stop on an error:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\framework"
+git status
+</code></pre>
+<p>Repeat the status check in <code>applications\studio</code>, <code>applications\desktop</code> and the parent directory. Preserve any work you have not committed or backed up. Do not discard it to make the status look clean.</p>
+<p>If the status says <code>On branch main</code>, you are already on the intended branch. If it says detached HEAD, compare the checked-out commit with <code>main</code>:</p>
+<pre><code class="language-powershell">git rev-parse HEAD main
+</code></pre>
+<p>When the two hashes are identical and the working tree is clean, <code>git switch main</code> attaches the checkout without changing the source revision. When they differ, or there is unfinished work on another branch, stop and review that work before switching. Do not use a forced switch, reset or clean command.</p>
+<h2 id="2-merge-the-source-update">2. Merge the source update</h2>
+<p>Extract the ZIP into a separate directory. Use Beyond Compare to merge the ZIP's <code>umicom-applications</code> folder into:</p>
+<pre><code class="language-text">C:\umicom\Umicom-Applications
+</code></pre>
+<p>On Linux, the examples use:</p>
+<pre><code class="language-text">$HOME/umicom/Umicom-Applications
+</code></pre>
+<p>Keep the spelling and case of your actual Linux checkout. Do not create a second nested <code>umicom-applications</code> folder.</p>
+<p><strong>Do not mirror-delete files that are absent from this ZIP.</strong> There are no folder moves and no <code>git mv</code> commands. The package includes only new or changed files. The earlier build CLI fallback, generic unset Run default, Output counters and all 64 existing lessons are preserved.</p>
+<h2 id="3-configure-and-build-everything-on-windows">3. Configure and build everything on Windows</h2>
+<p>Run each command separately. If configuration or building fails, stop before installing or publishing and keep the error output.</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+</code></pre>
+<p>Configure:</p>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\cmake.exe" --preset windows-ucrt64-all-debug -DBUILD_TESTING=ON -DUMICOM_BUILD_NATIVE_TOOL=ON -DUMICOM_BUILD_LEARNING_EXAMPLES=ON -DUMICOM_LEARNING_BUILD_GUI=ON
+</code></pre>
+<p>Build:</p>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\cmake.exe" --build --preset windows-ucrt64-all-debug --parallel 2 -- -k 0
+</code></pre>
+<p>The final <code>-k 0</code> asks Ninja to continue independent build work so that the log can show more than one error. A failed build is still a failed build; continuing independent jobs does not make it suitable for installation.</p>
+<h2 id="4-test-the-windows-build">4. Test the Windows build</h2>
+<p>Run the three focused groups separately. An absent required group should report an error rather than be hidden by unrelated passing tests.</p>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 1 --no-tests=error --output-on-failure -R '^framework\.operational_state\.'
+</code></pre>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 1 --no-tests=error --output-on-failure -R '^studio\.(project_settings\.|project_workflow$)'
+</code></pre>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 1 --no-tests=error --output-on-failure -R '^desktop\.launch_lifecycle$'
+</code></pre>
+<p>Then run the complete suite:</p>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\ctest.exe" --preset windows-ucrt64-all-debug --parallel 2 --no-tests=error --output-on-failure
+</code></pre>
+<p>Read the final summary. Failed, disabled, skipped and Not Run tests are different results. In particular, a skipped SQLite test is not proof that settings survive a restart. Keep the logs with your build evidence. Linux test results shipped with the batch do not replace these Windows checks.</p>
+<h2 id="5-check-studio-by-using-a-notes-project">5. Check Studio by using a Notes project</h2>
+<p>Start the build-tree Studio:</p>
+<pre><code class="language-powershell">&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-studio-ide.exe"
+</code></pre>
+<p>Use a disposable Umicom Notes project, not your main Applications source tree. Create it through File → New Project, or open a small existing project that you own. Under Build → Project Settings, choose its build directory, compiler/preset and actual executable. An imported project deliberately starts without a guessed Run target.</p>
+<p>Save the settings and note their values. Close Studio normally, reopen it, and open the same project folder. The saved fields should return, including an explicitly blank Run program. The settings are per-user and per-platform. They are not copied to another computer by Git.</p>
+<p><strong>Restored settings must not silently restore trust.</strong> Review and explicitly trust only your own project before allowing its build scripts or executable to run. Configure, build and run it. Edit a source file, save it and build again. Introduce a small compile error in this disposable project: Run should stop rather than launch the older executable. Remove the error and rebuild.</p>
+<p>For a settings-conflict check, open the same project in two Studio instances. Save a different setting in the first. Saving the older settings in the second should report a conflict. Reopen that workspace to load the saved revision before editing it again; the older instance must not overwrite silently.</p>
+<p>A corrupt stored profile should be reported and preserved, not replaced automatically with default values. Do not delete your workspace database as a routine repair; it may also contain your saved layouts.</p>
+<p>The service-level reopen, conflict and failure paths were executed in the supplied tests. These mouse-and-keyboard checks of the GTK forms still need to be completed on your native machine.</p>
+<h2 id="6-check-desk-trader-and-bank">6. Check Desk, Trader and Bank</h2>
+<p>Close Studio, then start Desk:</p>
+<pre><code class="language-powershell">&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-desk.exe"
+</code></pre>
+<p>Launch a harmless application, close it, and launch it again. The current runtime state should follow the new process. An old process's delayed exit must not stop the new instance. The automated test repeats 72 actual launches of an inert test child, including the former failure point at launch 65; it does not launch banking or trading products 72 times.</p>
+<p>Open Trader and Bank separately to check ordinary startup and shutdown:</p>
+<pre><code class="language-powershell">&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-trader.exe"
+</code></pre>
+<pre><code class="language-powershell">&amp; ".\build\windows-ucrt64-all-debug\bin\umicom-bank.exe"
+</code></pre>
+<p>Use synthetic accounts and simulation/paper data only. The new tests check shared identifiers, account balances, holds, transactions and non-finite Trader drafts. They do not establish a complete Bank service, a live broker connection or correct live market-order valuation. The pretrade reference-price fallback of <code>1.0</code> is still outstanding.</p>
+<h2 id="7-install-into-a-separate-windows-directory">7. Install into a separate Windows directory</h2>
+<p>Close the applications first. Choose a new installation directory; preserve any earlier one.</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+$Stage = "C:\umicom\installed\operational-state-validation"
+Test-Path -LiteralPath $Stage
+</code></pre>
+<p>If that last command prints <code>True</code>, change <code>$Stage</code> to a new directory before continuing. Do not install over the earlier copy.</p>
+<pre><code class="language-powershell">&amp; "C:\msys64\ucrt64\bin\cmake.exe" --install ".\build\windows-ucrt64-all-debug" --config Debug --prefix $Stage
+</code></pre>
+<p>After installation succeeds, check an installed command:</p>
+<pre><code class="language-powershell">$env:Path = "$Stage\bin;C:\msys64\ucrt64\bin;$env:Path"
+&amp; "$Stage\bin\umicom-source-contracts.exe" --help
+</code></pre>
+<p>Start the installed Studio from outside the source checkout:</p>
+<pre><code class="language-powershell">Set-Location $env:TEMP
+&amp; "$Stage\bin\umicom-studio-ide.exe"
+</code></pre>
+<p>Repeat the project-settings/reopen checks, then try installed Desk, Trader and Bank using their full paths under <code>$Stage\bin</code>. This is a development installation using your MSYS2 runtime. It is not yet evidence of a self-contained end-user installer.</p>
+<h2 id="8-make-a-windows-deployment-zip">8. Make a Windows deployment ZIP</h2>
+<p>This step is required before distributing an archive, but not for every source-only commit. Use a new package-output directory.</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+&amp; "C:\msys64\ucrt64\bin\cpack.exe" --config ".\build\windows-ucrt64-all-debug\CPackConfig.cmake" -G ZIP -C Debug -D CPACK_ARCHIVE_COMPONENT_INSTALL=OFF -B "C:\umicom\packages\operational-state-validation"
+</code></pre>
+<p>After packaging succeeds, inspect the ZIP and record its checksum:</p>
+<pre><code class="language-powershell">Get-ChildItem "C:\umicom\packages\operational-state-validation\*.zip" | Get-FileHash -Algorithm SHA256
+</code></pre>
+<p>Extract the ZIP into a new deployment directory. Start its executables, not the build-tree copies, and repeat the native checks. A clean-machine test is still needed before calling the archive self-contained. Do not distribute user configuration databases, credentials, live account information or your working project directories.</p>
+<h2 id="9-linux-build-test-install-and-package">9. Linux build, test, install and package</h2>
+<p>The native Linux preset requires the project's GTK4 development dependencies and compiler. Do not lower its GTK requirement or invent a substitute adapter to make configuration pass.</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+cmake --preset linux-all-gtk4-debug -DBUILD_TESTING=ON -DUMICOM_BUILD_NATIVE_TOOL=ON -DUMICOM_BUILD_LEARNING_EXAMPLES=ON -DUMICOM_LEARNING_BUILD_GUI=ON
+cmake --build --preset linux-all-gtk4-debug --parallel 2 -- -k 0
+</code></pre>
+<p>Run each focused group and then the complete suite, stopping at a failure:</p>
+<pre><code class="language-bash">ctest --preset linux-all-gtk4-debug --parallel 1 --no-tests=error --output-on-failure -R '^framework\.operational_state\.'
+ctest --preset linux-all-gtk4-debug --parallel 1 --no-tests=error --output-on-failure -R '^studio\.(project_settings\.|project_workflow$)'
+ctest --preset linux-all-gtk4-debug --parallel 1 --no-tests=error --output-on-failure -R '^desktop\.launch_lifecycle$'
+ctest --preset linux-all-gtk4-debug --parallel 2 --no-tests=error --output-on-failure
+</code></pre>
+<p>The headless preset used for this delivery is <code>linux-gcc-all-headless-debug</code>. It builds and tests the service paths without GTK. Use that preset when checking the same headless configuration; a successful headless run is not a graphical acceptance test.</p>
+<p>After a native build, start each application separately and close it before starting the next:</p>
+<pre><code class="language-bash">./build/linux-all-gtk4-debug/bin/umicom-studio-ide
+./build/linux-all-gtk4-debug/bin/umicom-desk
+./build/linux-all-gtk4-debug/bin/umicom-trader
+./build/linux-all-gtk4-debug/bin/umicom-bank
+</code></pre>
+<p>Install into a new development prefix:</p>
+<pre><code class="language-bash">stage="$HOME/umicom/installed/operational-state-validation"
+test -e "$stage" &amp;&amp; printf '%s\n' 'Directory already exists: choose a different stage path.'
+</code></pre>
+<p>Continue only after you have chosen an absent path. Then:</p>
+<pre><code class="language-bash">cmake --install build/linux-all-gtk4-debug --config Debug --prefix "$stage"
+"$stage/bin/umicom-source-contracts" --help
+cd /tmp
+"$stage/bin/umicom-studio-ide"
+</code></pre>
+<p>Repeat the native checks in the installed copy. Package from the source root:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+cpack --config build/linux-all-gtk4-debug/CPackConfig.cmake -G TGZ -C Debug -D CPACK_ARCHIVE_COMPONENT_INSTALL=OFF -B "$HOME/umicom/packages/operational-state-validation"
+sha256sum "$HOME/umicom/packages/operational-state-validation/"*.tar.gz
+</code></pre>
+<p>Extract into a new directory and test there. System GTK libraries remain dependencies unless the packaging work explicitly bundles and qualifies them.</p>
+<h2 id="10-commit-framework-studio-and-desk">10. Commit Framework, Studio and Desk</h2>
+<p>Use these commands only after reviewing the intended source changes and completing the required checks. <code>git add -A</code> includes new files, edits and deletions in the repository you are in; it does not commit files inside a submodule from its parent.</p>
+<p>Use the branch conditions in section 1 before <code>git switch main</code>. Run one line at a time. Stop on a failed directory change, branch switch, whitespace check or rejected push. Do not force-push.</p>
+<h3 id="framework-windows">Framework — Windows</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\framework"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "feat(framework): persist project settings and harden operational state"
+git push origin main
+</code></pre>
+<h3 id="studio-windows">Studio — Windows</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\studio"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "fix(studio): retain reviewed project settings across sessions"
+git push origin main
+</code></pre>
+<h3 id="desk-desktop-module-windows">Desk / Desktop module — Windows</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\desktop"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "fix(desktop): reclaim completed launches without stale exit updates"
+git push origin main
+</code></pre>
+<h3 id="the-same-three-repositories-linux">The same three repositories — Linux</h3>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/framework"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "feat(framework): persist project settings and harden operational state"
+git push origin main
+</code></pre>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/studio"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "fix(studio): retain reviewed project settings across sessions"
+git push origin main
+</code></pre>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/desktop"
+git status
+git switch main
+git status
+git add -A
+git diff --cached --check
+git commit -m "fix(desktop): reclaim completed launches without stale exit updates"
+git push origin main
+</code></pre>
+<p>No new Trader or Bank application commit is needed for this package. Their fixes are in Framework. The appendix contains the commands for all submodules when you have separate reviewed changes in them. Never create empty commits just to run through the list.</p>
+<h2 id="11-lock-and-publish-the-parent-last">11. Lock and publish the parent last</h2>
+<p>Only continue when every changed child repository has been committed and pushed. If another submodule still contains intended edits, finish publishing it first.</p>
+<h3 id="windows">Windows</h3>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications"
+git status
+git switch main
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+&amp; ".\build\windows-ucrt64-all-debug\bin\umicom.exe" repo lock .
+</code></pre>
+<p>After the lock succeeds:</p>
+<pre><code class="language-powershell">git add -A
+git diff --cached --check
+git diff --cached --submodule=log
+git commit -m "chore(applications): integrate operational state fixes and record child revisions"
+git push --recurse-submodules=check origin main
+git status
+</code></pre>
+<h3 id="linux">Linux</h3>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications"
+git status
+git switch main
+./build/linux-all-gtk4-debug/bin/umicom repo lock .
+</code></pre>
+<p>After the lock succeeds:</p>
+<pre><code class="language-bash">git add -A
+git diff --cached --check
+git diff --cached --submodule=log
+git commit -m "chore(applications): integrate operational state fixes and record child revisions"
+git push --recurse-submodules=check origin main
+git status
+</code></pre>
+<p>For a deliberately headless qualification, use the native <code>umicom</code> command from <code>build/linux-gcc-all-headless-debug/bin</code> instead. Do not skip the lock because a different build directory was used.</p>
+<p>The parent push checks that changed submodule commits are available through a submodule remote. It is not a substitute for pushing the intended child's <code>main</code> branch first. No commits or pushes were made by the preparation of this package.</p>
+<h2 id="12-confirm-and-update-another-machine">12. Confirm and update another machine</h2>
+<p>From the parent repository:</p>
+<pre><code class="language-text">git status
+git submodule foreach --recursive 'git status --short --branch'
+</code></pre>
+<p>The parent should have no pending changes. Inspect each child status as well. A clean working tree is not, by itself, proof that unpushed commits have reached GitHub; keep the successful push output.</p>
+<p>On another machine, start with a clean checkout with no uncommitted child work. Then run from the parent:</p>
+<pre><code class="language-text">git switch main
+git pull --ff-only origin main
+git submodule sync --recursive
+git submodule update --init --recursive
+</code></pre>
+<p>That last command checks out the exact child revisions recorded by the parent. Detached child checkouts are normal for reproducing that snapshot. Do not switch every child to a newer branch tip just to make the status say <code>main</code>. Attach a child before editing it, using section 1's comparison.</p>
+<p>Saved Studio settings are not part of the source checkout. On the second machine, review its own compiler, executable paths and workspace trust. This package does not synchronise user settings or trust through Git.</p>
+<h2 id="13-what-remains-before-the-five-products-are-complete">13. What remains before the five products are complete</h2>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Next work</th>
+<th>How to prove it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework and Studio</td>
+<td>Compile and exercise the native Windows/Linux GTK paths, including save/reopen, workspace transitions, shutdown and output.</td>
+<td>Native build logs plus real GUI acceptance checks, not catalogue or source-string tests alone.</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td>Portable project configuration, multiple targets/projects, interactive Run input, LSP/debugger/designer qualification.</td>
+<td>Repeatable end-to-end use of real tools and saved projects. This update adds local profile persistence, not all of those features.</td>
+</tr>
+<tr>
+<td>Desk</td>
+<td>Native launch/taskbar updates, application activation/focus, failed launches and shutdown with several products running.</td>
+<td>Tests and observed native behaviour; the current repeated-launch test uses an inert child.</td>
+</tr>
+<tr>
+<td>Trader</td>
+<td>Authoritative market references, stale-data and instrument valuation rules, paper lifecycle/reconciliation and broker-specific validation.</td>
+<td>Independent valuation and paper execution evidence. The <code>1.0</code> market-order fallback is still a blocker for live valuation.</td>
+</tr>
+<tr>
+<td>Bank</td>
+<td>Bind screens to approved account/ledger/payment services with permissions, atomic financial effects, reconciliation and recovery.</td>
+<td>Synthetic end-to-end account and payment workflows through the Data Server. Record validation alone is not a banking platform.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="14-all-submodule-command-reference">14. All submodule command reference</h2>
+<p>The main publication steps above cover this update. The following entries are for other intended changes you may also have. Review each repository before staging. Follow the branch conditions in section 1. <code>Nothing to commit, working tree clean</code> needs no new commit; continue to the push only when it is the intended branch. <code>Everything up-to-date</code> describes that branch push, not a detached checkout.</p>
+<p>The paths below are the 25 direct submodules in the checked parent <code>.gitmodules</code>. They are not a scan of unrelated repositories or a promise that future nested submodules have been published. If you add nested repositories, publish the deepest changed child before its containing repository.</p>
+<h3 id="framework">Framework</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\framework"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(framework): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/framework"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(framework): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="studio">Studio</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="trader">Trader</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\trader"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(trader): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/trader"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(trader): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="tms">Tms</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\tms"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(tms): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/tms"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(tms): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="llm">Llm</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\llm"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(llm): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/llm"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(llm): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="bank">Bank</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\bank"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(bank): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/bank"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(bank): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="exchange">Exchange</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\exchange"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(exchange): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/exchange"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(exchange): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="desk-desktop">Desk / Desktop</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\desktop"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(desktop): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/desktop"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(desktop): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="os">Os</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\os"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(os): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/os"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(os): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="music">Music</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\music"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(music): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/music"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(music): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="media">Media</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\media"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(media): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/media"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(media): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="accountant">Accountant</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\accountant"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(accountant): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/accountant"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(accountant): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="rag">Rag</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\rag"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(rag): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/rag"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(rag): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="games">Games</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\games"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(games): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/games"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(games): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="creator">Creator</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\creator"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(creator): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/creator"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(creator): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="kitchen">Kitchen</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\kitchen"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(kitchen): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/kitchen"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(kitchen): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="cad">Cad</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\cad"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(cad): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/cad"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(cad): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="web-studio">Web Studio</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\web-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(web-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/web-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(web-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="mobile-studio">Mobile Studio</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\mobile-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(mobile-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/mobile-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(mobile-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="database-studio">Database Studio</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\database-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(database-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/database-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(database-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="integration-studio">Integration Studio</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\integration-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(integration-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/integration-studio"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(integration-studio): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="operations">Operations</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\operations"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(operations): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/operations"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(operations): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="security-centre">Security Centre</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\security-centre"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(security-centre): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/security-centre"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(security-centre): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="marketplace">Marketplace</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\marketplace"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(marketplace): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/marketplace"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(marketplace): save reviewed development changes"
+git push origin main
+</code></pre>
+<h3 id="education">Education</h3>
+<p>Windows:</p>
+<pre><code class="language-powershell">Set-Location "C:\umicom\Umicom-Applications\applications\education"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(education): save reviewed development changes"
+git push origin main
+</code></pre>
+<p>Linux:</p>
+<pre><code class="language-bash">cd "$HOME/umicom/Umicom-Applications/applications/education"
+git status
+git switch main
+git status
+git add -A
+git commit -m "chore(education): save reviewed development changes"
+git push origin main
+</code></pre>
+<h2 id="15-reference-material">15. Reference material</h2>
+<p>The executable contracts are documented in <code>framework/docs/OPERATIONAL_STATE.md</code>. Tests are in <code>framework/tests/operational_state</code>, <code>applications/studio/tests/test_project_settings.c</code> and <code>applications/desktop/tests/test_launch_lifecycle.c</code>.</p>
+<p>The existing Git lessons remain in Framework's learning catalogue. Nothing in this update renames or replaces those lessons. For independent command reference, see the official <a href="https://git-scm.com/docs/git-submodule">Git submodule manual</a>, <a href="https://git-scm.com/docs/git-push">Git push manual</a>, <a href="https://cmake.org/cmake/help/latest/manual/cmake.1.html">CMake command manual</a>, <a href="https://cmake.org/cmake/help/latest/manual/ctest.1.html">CTest manual</a>, <a href="https://cmake.org/cmake/help/latest/manual/cpack.1.html">CPack manual</a>, <a href="https://www.sqlite.org/lang_transaction.html">SQLite transaction documentation</a> and <a href="https://docs.gtk.org/gtk4/section-threading.html">GTK threading guidance</a>.</p>
+<p class="footer">Sammy Hegab · Umicom Foundation · Source examples retain their MIT notices. Commands are instructions to review and run, not evidence that your local build has passed.</p></main></div><script>document.querySelectorAll('pre').forEach(p=>{const b=document.createElement('button');b.className='copy';b.type='button';b.textContent='Copy';b.onclick=async()=>{const text=p.querySelector('code')?.textContent||p.textContent;try{await navigator.clipboard.writeText(text);b.textContent='Copied';}catch(e){b.textContent='Select and copy';}setTimeout(()=>b.textContent='Copy',1800);};p.appendChild(b);});</script></body></html>

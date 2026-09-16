@@ -1,6 +1,5 @@
 # Umicom Studio — project workflow investigation
 
-Prepared 16 September 2026 from Sammy’s uploaded Applications archive.
 
 ## What this update establishes
 
@@ -77,7 +76,11 @@ The new course begins at `framework/docs/learning/application-development.html`.
 
 The original 53 catalogue records remain byte-for-byte present, in the same order. Appending eleven brings the catalogue to 64. The original programming lessons remain available for deeper practice. The course index maps further work in algorithms, memory, design patterns, Assembly, concurrency, persistence, networking, security and richer GUI controls. This delivery does not claim to have completed that entire curriculum.
 
-## Remaining work, in priority order
+## Follow-up: Operational State update, 16 September 2026
+
+The later Operational State update adds Data Server-backed, revision-checked project settings and Studio save/reopen integration. Memory and SQLite paths have separate regression tests. Build profiles do not restore workspace trust. These settings remain local to one user/platform rather than travelling with a Git clone. The session-only observation in the original audit below is historical; the native GTK binding still needs Windows/Linux graphical qualification. See `OPERATIONAL_STATE_UPDATE.html` and Framework's `docs/OPERATIONAL_STATE.md` for the new contracts. Earlier validation figures in this audit are not new test runs.
+
+## Remaining work at the original Project Workflow delivery
 
 | Priority | Next qualification or implementation | Completion evidence |
 |---|---|---|
