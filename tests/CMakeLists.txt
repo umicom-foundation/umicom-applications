@@ -284,5 +284,5 @@ add_subdirectory(
 # Shared input validation is owned by Framework, never by a duplicate Studio or
 # Trader implementation. Link its regressions to the existing library targets.
 add_subdirectory(
-    "${CMAKE_CURRENT_SOURCE_DIR}/../framework/tests/studio_trader_contracts"
-    "framework-studio-trader-contracts")
+    "${CMAKE_CURRENT_SOURCE_DIR}/../framework/tests/input_validation"
+    "framework-input-validation")

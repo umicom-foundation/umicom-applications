@@ -1,0 +1,107 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Framework Naming and Learning Qualification | Umicom</title><style>*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f3f6f9;color:#172b3a;font:17px/1.65 system-ui,Segoe UI,Arial,sans-serif}header{background:#123349;color:white;padding:58px 24px}.wrap{max-width:1120px;margin:auto}header p{color:#d4e6ee;max-width:820px}.kicker{text-transform:uppercase;font-size:13px;letter-spacing:.13em;font-weight:750}h1{font-size:clamp(32px,5vw,53px);line-height:1.13;margin:12px 0}h2{font-size:27px;margin-top:0}h3{margin-top:28px}nav{display:flex;flex-wrap:wrap;gap:16px;padding:18px 0}nav a{color:#07597b;font-weight:650}main{padding:28px 24px 64px}section{padding:32px 38px;background:white;border:1px solid #d6e2e9;border-radius:12px;margin-bottom:24px;scroll-margin-top:16px}p{max-width:970px}a{color:#07597b}code{font:14px/1.6 Consolas,monospace;overflow-wrap:anywhere;background:#eff4f7;padding:2px 4px}pre{background:#0c2333;color:#e8f2f7;padding:22px;overflow:auto;border-radius:8px}pre code{background:none;color:inherit;padding:0;white-space:pre;overflow-wrap:normal}table{border-collapse:collapse;width:100%;margin:20px 0;font-size:15px}th,td{border:1px solid #d5e1e8;padding:12px;text-align:left;vertical-align:top}th{background:#edf4f7}.table{overflow:auto}.note{background:#ebf6f5;border-left:4px solid #167c73;padding:17px 21px}.warning{background:#fff4e4;border-left:4px solid #b57322;padding:17px 21px}.tag{display:inline-block;padding:5px 11px;background:#224e63;border-radius:5px;font-size:13px}footer{padding:25px 24px;border-top:1px solid #d5e1e8;color:#506575;font-size:14px}@media(max-width:650px){section{padding:23px 20px}main{padding:18px 12px 42px}header{padding:40px 22px}pre{padding:15px}h2{font-size:24px}}@media print{body{background:white}nav{display:none}section{break-inside:avoid;border:0}header{background:white;color:black}header p{color:black}pre{white-space:pre-wrap;background:#f4f4f4;color:black}pre code{white-space:pre-wrap}.tag{background:#eee;color:black}}</style></head><body><header><div class="wrap"><div class="kicker">Umicom Framework · release engineering</div><h1>Naming and learning integrity</h1><p>Merge the capability-based naming corrections, verify the shared C implementation and reading resources, then qualify the real applications before publication.</p><span class="tag">Development candidate · 15 September 2026</span></div></header><main class="wrap"><nav aria-label="Guide sections"><a href="#scope">Scope</a><a href="#move">Move and merge</a><a href="#checks">Focused checks</a><a href="#integrated">Applications</a><a href="#linux">Linux</a><a href="#publish">Publish</a><a href="#next">Next milestones</a></nav>
+<section id="scope"><h2>What this candidate contains</h2><p>This batch begins the next release-foundation milestone. It is not a new version tag and does not declare the complete Applications estate production-ready. It extends the existing CodeGuard service, corrects the shared test-suite name and Git lesson filename, and strengthens the native learning-resource qualification.</p>
+<div class="table"><table><thead><tr><th>Previous identity/path</th><th>Canonical replacement</th><th>Compatibility</th></tr></thead><tbody>
+<tr><td><code>tests/studio_trader_contracts</code></td><td><code>tests/input_validation</code></td><td>Move the two complete files; no second test implementation remains.</td></tr>
+<tr><td><code>umicom-studio-trader-contract-tests</code></td><td><code>umicom-input-validation-tests</code></td><td>Update direct target invocations.</td></tr>
+<tr><td><code>framework.studio_trader_contracts.</code></td><td><code>framework.input_validation.</code></td><td>All 14 regression group suffixes remain.</td></tr>
+<tr><td><code>git-first-comment.html</code></td><td><code>git-first-commit.html</code></td><td>The old URL becomes a short compatibility link, not a duplicated lesson.</td></tr>
+</tbody></table></div>
+<p>CodeGuard keeps its original functions and enum values. Additional rules identify the specifically retired directory, numbered-copy filenames and selected ASCII filename-portability conflicts. It does not automatically rename or delete files. Legitimate product, adapter and domain names remain.</p><p>The 20 assessed lesson IDs, order, titles, exercises and teaching bodies are preserved. The new naming reference is supplementary, not a 21st assessed lesson. The previous eight production input fixes and runnable exercises remain unchanged.</p>
+<h3>Starting revisions</h3><p>Framework: <code>120b09f63e6b3ff8a7f5f350f45f2065d9d3a000</code><br>Applications: <code>6315cb29fe251feb69af8137729d1007eaee0ccf</code></p><p>Compare a newer local revision before applying these complete files. Do not reset, clean or force-checkout an established working tree to make it match the batch. No Studio or Trader source file changes are included.</p>
+</section><section id="move"><h2>1. Move the existing files, then merge</h2><div class="warning"><strong>A changed-file ZIP is not a mirror of the repository.</strong> Do not delete files merely because they are absent from this ZIP. Only the two explicit path migrations below are required. Preserve the Learning Workshop and all newer local changes.</div><p>Begin with a clean Framework working tree on main. The commands deliberately stop when there is pending work. Run these before copying the batch files:</p><pre><code>Set-Location &quot;C:\umicom\Umicom-Applications\framework&quot; -ErrorAction Stop
+
+if ((git branch --show-current) -ne &quot;main&quot;) {
+    throw &quot;Framework must be on main. Preserve any detached work first.&quot;
+}
+$pending = @(git status --porcelain)
+if ($LASTEXITCODE -ne 0 -or $pending.Count -ne 0) {
+    throw &quot;Framework has pending work. Review and preserve it before moving files.&quot;
+}
+
+git mv -- &quot;tests/studio_trader_contracts&quot; &quot;tests/input_validation&quot;
+if ($LASTEXITCODE -ne 0) { throw &quot;Test-folder migration failed. Stop before merging.&quot; }
+
+git mv -- &quot;docs/learning/git-first-comment.html&quot; &quot;docs/learning/git-first-commit.html&quot;
+if ($LASTEXITCODE -ne 0) { throw &quot;Lesson migration failed. Stop before merging.&quot; }
+
+git status --short</code></pre><p>Now open Beyond Compare. Compare the ZIP's <code>umicom-applications</code> directory with <code>C:\umicom\Umicom-Applications</code>. Merge only the supplied new/changed files into that existing root. Do not create a nested second Applications directory. The batch replaces the old Git page with its small compatibility link after its full body has moved to the canonical name.</p><p>When a migration was already completed, do not repeat the move or overwrite a newer target blindly. Inspect the existing pair and use the manifest's old/new paths and hashes to resolve the difference. The new input-validation CMake file rejects an overlay that leaves the retired test implementation behind.</p>
+</section><section id="checks"><h2>2. Run the focused Windows checks</h2><p>This builds the real affected C sources without requiring the entire GUI dependency graph. Expect <strong>6 naming/learning tests</strong> and <strong>14 input-validation tests</strong>. Checks and setup remain active in Release configurations too.</p><pre><code>Set-Location &quot;C:\umicom\Umicom-Applications&quot; -ErrorAction Stop
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+
+foreach ($suite in @(&quot;release_qualification&quot;, &quot;input_validation&quot;)) {
+    $buildDir = &quot;.\build\windows-ucrt64-$suite&quot;
+    &amp; &quot;C:\msys64\ucrt64\bin\cmake.exe&quot; `
+        -S &quot;.\framework\tests\$suite&quot; `
+        -B $buildDir `
+        -G Ninja `
+        -DCMAKE_BUILD_TYPE=Debug `
+        -DCMAKE_C_COMPILER=&quot;C:/msys64/ucrt64/bin/gcc.exe&quot; `
+        -DCMAKE_MAKE_PROGRAM=&quot;C:/msys64/ucrt64/bin/ninja.exe&quot;
+    if ($LASTEXITCODE -ne 0) { throw &quot;$suite configuration failed.&quot; }
+
+    &amp; &quot;C:\msys64\ucrt64\bin\cmake.exe&quot; --build $buildDir --parallel 2
+    if ($LASTEXITCODE -ne 0) { throw &quot;$suite build failed.&quot; }
+
+    &amp; &quot;C:\msys64\ucrt64\bin\ctest.exe&quot; `
+        --test-dir $buildDir --no-tests=error --output-on-failure
+    if ($LASTEXITCODE -ne 0) { throw &quot;$suite tests failed.&quot; }
+}</code></pre><h3>Recorded local evidence</h3><div class="table"><table><thead><tr><th>Configuration</th><th>Naming/learning</th><th>Input validation</th><th>Failures/skips</th></tr></thead><tbody><tr><td>Linux GCC Debug</td><td>6/6</td><td>14/14</td><td>0/0</td></tr><tr><td>Linux GCC Release</td><td>6/6</td><td>14/14</td><td>0/0</td></tr><tr><td>Linux Clang Debug</td><td>6/6</td><td>14/14</td><td>0/0</td></tr><tr><td>Linux Clang ASan + UBSan</td><td>6/6</td><td>14/14</td><td>0/0</td></tr></tbody></table></div><p>The resource gate reads 20 catalogue pages and four reference/compatibility pages, checks metadata/title/heading agreement and validates 583 local anchor/canonical links. Eleven deliberately corrupted reading copies pass the original substring-based checker but are rejected by the new checker. The comparison uses the same corrected catalogue for both checkers to isolate the verification defect.</p><p>The existing C and x86-64 Assembly exercises pass 6/6 in Linux Release. A small install fixture stages the actual Learning component and the native checker passes on its installed resource copy. That fixture is <strong>not</strong> a complete SDK installation or proof of Studio's runtime resource discovery.</p><p>The checker handles the documented authored HTML subset; it is not a general HTML5 validator. It does not fetch external links, execute scripts, inspect every image/CSS asset, prove learner mastery or scan every historical book. The evidence package contains commands, logs, JUnit XML, preservation checks and source receipts.</p>
+</section><section id="integrated"><h2>3. Qualify the integrated Applications build</h2><p>Run the complete application build and tests after the focused checks. This keeps the existing all-module preset and does not disable GTK or remove features to obtain a green result.</p><pre><code>Set-Location &quot;C:\umicom\Umicom-Applications&quot; -ErrorAction Stop
+$env:Path = &quot;C:\msys64\ucrt64\bin;$env:Path&quot;
+
+&amp; &quot;C:\msys64\ucrt64\bin\cmake.exe&quot; `
+    --preset windows-ucrt64-all-debug `
+    -DUMICOM_BUILD_NATIVE_TOOL=ON
+if ($LASTEXITCODE -ne 0) { throw &quot;Applications configuration failed.&quot; }
+
+&amp; &quot;C:\msys64\ucrt64\bin\cmake.exe&quot; `
+    --build --preset windows-ucrt64-all-debug --parallel 2 -- -k 0
+if ($LASTEXITCODE -ne 0) { throw &quot;Applications build failed. Do not publish.&quot; }
+
+&amp; &quot;C:\msys64\ucrt64\bin\ctest.exe&quot; `
+    --preset windows-ucrt64-all-debug `
+    --parallel 1 --no-tests=error --output-on-failure
+if ($LASTEXITCODE -ne 0) { throw &quot;Applications tests failed. Do not publish.&quot; }</code></pre><p>Launch Studio and Trader from the resulting build. Open lessons, navigate the index and next/previous links, open the supplementary naming reference, and exercise the ordinary document, layout, save and close workflows. Record actual Windows/GUI results. These operations have not been performed in the Linux qualification container.</p><div class="warning"><strong>No release promotion from focused tests alone.</strong> Full Windows execution, the complete Applications dependency graph, graphical interaction, clean-machine SDK deployment and broker integration remain separate gates. The prior risk valuation fallback of 1.0 for a request without a positive limit price is unchanged; it is not a market-data reference policy.</div>
+</section><section id="linux"><h2>4. Update and verify Linux separately</h2><p>After publishing the Windows-side child and parent commits, update a clean Linux checkout using its normal main/submodule workflow. Do not copy Windows object files, executables or CMake caches into Linux. Use new native build directories:</p><pre><code>cd &quot;$HOME/umicom/Umicom-Applications&quot;
+for suite in release_qualification input_validation; do
+    cmake -S &quot;framework/tests/$suite&quot; -B &quot;build/linux-$suite&quot; \
+        -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc || exit 1
+    cmake --build &quot;build/linux-$suite&quot; --parallel 2 || exit 1
+    ctest --test-dir &quot;build/linux-$suite&quot; \
+        --no-tests=error --output-on-failure || exit 1
+done
+
+# A separate all-module build is still required before release promotion.
+cmake --preset linux-gcc-all-headless-debug || exit 1
+cmake --build --preset linux-gcc-all-headless-debug --parallel 2 || exit 1
+ctest --preset linux-gcc-all-headless-debug \
+    --no-tests=error --output-on-failure || exit 1</code></pre><p>For graphical release evidence, also use the existing <code>linux-all-gtk4-debug</code> preset on a Linux machine with the required GUI dependencies and a graphical session. Keep that result separate from these headless tests.</p>
+</section><section id="publish"><h2>5. Publish Framework, then the parent</h2><p>Only publish after the required tests for the intended development merge have passed and you have reviewed the actual staged changes. A development source commit is not a public release tag. Do not include secrets, build outputs or unrelated work.</p><h3>Framework first</h3><pre><code>Set-Location &quot;C:\umicom\Umicom-Applications\framework&quot; -ErrorAction Stop
+if ((git branch --show-current) -ne &quot;main&quot;) { throw &quot;Framework is not on main.&quot; }
+git add -A
+if ($LASTEXITCODE -ne 0) { throw &quot;Framework staging failed.&quot; }
+git diff --cached --check
+if ($LASTEXITCODE -ne 0) { throw &quot;Resolve staged whitespace errors.&quot; }
+git diff --cached --stat
+# Review the staged changes and test evidence before the next command.
+git commit -m &quot;feat(framework): qualify naming and learning resource integrity&quot;
+if ($LASTEXITCODE -ne 0) { throw &quot;Framework commit did not complete.&quot; }
+git push origin main
+if ($LASTEXITCODE -ne 0) { throw &quot;Framework push failed. Stop before the parent.&quot; }</code></pre><h3>Applications and repository lock last</h3><p>This batch requires no new Studio or Trader commit. Their existing committed work remains in their own repositories. Publish any unrelated child changes separately before updating the parent lock; never create empty commits for appearance.</p><pre><code>Set-Location &quot;C:\umicom\Umicom-Applications&quot; -ErrorAction Stop
+if ((git branch --show-current) -ne &quot;main&quot;) { throw &quot;Applications is not on main.&quot; }
+git submodule foreach --recursive &#x27;echo ===== $displaypath =====; git status --short&#x27;
+# Stop and resolve any child working-tree changes before locking.
+&amp; &quot;.\build\windows-ucrt64-all-debug\bin\umicom.exe&quot; repo lock .
+if ($LASTEXITCODE -ne 0) { throw &quot;Repository lock failed.&quot; }
+git add -A
+if ($LASTEXITCODE -ne 0) { throw &quot;Parent staging failed.&quot; }
+git diff --cached --check
+if ($LASTEXITCODE -ne 0) { throw &quot;Resolve staged whitespace errors.&quot; }
+git diff --cached --submodule=log
+# Review only intended test integration, guide and revision-lock updates.
+git commit -m &quot;chore(applications): integrate Framework naming and learning qualification&quot;
+if ($LASTEXITCODE -ne 0) { throw &quot;Parent commit did not complete.&quot; }
+git push origin main
+if ($LASTEXITCODE -ne 0) { throw &quot;Parent push failed.&quot; }
+git status</code></pre><p>Keep the full changed-file manifest with the review evidence. It identifies actual production, test/build and documentation changes separately; unchanged prior fixes and examples are not counted as newly implemented work.</p>
+</section><section id="next"><h2>Next major-release milestones</h2><p>The included Framework <code>docs/RELEASE_QUALIFICATION_ROADMAP.md</code> keeps the remaining work explicit: source/installed resource discovery from arbitrary workspaces; persistent learning and exercise evidence through existing Framework contracts; real workbench and exported SDK qualification; then cross-platform packaging and release promotion.</p><p>The naming audit in this candidate is targeted. Public C names, saved lesson IDs, Master Controller / Slave Controller terminology, genuine product profiles, third-party API names and historical published book titles are not globally rewritten. Further naming candidates require an ownership and reference inventory before a move.</p></section></main><footer><div class="wrap">Umicom Foundation · Sammy Hegab · Source code: MIT · Qualification scope is stated separately from product readiness.</div></footer></body></html>
