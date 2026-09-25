@@ -183,6 +183,18 @@ function(umicom_add_shared_native_applications)
             UMICOM_PRODUCT_TITLE="${_umicom_title}")
         target_link_libraries("${_umicom_native_target}" PRIVATE
             "${_umicom_module_target}" Umicom::ui_gtk4)
+        # Accountant and Exchange select the same Framework operations host.
+        # Their original catalogue layouts remain available inside that host;
+        # every other product continues to use the unchanged preview path.
+        if(_umicom_slug MATCHES "^(accountant|exchange)$")
+            if(NOT TARGET Umicom::finance_operations_gtk4)
+                message(FATAL_ERROR "Financial desktop requires Framework finance_operations_gtk4")
+            endif()
+            target_compile_definitions("${_umicom_native_target}" PRIVATE
+                UMICOM_PRODUCT_FINANCE_OPERATIONS=1)
+            target_link_libraries("${_umicom_native_target}" PRIVATE
+                Umicom::finance_operations_gtk4)
+        endif()
         umicom_apply_warnings("${_umicom_native_target}")
         umicom_apply_sanitizers("${_umicom_native_target}")
 
