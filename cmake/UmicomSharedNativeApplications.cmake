@@ -195,6 +195,19 @@ function(umicom_add_shared_native_applications)
             target_link_libraries("${_umicom_native_target}" PRIVATE
                 Umicom::finance_operations_gtk4)
         endif()
+        # The thin module opts into a shared AI workspace. Other applications
+        # keep their existing frontend and no AI controller is attached to them.
+        get_target_property(_umicom_ai_workspace "${_umicom_module_target}"
+            UMICOM_AI_WORKSPACE_ATTACHED)
+        if(_umicom_ai_workspace)
+            if(NOT TARGET Umicom::ai_workspace_gtk4)
+                message(FATAL_ERROR "AI desktop requires Framework ai_workspace_gtk4")
+            endif()
+            target_compile_definitions("${_umicom_native_target}" PRIVATE
+                UMICOM_PRODUCT_AI_WORKSPACE=1)
+            target_link_libraries("${_umicom_native_target}" PRIVATE
+                Umicom::ai_workspace_gtk4)
+        endif()
         umicom_apply_warnings("${_umicom_native_target}")
         umicom_apply_sanitizers("${_umicom_native_target}")
 
