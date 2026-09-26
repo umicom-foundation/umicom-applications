@@ -208,6 +208,19 @@ function(umicom_add_shared_native_applications)
             target_link_libraries("${_umicom_native_target}" PRIVATE
                 Umicom::ai_workspace_gtk4)
         endif()
+        # Keep enterprise service selection in Framework; native products carry
+        # only the attachment property, never duplicated import or policy code.
+        get_target_property(_umicom_enterprise_workspace
+            "${_umicom_module_target}" UMICOM_ENTERPRISE_WORKSPACE_ATTACHED)
+        if(_umicom_enterprise_workspace)
+            if(NOT TARGET Umicom::enterprise_workspace_gtk4)
+                message(FATAL_ERROR "Enterprise native product needs its Framework GTK adapter")
+            endif()
+            target_compile_definitions("${_umicom_native_target}" PRIVATE
+                UMICOM_PRODUCT_ENTERPRISE_WORKSPACE=1)
+            target_link_libraries("${_umicom_native_target}" PRIVATE
+                Umicom::enterprise_workspace_gtk4)
+        endif()
         umicom_apply_warnings("${_umicom_native_target}")
         umicom_apply_sanitizers("${_umicom_native_target}")
 
