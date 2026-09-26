@@ -221,6 +221,22 @@ function(umicom_add_shared_native_applications)
             target_link_libraries("${_umicom_native_target}" PRIVATE
                 Umicom::enterprise_workspace_gtk4)
         endif()
+        # A product selects a creative profile; reusable scene, music and
+        # export policy stay behind the Framework-owned native surface.
+        get_target_property(_umicom_creative_workspace
+            "${_umicom_module_target}" UMICOM_CREATIVE_WORKSPACE_ATTACHED)
+        if(_umicom_creative_workspace)
+            if(NOT TARGET Umicom::creative_workspace_gtk4)
+                message(FATAL_ERROR "Creative product needs its Framework GTK adapter")
+            endif()
+            get_target_property(_umicom_creative_profile
+                "${_umicom_module_target}" UMICOM_CREATIVE_WORKSPACE_PROFILE)
+            target_compile_definitions("${_umicom_native_target}" PRIVATE
+                UMICOM_PRODUCT_CREATIVE_WORKSPACE=1
+                UMICOM_CREATIVE_PROFILE="${_umicom_creative_profile}")
+            target_link_libraries("${_umicom_native_target}" PRIVATE
+                Umicom::creative_workspace_gtk4)
+        endif()
         umicom_apply_warnings("${_umicom_native_target}")
         umicom_apply_sanitizers("${_umicom_native_target}")
 
