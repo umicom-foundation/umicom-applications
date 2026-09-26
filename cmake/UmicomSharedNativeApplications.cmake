@@ -122,6 +122,22 @@ function(umicom_add_shared_native_applications)
         return()
     endif()
 
+    # Add the shared practicum to Studio even when the Education application
+    # is not selected. Framework owns the controller; Studio only adds a button.
+    if(TARGET umicom-studio-ide OR TARGET umicom_education_module)
+        include("${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake/UmicomEducationWorkspace.cmake")
+        if(TARGET Umicom::education_workspace_gtk4)
+            foreach(_umicom_learning_host umicom-studio-ide umicom-studio-workbench-demo)
+                if(TARGET "${_umicom_learning_host}")
+                    target_compile_definitions("${_umicom_learning_host}" PRIVATE
+                        UMICOM_EDUCATION_WORKSPACE_GTK4=1)
+                    target_link_libraries("${_umicom_learning_host}" PRIVATE
+                        Umicom::education_workspace_gtk4)
+                endif()
+            endforeach()
+        endif()
+    endif()
+
     add_custom_target(umicom-desktop-products)
     foreach(_umicom_dedicated_target
             umicom-desk umicom-studio-ide umicom-trader
@@ -236,6 +252,19 @@ function(umicom_add_shared_native_applications)
                 UMICOM_CREATIVE_PROFILE="${_umicom_creative_profile}")
             target_link_libraries("${_umicom_native_target}" PRIVATE
                 Umicom::creative_workspace_gtk4)
+        endif()
+        # The application carries an opt-in property, not its own curriculum
+        # or persistence engine. The extension retains Existing layouts.
+        get_target_property(_umicom_education_workspace
+            "${_umicom_module_target}" UMICOM_EDUCATION_WORKSPACE_ATTACHED)
+        if(_umicom_education_workspace)
+            if(NOT TARGET Umicom::education_workspace_gtk4)
+                message(FATAL_ERROR "Education product needs its Framework GTK adapter")
+            endif()
+            target_compile_definitions("${_umicom_native_target}" PRIVATE
+                UMICOM_PRODUCT_EDUCATION_WORKSPACE=1)
+            target_link_libraries("${_umicom_native_target}" PRIVATE
+                Umicom::education_workspace_gtk4)
         endif()
         umicom_apply_warnings("${_umicom_native_target}")
         umicom_apply_sanitizers("${_umicom_native_target}")
