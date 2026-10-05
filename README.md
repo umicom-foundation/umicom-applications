@@ -326,3 +326,7 @@ The next milestone is the root application-composition build, beginning with Fra
 Project lead and author: Sammy Hegab
 Organisation: Umicom Foundation
 Licence: MIT
+
+Workspace recovery: [Recover application layouts and desktop checkpoints](framework/docs/learning/restore-saved-workspaces.html). The guide explains the complete comparison, explicit confirmation and recovery limits.
+
+The shared native application menu now includes **Launch activity**: inspect process starts and exits, avoid duplicate standard opens, and keep opened applications alive when their launching window closes. See [Opening applications and checking launch activity](framework/docs/learning/application-launch-activity.html) for the supported workflow and limits.
