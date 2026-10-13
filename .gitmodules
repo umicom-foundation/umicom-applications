@@ -98,3 +98,7 @@
 	path = applications/education
 	url = https://github.com/umicom-foundation/umicom-education-studio-module.git
 	branch = main
+[submodule "applications/healthcare"]
+	path = applications/healthcare
+	url = https://github.com/umicom-foundation/umicom-healthcare-module.git
+	branch = main

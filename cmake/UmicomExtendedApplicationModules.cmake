@@ -62,7 +62,9 @@ option(UMICOM_APPLICATIONS_BUILD_MARKETPLACE
 option(UMICOM_APPLICATIONS_BUILD_EDUCATION
        "Build the Umicom Education Studio application module"
        OFF)
-
+option(UMICOM_APPLICATIONS_BUILD_HEALTHCARE
+       "Build the Umicom Healthcare application module"
+       OFF)
 option(UMICOM_APPLICATIONS_BUILD_ALL_MODULES
        "Build every checked-in Umicom application module"
        OFF)
@@ -73,6 +75,8 @@ if(UMICOM_APPLICATIONS_BUILD_ALL_MODULES)
         "Build Umicom Desk" FORCE)
     set(UMICOM_APPLICATIONS_BUILD_STUDIO ON CACHE BOOL
         "Build Umicom Studio IDE" FORCE)
+set(UMICOM_APPLICATIONS_BUILD_HEALTHCARE ON CACHE BOOL
+    "Build Umicom Healthcare" FORCE)
     set(UMICOM_APPLICATIONS_BUILD_TRADER ON CACHE BOOL
         "Build Umicom Trader" FORCE)
     set(UMICOM_APPLICATIONS_BUILD_TMS ON CACHE BOOL
@@ -126,6 +130,11 @@ function(umicom_add_extended_application_modules)
         UMICOM_APPLICATIONS_BUILD_MUSIC_STUDIO
         "applications/music"
         "Umicom Music Studio")
+umicom_add_optional_application(
+    UMICOM_APPLICATIONS_BUILD_HEALTHCARE
+    "applications/healthcare"
+    "Umicom Healthcare"
+    "Healthcare")
     umicom_add_optional_application(
         UMICOM_APPLICATIONS_BUILD_MEDIA_STUDIO
         "applications/media"
