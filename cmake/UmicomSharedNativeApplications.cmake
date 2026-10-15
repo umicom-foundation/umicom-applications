@@ -170,9 +170,12 @@ function(umicom_add_shared_native_applications)
                 break()
             endif()
         endforeach()
+        # Deferred until after module-owned frontend detection.
+        if(FALSE)
         if(NOT _umicom_module_target)
             message(FATAL_ERROR
                 "No thin application module target in ${_umicom_relative_directory}")
+        endif()
         endif()
 
         set(_umicom_manifest "${_umicom_directory}/application.umicom.yaml")
@@ -188,8 +191,33 @@ function(umicom_add_shared_native_applications)
             continue()
         endif()
         if(TARGET "${_umicom_native_target}")
+            # Reuse a frontend belonging to this module, not an unrelated
+            # executable with the same name. Module CMake retains installation.
+            get_target_property(_umicom_native_type "${_umicom_native_target}" TYPE)
+            get_target_property(_umicom_native_imported "${_umicom_native_target}" IMPORTED)
+            get_target_property(_umicom_native_alias "${_umicom_native_target}" ALIASED_TARGET)
+            get_target_property(_umicom_native_source "${_umicom_native_target}" SOURCE_DIR)
+            cmake_path(IS_PREFIX _umicom_directory "${_umicom_native_source}" NORMALIZE _umicom_owned_native)
+            if(NOT _umicom_native_type STREQUAL "EXECUTABLE" OR _umicom_native_imported OR
+               _umicom_native_alias OR NOT _umicom_owned_native)
+                message(FATAL_ERROR "Native target does not belong to ${_umicom_relative_directory}: ${_umicom_native_target}")
+            endif()
+            add_dependencies(umicom-desktop-products "${_umicom_native_target}")
+            continue()
+        endif()
+
+        # The unconditional rejection is kept for review. The owner check above
+        # distinguishes a module's frontend from a name clash.
+        if(FALSE)
+        if(TARGET "${_umicom_native_target}")
             message(FATAL_ERROR
                 "Native target ${_umicom_native_target} already belongs to another frontend")
+        endif()
+        endif()
+
+        if(NOT _umicom_module_target)
+            message(FATAL_ERROR
+                "No thin application module target in ${_umicom_relative_directory}")
         endif()
 
         add_executable("${_umicom_native_target}"

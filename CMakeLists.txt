@@ -214,6 +214,21 @@ endfunction()
 
 # Define the add optional application build helper so parent and application projects
 # apply one consistent rule.
+# Framework now owns the reusable module and installer registration. Keep the
+# suite entry point so existing application calls retain their public contract.
+function(umicom_add_optional_application option_name relative_path display_name)
+    if(ARGC GREATER 3)
+        set(_umicom_component "${ARGV3}")
+    else()
+        string(REGEX REPLACE "[^A-Za-z0-9]" "" _umicom_component "${display_name}")
+    endif()
+    umicom_add_application_module("${option_name}" "${relative_path}"
+        "${display_name}" "${_umicom_component}")
+endfunction()
+
+# The original suite implementation is retained for review. The Framework helper
+# performs the same enabled-module, test-directory and installer registration.
+if(FALSE)
 function(umicom_add_optional_application option_name relative_path display_name)
     # Apply this branch only when its contract condition is satisfied.
     if(${option_name})
@@ -252,6 +267,7 @@ function(umicom_add_optional_application option_name relative_path display_name)
         message(STATUS "Disabled application module: ${display_name}")
     endif()
 endfunction()
+endif()
 
 # Extended application-module switches are kept in one suite-owned catalogue.
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/UmicomExtendedApplicationModules.cmake")

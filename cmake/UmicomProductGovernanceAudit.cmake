@@ -161,6 +161,12 @@ if(NOT EXISTS "${_umicom_gitmodules}")
         "The suite .gitmodules file is required for application coverage")
 endif()
 
+include("${_umicom_root}/framework/cmake/UmicomApplicationModules.cmake")
+umicom_registered_application_paths("${_umicom_root}" _umicom_application_paths)
+
+# The line-based registry reader remains for review. Framework now delegates
+# Git quoting to Git and applies the same path checks as build discovery.
+if(FALSE)
 file(STRINGS "${_umicom_gitmodules}"
     _umicom_application_path_lines
     REGEX "^[ \t]*path[ \t]*=[ \t]*applications/")
@@ -176,6 +182,7 @@ foreach(_umicom_path_line IN LISTS _umicom_application_path_lines)
     list(APPEND _umicom_application_paths "${_umicom_application_path}")
 endforeach()
 list(REMOVE_DUPLICATES _umicom_application_paths)
+endif()
 list(LENGTH _umicom_application_paths _umicom_application_count)
 
 if(_umicom_application_count EQUAL 0)
@@ -195,9 +202,40 @@ foreach(_umicom_application_path IN LISTS _umicom_application_paths)
         "${_umicom_application_path}"
         _umicom_coverage_position)
     if(_umicom_coverage_position EQUAL -1)
+        # New modules own their feature guide. Require a bounded public document
+        # within the module; discovery must not bypass product documentation.
+        set(_umicom_module_root "${_umicom_root}/${_umicom_application_path}")
+        set(_umicom_module_guide "${_umicom_module_root}/docs/application-features.md")
+        if(NOT EXISTS "${_umicom_module_guide}" OR IS_DIRECTORY "${_umicom_module_guide}")
+            message(FATAL_ERROR
+                "Application coverage is missing ${_umicom_application_path}; "
+                "add its central coverage entry or docs/application-features.md in the module")
+        endif()
+        file(REAL_PATH "${_umicom_module_root}" _umicom_module_real)
+        file(REAL_PATH "${_umicom_module_guide}" _umicom_guide_real)
+        cmake_path(IS_PREFIX _umicom_module_real "${_umicom_guide_real}" NORMALIZE _umicom_guide_inside)
+        file(SIZE "${_umicom_guide_real}" _umicom_guide_bytes)
+        if(NOT _umicom_guide_inside OR _umicom_guide_bytes LESS 1 OR
+           _umicom_guide_bytes GREATER 262144)
+            message(FATAL_ERROR "Invalid application feature guide: ${_umicom_application_path}")
+        endif()
+        file(READ "${_umicom_guide_real}" _umicom_module_guide_text)
+        foreach(_umicom_heading "# Supported features" "# Getting started" "# Limitations")
+            string(FIND "${_umicom_module_guide_text}" "${_umicom_heading}" _umicom_heading_position)
+            if(_umicom_heading_position EQUAL -1)
+                message(FATAL_ERROR "Application guide requires '${_umicom_heading}': ${_umicom_module_guide}")
+            endif()
+        endforeach()
+    endif()
+
+    # The central-only check is kept for review. The active branch also accepts
+    # a module-owned guide while preserving the documentation requirement.
+    if(FALSE)
+    if(_umicom_coverage_position EQUAL -1)
         message(FATAL_ERROR
             "Application coverage is missing registered path: "
             "${_umicom_application_path}")
+    endif()
     endif()
 endforeach()
 

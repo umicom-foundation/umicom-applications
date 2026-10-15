@@ -1,0 +1,78 @@
+# Umicom Applications
+# File: tests/check_discovered_native.cmake
+# Sammy Hegab, Umicom Foundation. MIT licence.
+cmake_minimum_required(VERSION 3.24)
+# This fixture checks ownership and composition at configure time. Its dummy
+# GTK target supplies no toolkit code and does not qualify any GUI behaviour.
+set(_source "${TEST_BINARY}/source")
+set(_binary "${TEST_BINARY}/build")
+file(MAKE_DIRECTORY "${_source}/applications/weather")
+configure_file("${SUITE_SOURCE}/framework/tests/application_modules/fixtures/application.umicom.yaml"
+    "${_source}/applications/weather/application.umicom.yaml" COPYONLY)
+file(WRITE "${_source}/.gitmodules"
+    "[submodule \"weather\"]\n path = applications/weather\n")
+file(WRITE "${_source}/applications/weather/main.c" "int main(void) { return 0; }\n")
+set(_root [=[
+cmake_minimum_required(VERSION 3.24)
+project(DiscoveredNativeFrontend LANGUAGES C)
+include("${SUITE_SOURCE}/framework/cmake/UmicomApplicationModules.cmake")
+add_library(Umicom::ui_gtk4 INTERFACE IMPORTED)
+set(UMICOM_APPLICATIONS_BUILD_SHARED_GTK4 ON)
+set(UMICOM_APPLICATIONS_BUILD_WEATHER ON CACHE BOOL "Select fixture")
+]=])
+set(_module "add_library(umicom_weather_module INTERFACE)\n")
+if(CASE STREQUAL "owned")
+    string(APPEND _module "add_executable(umicom-weather main.c)\ninstall(TARGETS umicom-weather RUNTIME DESTINATION bin)\n")
+elseif(CASE STREQUAL "foreign")
+    string(APPEND _root "add_executable(umicom-weather applications/weather/main.c)\n")
+elseif(CASE STREQUAL "imported")
+    string(APPEND _module "add_executable(umicom-weather IMPORTED)\n")
+elseif(CASE STREQUAL "library")
+    string(APPEND _module "add_library(umicom-weather INTERFACE)\n")
+else()
+    message(FATAL_ERROR "Unknown native ownership case")
+endif()
+string(APPEND _root [=[
+umicom_discover_application_modules(ROOT "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX FOUND)
+string(SHA256 _key "applications/weather")
+umicom_add_application_module("${FOUND_${_key}_option}" applications/weather
+    "${FOUND_${_key}_name}" "${FOUND_${_key}_component}")
+# Branding is included by the shared host. Only the owned-frontend branch runs.
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake")
+configure_file("${SUITE_SOURCE}/framework/cmake/UmicomApplicationBranding.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake/UmicomApplicationBranding.cmake" COPYONLY)
+include("${SUITE_SOURCE}/cmake/UmicomSharedNativeApplications.cmake")
+umicom_add_shared_native_applications()
+get_target_property(_dependencies umicom-desktop-products MANUALLY_ADDED_DEPENDENCIES)
+if(NOT "umicom-weather" IN_LIST _dependencies)
+    message(FATAL_ERROR "Owned frontend missing from desktop build target")
+endif()
+]=])
+file(WRITE "${_source}/CMakeLists.txt" "${_root}")
+file(WRITE "${_source}/applications/weather/CMakeLists.txt" "${_module}")
+set(_generator -G "${TEST_GENERATOR}")
+if(TEST_PLATFORM)
+    list(APPEND _generator -A "${TEST_PLATFORM}")
+endif()
+if(TEST_TOOLSET)
+    list(APPEND _generator -T "${TEST_TOOLSET}")
+endif()
+execute_process(COMMAND "${CMAKE_COMMAND}" ${_generator}
+    -S "${_source}" -B "${_binary}"
+    "-DSUITE_SOURCE=${SUITE_SOURCE}" "-DCMAKE_C_COMPILER=${TEST_COMPILER}"
+    RESULT_VARIABLE _status OUTPUT_VARIABLE _output ERROR_VARIABLE _error)
+if(CASE STREQUAL "owned")
+    if(NOT _status STREQUAL "0")
+        message(FATAL_ERROR "Owned frontend configuration failed: ${_output}\n${_error}")
+    endif()
+    file(READ "${_binary}/applications/weather/cmake_install.cmake" _install)
+    string(FIND "${_install}" "UmicomWeather" _component)
+    if(_component EQUAL -1)
+        message(FATAL_ERROR "Owned frontend lost its module installer component")
+    endif()
+else()
+    string(FIND "${_output}\n${_error}" "Native target does not belong" _match)
+    if(_status STREQUAL "0" OR _match EQUAL -1)
+        message(FATAL_ERROR "Expected an ownership rejection: ${_output}\n${_error}")
+    endif()
+endif()

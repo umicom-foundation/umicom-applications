@@ -14,6 +14,62 @@
 #   MIT
 #-----------------------------------------------------------------------------
 
+# Framework validates registered, initialised application manifests before any
+# module CMake executes. Core products retain their specialised suite setup.
+include("${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake/UmicomApplicationModules.cmake")
+option(UMICOM_APPLICATIONS_BUILD_ALL_MODULES
+    "Build every registered Umicom application module" OFF)
+set(_umicom_core_paths
+    applications/desktop applications/studio applications/trader applications/tms
+    applications/llm applications/bank applications/exchange applications/os)
+set(_umicom_core_options
+    UMICOM_APPLICATIONS_BUILD_DESKTOP UMICOM_APPLICATIONS_BUILD_STUDIO
+    UMICOM_APPLICATIONS_BUILD_TRADER UMICOM_APPLICATIONS_BUILD_TMS
+    UMICOM_APPLICATIONS_BUILD_LLM UMICOM_APPLICATIONS_BUILD_BANK
+    UMICOM_APPLICATIONS_BUILD_EXCHANGE UMICOM_APPLICATIONS_BUILD_OS)
+set(_umicom_discovery_all "")
+if(UMICOM_APPLICATIONS_BUILD_ALL_MODULES)
+    set(_umicom_discovery_all ALL)
+    foreach(_umicom_option IN LISTS _umicom_core_options)
+        set(${_umicom_option} ON CACHE BOOL "Build the selected core application" FORCE)
+    endforeach()
+endif()
+umicom_discover_application_modules(
+    ROOT "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX UMICOM_DISCOVERED
+    ${_umicom_discovery_all}
+    EXCLUDE_PATHS ${_umicom_core_paths}
+    RESERVED_OPTIONS ${_umicom_core_options} UMICOM_APPLICATIONS_BUILD_ALL_MODULES
+        UMICOM_APPLICATIONS_BUILD_SHARED_GTK4
+    RESERVED_COMPONENTS framework desktop studio trader tms bank operatingsystem
+        umicomllm umicomexchange)
+
+# Healthcare's published option remains recognised when its checkout is absent.
+# Initialisation supplies the authoritative manifest like every other module.
+if("applications/healthcare" IN_LIST UMICOM_DISCOVERED_MISSING AND
+   UMICOM_APPLICATIONS_BUILD_HEALTHCARE)
+    message(FATAL_ERROR "Healthcare is enabled but its submodule is not initialised")
+endif()
+
+function(umicom_add_extended_application_modules)
+    foreach(_umicom_path IN LISTS UMICOM_DISCOVERED_PATHS)
+        string(SHA256 _umicom_key "${_umicom_path}")
+        set(_umicom_component "${UMICOM_DISCOVERED_${_umicom_key}_component}")
+        if(_umicom_path STREQUAL "applications/healthcare")
+            # Preserve the published installer identity for this existing module.
+            set(_umicom_component Healthcare)
+        endif()
+        umicom_add_optional_application(
+            "${UMICOM_DISCOVERED_${_umicom_key}_option}"
+            "${_umicom_path}"
+            "${UMICOM_DISCOVERED_${_umicom_key}_name}"
+            "${_umicom_component}")
+    endforeach()
+endfunction()
+
+# The handwritten catalogue is retained for compatibility review. Manifest
+# discovery above replaces its repeated option, enable-all and registration
+# lists without changing the existing module build and installer helper.
+if(FALSE)
 option(UMICOM_APPLICATIONS_BUILD_MUSIC_STUDIO
        "Build the Umicom Music Studio application module"
        OFF)
@@ -196,6 +252,8 @@ umicom_add_optional_application(
         "applications/education"
         "Umicom Education Studio")
 endfunction()
+
+endif()
 
 # Product and architecture decisions are part of the suite contract. The shared
 # audit is included here because this catalogue is already loaded by every

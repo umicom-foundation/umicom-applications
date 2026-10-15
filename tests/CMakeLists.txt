@@ -286,3 +286,20 @@ add_subdirectory(
 add_subdirectory(
     "${CMAKE_CURRENT_SOURCE_DIR}/../framework/tests/input_validation"
     "framework-input-validation")
+
+# Configure-time frontend checks preserve module-owned GUI targets without
+# requiring a display. Actual GTK workflows remain separate native tests.
+foreach(_umicom_native_case owned foreign imported library)
+    add_test(NAME "applications.discovered_native.${_umicom_native_case}"
+        COMMAND "${CMAKE_COMMAND}"
+            "-DSUITE_SOURCE=${CMAKE_SOURCE_DIR}"
+            "-DTEST_BINARY=${CMAKE_CURRENT_BINARY_DIR}/discovered-native/${_umicom_native_case}"
+            "-DCASE=${_umicom_native_case}"
+            "-DTEST_GENERATOR=${CMAKE_GENERATOR}"
+            "-DTEST_PLATFORM=${CMAKE_GENERATOR_PLATFORM}"
+            "-DTEST_TOOLSET=${CMAKE_GENERATOR_TOOLSET}"
+            "-DTEST_COMPILER=${CMAKE_C_COMPILER}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/check_discovered_native.cmake")
+    set_tests_properties("applications.discovered_native.${_umicom_native_case}"
+        PROPERTIES LABELS "applications;discovery;frontend;cmake;regression" TIMEOUT 90)
+endforeach()
