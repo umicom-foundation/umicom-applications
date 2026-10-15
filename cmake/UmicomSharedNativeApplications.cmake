@@ -220,6 +220,14 @@ function(umicom_add_shared_native_applications)
                 "No thin application module target in ${_umicom_relative_directory}")
         endif()
 
+        # Modules can explicitly disable their own frontend. Respect that choice
+        # instead of silently building a generic preview with the same basename.
+        get_target_property(_umicom_native_disabled "${_umicom_module_target}"
+            UMICOM_NATIVE_FRONTEND_DISABLED)
+        if(_umicom_native_disabled)
+            continue()
+        endif()
+
         add_executable("${_umicom_native_target}"
             "${CMAKE_CURRENT_SOURCE_DIR}/framework/examples/product_workstation_main.c")
         target_compile_definitions("${_umicom_native_target}" PRIVATE

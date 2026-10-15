@@ -289,7 +289,7 @@ add_subdirectory(
 
 # Configure-time frontend checks preserve module-owned GUI targets without
 # requiring a display. Actual GTK workflows remain separate native tests.
-foreach(_umicom_native_case owned foreign imported library)
+foreach(_umicom_native_case owned foreign imported library disabled)
     add_test(NAME "applications.discovered_native.${_umicom_native_case}"
         COMMAND "${CMAKE_COMMAND}"
             "-DSUITE_SOURCE=${CMAKE_SOURCE_DIR}"
