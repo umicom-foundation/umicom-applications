@@ -190,6 +190,14 @@ function(umicom_add_shared_native_applications)
                 "No native executable declared for ${_umicom_relative_directory}; preserving its existing frontends")
             continue()
         endif()
+        # A non-global imported executable is visible only inside its module
+        # directory. Inspect that directory explicitly before creating a host;
+        # a parent-scope TARGET check alone would miss the conflicting name.
+        get_property(_umicom_imported_targets DIRECTORY "${_umicom_directory}"
+            PROPERTY IMPORTED_TARGETS)
+        if("${_umicom_native_target}" IN_LIST _umicom_imported_targets)
+            message(FATAL_ERROR "Native target does not belong to ${_umicom_relative_directory}: ${_umicom_native_target}")
+        endif()
         if(TARGET "${_umicom_native_target}")
             # Reuse a frontend belonging to this module, not an unrelated
             # executable with the same name. Module CMake retains installation.

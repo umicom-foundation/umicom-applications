@@ -168,7 +168,12 @@ int main(void)
             }
         }
     }
+    /* Every native product above must have its own valid manifest. A fixed
+     * historic total rejects newly registered products even when all match. */
+#if 0
     if (expected_count != 24U || fixture.visited_count != expected_count) goto cleanup;
+#endif
+    if (expected_count == 0U || fixture.visited_count != expected_count) goto cleanup;
     failed = 0;
 cleanup:
     free(fixture.modules);
