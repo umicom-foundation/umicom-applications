@@ -145,6 +145,9 @@ function(umicom_apply_warnings target)
     endif()
 endfunction()
 
+# Framework owns the shared sanitizer policy, including early runtime checks.
+# Retain the original parent-only flags for engineering review.
+if(FALSE)
 # Define the apply sanitizers build helper so parent and application projects apply one
 # consistent rule.
 function(umicom_apply_sanitizers target)
@@ -159,6 +162,10 @@ function(umicom_apply_sanitizers target)
         )
     endif()
 endfunction()
+
+endif()
+include("${CMAKE_CURRENT_LIST_DIR}/framework/cmake/UmicomSanitizers.cmake")
+umicom_check_sanitizers()
 
 # Focused platform tests may be declared in Framework or a thin application.
 # Registering them here provides one explicit build closure and prevents CTest
