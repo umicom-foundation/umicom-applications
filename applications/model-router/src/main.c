@@ -18,6 +18,7 @@
  *---------------------------------------------------------------------------*/
 
 #include "umicom/ai_workspace/worker_transport.h"
+#include "umicom/ai_workspace/storyboard_bridge.h"
 #include <json-c/json.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -122,11 +123,11 @@ static int BridgeCapabilities(void)
 {
 #ifdef UMICOM_WORKER_HAS_TEXT
     bool text=UmiAiWorkspaceLocalProviderAvailable();
-    printf("{\"abi\":1,\"media\":true,\"text\":%s,\"message_bytes\":%u,\"response_bytes\":%u,\"messages\":%u}",
+    printf("{\"abi\":1,\"media\":true,\"text\":%s,\"message_bytes\":%u,\"response_bytes\":%u,\"messages\":%u,\"storyboard\":%s,\"local_image\":false,\"local_video\":false}",
            text?"true":"false",(unsigned)UMI_AI_TEXT_CAPACITY-1U,
-           (unsigned)(UMI_AI_TEXT_CAPACITY*2U)-1U,(unsigned)UMI_AI_MAX_MESSAGES);
+           (unsigned)(UMI_AI_TEXT_CAPACITY*2U)-1U,(unsigned)UMI_AI_MAX_MESSAGES, UmiAiStoryboardBridgeAvailable()?"true":"false");
 #else
-    printf("{\"abi\":1,\"media\":true,\"text\":false}");
+    printf("{\"abi\":1,\"media\":true,\"text\":false,\"storyboard\":%s,\"local_image\":false,\"local_video\":false}", UmiAiStoryboardBridgeAvailable()?"true":"false");
 #endif
     return ferror(stdout)?1:0;
 }
@@ -149,7 +150,10 @@ int main(int argc, char **argv)
     if(status==UMI_STATUS_OK) {
         int64_t port, timeout;
         const char *action=BridgeString(root,"action",64U);
-        if(action==NULL || !BridgeInteger(root,"port",1024,65535,&port) ||
+        if(action != NULL && strcmp(action,"storyboard-compile")==0) {
+            status=UmiAiStoryboardCompile(input,length,BridgeWrite,stdout);
+            (void)snprintf(error,sizeof(error),"Canonical storyboard validation failed or is unavailable. No media was rendered.");
+        } else if(action==NULL || !BridgeInteger(root,"port",1024,65535,&port) ||
             !BridgeInteger(root,"timeout_ms",100,60000,&timeout)) status=UMI_STATUS_INVALID_ARGUMENT;
         else {
             UmiAiWorkerEndpoint endpoint={.port=(uint16_t)port,.timeoutMillis=(uint32_t)timeout};
