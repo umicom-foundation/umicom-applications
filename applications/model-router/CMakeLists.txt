@@ -63,3 +63,14 @@ if(UMICOM_MODEL_ROUTER_DESKTOP)
     install(TARGETS umicom-model-router-desktop RUNTIME DESTINATION tools/native)
 endif()
 install(TARGETS umicom-ai-bridge RUNTIME DESTINATION tools/native)
+
+# Stage non-system DLLs at both build and install locations. This leaves the
+# existing executable name, provider links and optional desktop target unchanged.
+option(UMICOM_MODEL_ROUTER_STAGE_RUNTIME "Stage coherent Windows helper DLLs" ON)
+if(WIN32 AND UMICOM_MODEL_ROUTER_STAGE_RUNTIME)
+    get_filename_component(_router_runtime_bin "${CMAKE_C_COMPILER}" DIRECTORY)
+    set(UMICOM_MODEL_ROUTER_RUNTIME_DIR "${_router_runtime_bin}" CACHE PATH "Runtime bin directory used to link the bridge")
+    include("${UMICOM_FRAMEWORK_SOURCE_DIR}/cmake/UmicomNativeRuntime.cmake")
+    umicom_prepare_native_runtime(TARGET umicom-ai-bridge
+        RUNTIME_DIR "${UMICOM_MODEL_ROUTER_RUNTIME_DIR}" DESTINATION tools/native)
+endif()
