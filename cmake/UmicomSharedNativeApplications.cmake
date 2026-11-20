@@ -115,6 +115,60 @@ function(umicom_native_manifest_field manifest field output_variable)
     set("${output_variable}" "${_umicom_field_value}" PARENT_SCOPE)
 endfunction()
 
+# Stage the approved identity for configured product executables named by the
+# application manifest. Product-owned branding still takes precedence, while
+# examples, tests and unrelated executable targets stay outside this policy.
+function(umicom_brand_declared_application_targets)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/framework/cmake/UmicomApplicationBranding.cmake")
+    get_property(_application_paths GLOBAL PROPERTY UMICOM_SUITE_APPLICATION_DIRECTORIES)
+    # These two established entries are configured directly by the parent.
+    if(TARGET Umicom::desktop_module)
+        list(APPEND _application_paths "applications/desktop")
+    endif()
+    if(TARGET Umicom::StudioCore)
+        list(APPEND _application_paths "applications/studio")
+    endif()
+    list(REMOVE_DUPLICATES _application_paths)
+
+    foreach(_application IN LISTS _application_paths)
+        set(_application_dir "${CMAKE_CURRENT_SOURCE_DIR}/${_application}")
+        set(_manifest "${_application_dir}/application.umicom.yaml")
+        umicom_native_manifest_field("${_manifest}" id _application_id)
+        umicom_native_manifest_field("${_manifest}" name _product_name)
+        get_directory_property(_component DIRECTORY "${_application_dir}"
+            DEFINITION CMAKE_INSTALL_DEFAULT_COMPONENT_NAME)
+        # Keep Framework artwork in the same install component as the product.
+        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "${_component}")
+
+        foreach(_role IN ITEMS native_executable console_executable)
+            umicom_native_manifest_field("${_manifest}" "${_role}" _product_target OPTIONAL)
+            if(NOT _product_target OR NOT TARGET "${_product_target}" OR
+                    TARGET "${_product_target}-branding")
+                continue()
+            endif()
+            # An imported, aliased or unrelated target may reuse the name.
+            # The module must own the selected executable before it is changed.
+            get_target_property(_type "${_product_target}" TYPE)
+            get_target_property(_source "${_product_target}" SOURCE_DIR)
+            get_target_property(_imported "${_product_target}" IMPORTED)
+            get_target_property(_aliased "${_product_target}" ALIASED_TARGET)
+            cmake_path(IS_PREFIX _application_dir "${_source}" NORMALIZE _owned)
+            if(NOT _type STREQUAL "EXECUTABLE" OR _imported OR _aliased OR NOT _owned)
+                message(FATAL_ERROR
+                    "Declared product executable does not belong to ${_application}: ${_product_target}")
+            endif()
+            # Branding adds the supplied ICO and runtime artwork. Existing
+            # modules continue to own their subsystem and DLL deployment.
+            umicom_apply_application_branding(
+                TARGET "${_product_target}"
+                PRODUCT_NAME "${_product_name}"
+                INTERNAL_NAME "${_product_target}"
+                APPLICATION_ID "${_application_id}"
+                BRANDING_ONLY)
+        endforeach()
+    endforeach()
+endfunction()
+
 # Create native executables from configured module targets, even when their
 # verification consoles are disabled. Never replace a dedicated product frontend.
 function(umicom_add_shared_native_applications)

@@ -534,6 +534,13 @@ umicom_add_extended_application_modules()
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/UmicomSharedNativeApplications.cmake")
 umicom_add_shared_native_applications()
 
+# The parent owns the Windows resource compiler used across application
+# subdirectories, including configurations where the Framework CLI is disabled.
+if(WIN32 AND NOT CMAKE_RC_COMPILER_LOADED)
+    enable_language(RC)
+endif()
+umicom_brand_declared_application_targets()
+
 # Register verification targets only when the developer has enabled testing.
 if(BUILD_TESTING AND
    COMMAND umicom_register_header_portfolio_governance_test)
